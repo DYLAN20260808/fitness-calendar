@@ -25,7 +25,7 @@
         .day-number { font-size: 12px; font-weight: 600; margin-bottom: 1px; flex-shrink: 0; }
         .day-icons { display: flex; flex-wrap: wrap; gap: 1px; justify-content: center; max-height: 28px; overflow: hidden; }
         .day-volume { font-size: 9px; color: #764ba2; margin-top: 1px; font-weight: 600; flex-shrink: 0; }
-        .muscle-icon { width: 14px; height: 14px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+        .muscle-icon { width: 11px; height: 11px; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 8px; }
         .chest { background: #667eea; }
         .back { background: #38b000; }
         .shoulder { background: #00b4d8; }
@@ -48,7 +48,9 @@
         .detail-section { background: rgba(200,210,230,0.5); border-radius: 15px; margin: 10px 5px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .detail-header { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: #667eea; }
         .exercise-list { display: flex; flex-direction: column; gap: 10px; }
-        .exercise-item { background: rgba(102,126,234,0.15); border-radius: 10px; padding: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .exercise-item { background: rgba(102,126,234,0.15); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+        .exercise-row1 { display: flex; align-items: center; gap: 8px; }
+        .exercise-row2 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-left: 40px; }
         .exercise-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
         .exercise-icon.chest { background: #667eea; }
         .exercise-icon.back { background: #38b000; }
@@ -201,14 +203,16 @@ function showDetail(dk){
     for(var i=0;i<ex.length;i++){
         var e=ex[i];
         htm+='<div class="exercise-item">'+
-            '<div class="exercise-icon '+e.muscle+'">'+(e.muscle==='back'?backIcon:(icons[e.muscle]||'💪'))+'</div>'+
-            '<div class="exercise-content">'+
+            '<div class="exercise-row1">'+
+                '<div class="exercise-icon '+e.muscle+'">'+(e.muscle==='back'?backIcon:(icons[e.muscle]||'💪'))+'</div>'+
                 '<div class="exercise-name" onclick="editName(\''+dk+'\','+i+',this)">'+e.name+'</div>'+
+                '<button class="delete-btn" onclick="del(\''+dk+'\','+i+')">删除</button>'+
+            '</div>'+
+            '<div class="exercise-row2">'+
                 '<div class="param-group"><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+i+',-1)">-</button><span class="adjust-value">'+e.sets+'</span><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+i+',1)">+</button><span class="param-label">组</span></div>'+
                 '<div class="param-group"><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+i+',-1)">-</button><span class="adjust-value">'+e.reps+'</span><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+i+',1)">+</button><span class="param-label">次</span></div>'+
                 (e.weight?'<div class="param-group"><button class="adjust-btn" onclick="adjWeight(\''+dk+'\','+i+',-1)">-</button><span class="adjust-value">'+e.weight+'</span><button class="adjust-btn" onclick="adjWeight(\''+dk+'\','+i+',1)">+</button><span class="param-label">kg</span></div>':'')+
             '</div>'+
-            '<button class="delete-btn" onclick="del(\''+dk+'\','+i+')">删除</button>'+
         '</div>';
     }
     lst.innerHTML=htm;
