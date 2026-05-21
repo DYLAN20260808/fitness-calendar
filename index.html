@@ -40,7 +40,7 @@
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .modal-header h2 { font-size: 14px; color: #3d4f6f; }
         .close-btn { background: none; border: none; color: #667eea; font-size: 16px; cursor: pointer; }
-        .muscle-select { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; margin-bottom: 10px; }
+        .muscle-select { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 10px; }
         .muscle-btn { padding: 6px; border: none; border-radius: 6px; color: white; font-size: 11px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
         .muscle-btn:active { transform: scale(0.95); }
         .muscle-btn.selected { opacity: 0.6; box-shadow: 0 0 0 2px #667eea; }
@@ -157,7 +157,7 @@ var exerciseNames = {
     core:['卷腹','仰卧起坐','平板支撑','俄罗斯转体','悬垂举腿','健腹轮'],
     cardio:['跑步','椭圆机','动感单车','跳绳','游泳','爬楼梯','划船机']
 };
-var backIcon = '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="#00b4d8"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>';
+var backIcon = '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="#ffd700"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>';
 function save(){localStorage.setItem('fd',JSON.stringify(data));}
 function pad(n){return String(n).padStart(2,'0');}
 function render(){
