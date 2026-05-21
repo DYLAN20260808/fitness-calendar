@@ -1,0 +1,18 @@
+{
+    "name": "健身月历",
+    "short_name": "健身月历",
+    "description": "记录你的健身训练计划",
+    "start_url": "index.html",
+    "display": "standalone",
+    "background_color": "#e8ecf3",
+    "theme_color": "#667eea",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}

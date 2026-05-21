@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#667eea">
+    <title>健身月历</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #e8ecf3 0%, #dce4f0 100%); min-height: 100vh; color: #3d4f6f; padding-bottom: 20px; }
+        .header { background: linear-gradient(90deg, #667eea, #764ba2); padding: 15px 0; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header h1 { font-size: 24px; font-weight: 600; color: #fff; }
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; background: rgba(102,126,234,0.15); }
+        .nav button { background: #667eea; border: none; color: white; padding: 8px 16px; border-radius: 8px; font-size: 18px; cursor: pointer; }
+        .nav button:active { transform: scale(0.95); }
+        .nav .month-year { font-size: 20px; font-weight: 600; }
+        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; padding: 10px 5px; }
+        .weekday { text-align: center; padding: 10px 5px; font-weight: 600; color: #667eea; font-size: 14px; }
+        .day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background: rgba(200,210,230,0.6); border-radius: 10px; padding: 5px; cursor: pointer; min-height: 60px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .day:hover { background: rgba(200,210,230,0.9); box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+        .day.empty { background: transparent; cursor: default; box-shadow: none; }
+        .day.today { border: 2px solid #667eea; }
+        .day.selected { background: rgba(102,126,234,0.3); }
+        .day-number { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+        .day-icons { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; }
+        .day-volume { font-size: 10px; color: #764ba2; margin-top: 2px; font-weight: 600; }
+        .muscle-icon { width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .chest { background: #667eea; }
+        .back { background: #38b000; }
+        .shoulder { background: #00b4d8; }
+        .leg { background: #48cae4; }
+        .arm { background: #38b000; }
+        .core { background: #9d4edd; }
+        .cardio { background: #ff6b6b; }
+        .form-group select { width: 100%; padding: 10px; border: none; border-radius: 8px; background: rgba(200,210,230,0.6); color: #3d4f6f; font-size: 16px; cursor: pointer; }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+        .modal.show { display: flex; }
+        .modal-content { background: #e8ecf3; border-radius: 15px; padding: 20px; width: 100%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { font-size: 18px; color: #3d4f6f; }
+        .close-btn { background: none; border: none; color: #667eea; font-size: 24px; cursor: pointer; }
+        .muscle-select { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        .muscle-btn { padding: 15px; border: none; border-radius: 10px; color: white; font-size: 16px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .muscle-btn:active { transform: scale(0.95); }
+        .muscle-btn.selected { opacity: 0.6; box-shadow: 0 0 0 3px #667eea; }
+        .muscle-btn span { font-size: 24px; }
+        .detail-section { background: rgba(200,210,230,0.5); border-radius: 15px; margin: 10px 5px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .detail-header { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: #667eea; }
+        .exercise-list { display: flex; flex-direction: column; gap: 10px; }
+        .exercise-item { background: rgba(102,126,234,0.15); border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 10px; }
+        .exercise-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .exercise-icon.chest { background: #667eea; }
+        .exercise-icon.back { background: #38b000; }
+        .exercise-icon.shoulder { background: #00b4d8; }
+        .exercise-icon.leg { background: #48cae4; }
+        .exercise-icon.arm { background: #38b000; }
+        .exercise-icon.core { background: #9d4edd; }
+        .exercise-icon.cardio { background: #ff6b6b; }
+        .exercise-content { flex: 1; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .exercise-name { font-weight: 600; cursor: pointer; padding: 4px 8px; border-radius: 4px; transition: background 0.2s; min-width: 60px; }
+        .exercise-name:hover { background: rgba(102,126,234,0.2); }
+        .exercise-name-input { font-weight: 600; background: #dce4f0; border: 1px solid #667eea; color: #3d4f6f; padding: 4px 8px; border-radius: 4px; font-size: 14px; min-width: 80px; max-width: 150px; }
+        .exercise-sets { color: #5a6a8a; font-size: 14px; display: flex; align-items: center; gap: 4px; }
+        .adjust-btn { background: rgba(102,126,234,0.25); border: none; color: #667eea; width: 24px; height: 24px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .adjust-btn:active { background: rgba(102,126,234,0.4); }
+        .adjust-value { display: inline-block; min-width: 24px; text-align: center; }
+        .delete-btn { background: #764ba2; border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; flex-shrink: 0; }
+        .param-group { display: flex; align-items: center; gap: 2px; }
+        .param-label { color: #5a6a8a; font-size: 14px; margin-left: 4px; }
+        .no-data { text-align: center; color: #7a8aaa; padding: 20px; }
+        .add-form { display: none; background: rgba(102,126,234,0.15); border-radius: 10px; padding: 15px; margin-top: 15px; }
+        .add-form.show { display: block; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 14px; color: #3d4f6f; }
+        .form-group input { width: 100%; padding: 10px; border: none; border-radius: 8px; background: rgba(200,210,230,0.6); color: #3d4f6f; font-size: 16px; }
+        .form-group input::placeholder { color: #7a8aaa; }
+        .add-exercise-btn { width: 100%; padding: 12px; background: #667eea; border: none; border-radius: 8px; color: white; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        .add-btn-small { margin-left: 10px; padding: 5px 15px; font-size: 14px; background: #667eea; border: none; border-radius: 8px; color: white; cursor: pointer; }
+        .tab-container { display: flex; gap: 5px; margin-bottom: 15px; }
+        .tab-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; background: rgba(102,126,234,0.15); color: #3d4f6f; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .tab-btn.active { background: #667eea; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .chart-container { padding: 10px; }
+        .line-chart { position: relative; height: 200px; margin: 20px 0; }
+        .line-chart-svg { width: 100%; height: 100%; }
+        .chart-axis { font-size: 10px; fill: #5a6a8a; }
+        .chart-grid { stroke: rgba(102,126,234,0.2); stroke-width: 1; }
+        .chart-line { fill: none; stroke-width: 2; }
+        .chart-point { cursor: pointer; }
+        .chart-point:hover { r: 6; }
+        .chart-tooltip { position: absolute; background: rgba(61,79,111,0.9); color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; pointer-events: none; white-space: nowrap; }
+        .muscle-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .legend-item { display: flex; align-items: center; gap: 4px; font-size: 12px; cursor: pointer; opacity: 0.5; transition: opacity 0.2s; }
+        .legend-item.active { opacity: 1; }
+        .legend-color { width: 12px; height: 12px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="header"><h1>💪 健身月历</h1><div style="position:absolute;right:15px;top:50%;transform:translateY(-50%);"><button onclick="exportData()" style="background:rgba(255,255,255,0.2);border:none;color:white;padding:5px 10px;border-radius:5px;cursor:pointer;font-size:12px;margin-right:5px;">导出</button><button onclick="document.getElementById('importFile').click()" style="background:rgba(255,255,255,0.2);border:none;color:white;padding:5px 10px;border-radius:5px;cursor:pointer;font-size:12px;">导入</button><input type="file" id="importFile" accept=".json" style="display:none;" onchange="importData(this)"></div></div>
+    <div class="nav">
+        <button id="prevMonth">◀</button>
+        <span class="month-year" id="monthYear"></span>
+        <button id="nextMonth">▶</button>
+    </div>
+    <div class="calendar" id="calendar"></div>
+    <div class="detail-section" id="detailSection">
+        <div class="tab-container">
+            <button class="tab-btn active" id="tabRecord" onclick="switchTab('record')">训练记录</button>
+            <button class="tab-btn" id="tabVolume" onclick="switchTab('volume')">容量: 0kg</button>
+            <button class="add-btn-small" onclick="openM()">+ 添加</button>
+        </div>
+        <div class="tab-content active" id="recordContent">
+            <div class="exercise-list" id="exerciseList"><div class="no-data">点击日期添加/查看训练记录</div></div>
+        </div>
+        <div class="tab-content" id="volumeContent">
+            <div class="chart-container" id="chartContainer"></div>
+        </div>
+    </div>
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>添加训练</h2>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+            <div class="muscle-select" id="muscleSelect">
+                <button class="muscle-btn chest" data-muscle="chest"><span>❤️</span>胸肌</button>
+                <button class="muscle-btn back" data-muscle="back"><span>🛡️</span>背部</button>
+                <button class="muscle-btn shoulder" data-muscle="shoulder"><span>💪</span>肩部</button>
+                <button class="muscle-btn leg" data-muscle="leg"><span>🦵</span>腿部</button>
+                <button class="muscle-btn arm" data-muscle="arm"><span>💪</span>手臂</button>
+                <button class="muscle-btn core" data-muscle="core"><span>🎯</span>核心</button>
+                <button class="muscle-btn cardio" data-muscle="cardio"><span>🏃</span>有氧</button>
+            </div>
+            <div class="add-form" id="addForm">
+                <div class="form-group"><label>动作名称</label><select id="exerciseName"></select></div>
+                <div class="form-group"><label>组数</label><input type="number" id="exerciseSets" placeholder="如：4" min="1"></div>
+                <div class="form-group"><label>次数/组</label><input type="text" id="exerciseReps" placeholder="如：12 或 8-12"></div>
+                <div class="form-group"><label>重量(kg)</label><input type="number" id="exerciseWeight" placeholder="如：60" step="0.5"></div>
+                <button class="add-exercise-btn" id="addExercise">添加动作</button>
+            </div>
+        </div>
+    </div>
+    <script>
+var data = JSON.parse(localStorage.getItem('fd')||'{}');
+var curDate = new Date(), selDate = null, selMuscle = null, editIdx = -1;
+var icons = {chest:'❤️',back:'🛡️',shoulder:'💪',leg:'🦵',arm:'💪',core:'🎯',cardio:'🏃'};
+var exerciseNames = {
+    chest:['卧推','上斜卧推','下斜卧推','哑铃飞鸟','器械夹胸','俯卧撑'],
+    back:['引体向上','高位下拉','杠铃划船','哑铃划船','坐姿划船','硬拉'],
+    shoulder:['哑铃推举','杠铃推举','侧平举','前平举','俯身飞鸟','面拉'],
+    leg:['深蹲','腿举','腿弯举','腿屈伸','弓步蹲','小腿提踵'],
+    arm:['哑铃弯举','杠铃弯举','锤式弯举','绳索下压','哑铃臂屈伸','集中弯举'],
+    core:['卷腹','仰卧起坐','平板支撑','俄罗斯转体','悬垂举腿','健腹轮'],
+    cardio:['跑步','椭圆机','动感单车','跳绳','游泳','爬楼梯','划船机']
+};
+var backIcon = '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="#00b4d8"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>';
+function save(){localStorage.setItem('fd',JSON.stringify(data));}
+function pad(n){return String(n).padStart(2,'0');}
+function render(){
+    var c=document.getElementById('calendar');c.innerHTML='';
+    ['日','一','二','三','四','五','六'].forEach(function(d){c.innerHTML+='<div class="weekday">'+d+'</div>';});
+    var y=curDate.getFullYear(),m=curDate.getMonth();
+    var fd=new Date(y,m,1).getDay(),dm=new Date(y,m+1,0).getDate(),td=new Date();
+    for(var i=0;i<fd;i++)c.innerHTML+='<div class="day empty"></div>';
+    for(var d=1;d<=dm;d++){
+        var dk=y+'-'+pad(m+1)+'-'+pad(d);
+        var cls='day';
+        if(td.getFullYear()===y&&td.getMonth()===m&&td.getDate()===d)cls+=' today';
+        if(selDate===dk)cls+=' selected';
+        var ic='',volStr='';
+        if(data[dk]){
+            var ms=new Set(data[dk].map(function(e){return e.muscle;}));
+            ms.forEach(function(mu){ic+='<div class="muscle-icon '+mu+'">'+(mu==='back'?backIcon:(icons[mu]||'💪'))+'</div>';});
+            var vol=calcVolume(data[dk]);
+            if(vol>0)volStr='<div class="day-volume">'+vol+'kg</div>';
+        }
+        c.innerHTML+='<div class="'+cls+'" onclick="sel(\''+dk+'\')"><div class="day-number">'+d+'</div><div class="day-icons">'+ic+'</div>'+volStr+'</div>';
+    }
+    document.getElementById('monthYear').textContent=y+'年 '+(m+1)+'月';
+}
+function sel(dk){selDate=dk;render();showDetail(dk);if(!data[dk]||!data[dk].length)openM();}
+function calcVolume(ex){
+    var vol=0;
+    for(var i=0;i<ex.length;i++){
+        var e=ex[i];
+        var reps=parseInt(e.reps)||0;
+        var weight=e.weight||0;
+        vol+=e.sets*reps*weight;
+    }
+    return vol;
+}
+function showDetail(dk){
+    var lst=document.getElementById('exerciseList');
+    var ex=data[dk]||[];
+    var vol=calcVolume(ex);
+    document.getElementById('tabVolume').textContent='容量: '+vol+'kg';
+    if(!ex.length){lst.innerHTML='<div class="no-data">暂无训练记录，点击上方添加</div>';return;}
+    var htm='';
+    for(var i=0;i<ex.length;i++){
+        var e=ex[i];
+        htm+='<div class="exercise-item">'+
+            '<div class="exercise-icon '+e.muscle+'">'+(e.muscle==='back'?backIcon:(icons[e.muscle]||'💪'))+'</div>'+
+            '<div class="exercise-content">'+
+                '<div class="exercise-name" onclick="editName(\''+dk+'\','+i+',this)">'+e.name+'</div>'+
+                '<div class="param-group"><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+i+',-1)">-</button><span class="adjust-value">'+e.sets+'</span><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+i+',1)">+</button><span class="param-label">组</span></div>'+
+                '<div class="param-group"><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+i+',-1)">-</button><span class="adjust-value">'+e.reps+'</span><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+i+',1)">+</button><span class="param-label">次</span></div>'+
+                (e.weight?'<div class="param-group"><button class="adjust-btn" onclick="adjWeight(\''+dk+'\','+i+',-1)">-</button><span class="adjust-value">'+e.weight+'</span><button class="adjust-btn" onclick="adjWeight(\''+dk+'\','+i+',1)">+</button><span class="param-label">kg</span></div>':'')+
+            '</div>'+
+            '<button class="delete-btn" onclick="del(\''+dk+'\','+i+')">删除</button>'+
+        '</div>';
+    }
+    lst.innerHTML=htm;
+}
+function editName(dk,i,el){
+    var curName=data[dk][i].name;
+    var input=document.createElement('input');
+    input.type='text';
+    input.className='exercise-name-input';
+    input.value=curName;
+    input.onblur=function(){
+        var newName=this.value.trim();
+        if(newName&&newName!==curName){
+            data[dk][i].name=newName;
+            save();
+        }
+        showDetail(dk);
+    };
+    input.onkeydown=function(e){
+        if(e.key==='Enter')this.blur();
+        if(e.key==='Escape'){this.value=curName;this.blur();}
+    };
+    el.innerHTML='';
+    el.appendChild(input);
+    input.focus();
+    input.select();
+}
+function adjWeight(dk,i,d){data[dk][i].weight=Math.max(0,(data[dk][i].weight||0)+d*2.5);save();showDetail(dk);}
+function del(dk,i){data[dk].splice(i,1);if(!data[dk].length)delete data[dk];save();render();showDetail(dk);}
+function adjSets(dk,i,d){data[dk][i].sets=Math.max(1,data[dk][i].sets+d);save();showDetail(dk);}
+function adjReps(dk,i,d){var r=parseInt(data[dk][i].reps)||1;r=Math.max(1,r+d);data[dk][i].reps=String(r);save();showDetail(dk);}
+function openM(){document.getElementById('modal').classList.add('show');document.getElementById('addForm').classList.remove('show');selMuscle=null;document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});}
+function closeM(){document.getElementById('modal').classList.remove('show');document.getElementById('addForm').classList.remove('show');selMuscle=null;}
+function selM(m){
+    selMuscle=m;
+    document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});
+    document.querySelector('.muscle-btn[data-muscle="'+m+'"]').classList.add('selected');
+    document.getElementById('addForm').classList.add('show');
+    var sel=document.getElementById('exerciseName');
+    sel.innerHTML='';
+    var names=exerciseNames[m]||[];
+    for(var i=0;i<names.length;i++){
+        sel.innerHTML+='<option value="'+names[i]+'">'+names[i]+'</option>';
+    }
+    document.getElementById('exerciseSets').value='1';
+    document.getElementById('exerciseReps').value='9';
+    var defaultWeight = (m==='chest'||m==='back')?'100':'20';
+    document.getElementById('exerciseWeight').value=defaultWeight;
+}
+function editEx(dk,i){
+    editIdx=i;
+    selDate=dk;
+    var e=data[dk][i];
+    selMuscle=e.muscle;
+    document.getElementById('modal').classList.add('show');
+    document.getElementById('addForm').classList.add('show');
+    document.querySelector('.modal-header h2').textContent='编辑训练';
+    document.getElementById('addExercise').textContent='保存修改';
+    document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});
+    document.querySelector('.muscle-btn[data-muscle="'+e.muscle+'"]').classList.add('selected');
+    document.getElementById('exerciseName').value=e.name;
+    document.getElementById('exerciseSets').value=e.sets;
+    document.getElementById('exerciseReps').value=e.reps;
+    document.getElementById('exerciseWeight').value=e.weight||'';
+}
+function addEx(){
+    var n=document.getElementById('exerciseName').value.trim(),s=document.getElementById('exerciseSets').value,r=document.getElementById('exerciseReps').value.trim(),w=document.getElementById('exerciseWeight').value;
+    if(!n||!s||!r||!selMuscle||!selDate){alert('请填写完整信息');return;}
+    var ex={muscle:selMuscle,name:n,sets:parseInt(s),reps:r,weight:w?parseFloat(w):null};
+    if(editIdx>=0){
+        data[selDate][editIdx]=ex;
+        editIdx=-1;
+    }else{
+        if(!data[selDate])data[selDate]=[];
+        data[selDate].push(ex);
+    }
+    save();closeM();render();showDetail(selDate);
+    document.getElementById('exerciseName').value='';document.getElementById('exerciseSets').value='';document.getElementById('exerciseReps').value='';document.getElementById('exerciseWeight').value='';
+    document.querySelector('.modal-header h2').textContent='添加训练';
+    document.getElementById('addExercise').textContent='添加动作';
+}
+document.getElementById('prevMonth').onclick=function(){curDate.setMonth(curDate.getMonth()-1);render();};
+document.getElementById('nextMonth').onclick=function(){curDate.setMonth(curDate.getMonth()+1);render();};
+document.getElementById('closeModal').onclick=closeM;
+document.querySelectorAll('.muscle-btn').forEach(function(b){b.onclick=function(){selM(this.dataset.muscle);};});
+document.getElementById('addExercise').onclick=addEx;
+function switchTab(tab){
+    document.getElementById('tabRecord').classList.toggle('active',tab==='record');
+    document.getElementById('tabVolume').classList.toggle('active',tab==='volume');
+    document.getElementById('recordContent').classList.toggle('active',tab==='record');
+    document.getElementById('volumeContent').classList.toggle('active',tab==='volume');
+    if(tab==='volume')showVolumeChart();
+}
+function showVolumeChart(){
+    var container=document.getElementById('chartContainer');
+    var y=curDate.getFullYear(),m=curDate.getMonth();
+    var muscleNames={chest:'胸肌',back:'背部',shoulder:'肩部',leg:'腿部',arm:'手臂',core:'核心'};
+    var muscleColors={chest:'#667eea',back:'#764ba2',shoulder:'#00b4d8',leg:'#48cae4',arm:'#38b000',core:'#9d4edd'};
+    var dateVols={};
+    var muscleDateVols={chest:{},back:{},shoulder:{},leg:{},arm:{},core:{}};
+    for(var dk in data){
+        var parts=dk.split('-');
+        if(parseInt(parts[0])===y&&parseInt(parts[1])===m+1){
+            var ex=data[dk];
+            var vol=calcVolume(ex);
+            if(vol>0){
+                dateVols[dk]=vol;
+                for(var i=0;i<ex.length;i++){
+                    var e=ex[i];
+                    var reps=parseInt(e.reps)||0;
+                    var weight=e.weight||0;
+                    var mvol=e.sets*reps*weight;
+                    if(muscleDateVols[e.muscle])muscleDateVols[e.muscle][dk]=(muscleDateVols[e.muscle][dk]||0)+mvol;
+                }
+            }
+        }
+    }
+    var dates=Object.keys(dateVols).sort();
+    if(!dates.length){container.innerHTML='<div class="no-data">本月暂无训练数据</div>';return;}
+    var maxVol=0;
+    for(var dk in dateVols){if(dateVols[dk]>maxVol)maxVol=dateVols[dk];}
+    var padding={top:20,right:20,bottom:30,left:40};
+    var width=320,height=200;
+    var chartW=width-padding.left-padding.right;
+    var chartH=height-padding.top-padding.bottom;
+    var htm='<div class="muscle-legend">';
+    var muscles=['chest','back','shoulder','leg','arm','core'];
+    for(var i=0;i<muscles.length;i++){
+        var mu=muscles[i];
+        htm+='<div class="legend-item active" data-muscle="'+mu+'" onclick="toggleMuscle(\''+mu+'\')"><div class="legend-color" style="background:'+muscleColors[mu]+'"></div>'+icons[mu]+' '+muscleNames[mu]+'</div>';
+    }
+    htm+='</div>';
+    htm+='<div class="line-chart"><svg class="line-chart-svg" viewBox="0 0 '+width+' '+height+'">';
+    for(var i=0;i<=4;i++){
+        var yy=padding.top+chartH*i/4;
+        htm+='<line class="chart-grid" x1="'+padding.left+'" y1="'+yy+'" x2="'+(width-padding.right)+'" y2="'+yy+'"/>';
+    }
+    for(var i=0;i<=4;i++){
+        var yy=padding.top+chartH*i/4;
+        var val=Math.round(maxVol*(4-i)/4);
+        htm+='<text class="chart-axis" x="'+(padding.left-5)+'" y="'+(yy+4)+'" text-anchor="end">'+val+'</text>';
+    }
+    for(var i=0;i<dates.length;i++){
+        var x=padding.left+chartW*i/(dates.length-1||1);
+        var day=parseInt(dates[i].split('-')[2]);
+        htm+='<text class="chart-axis" x="'+x+'" y="'+(height-10)+'" text-anchor="middle">'+day+'日</text>';
+    }
+    for(var mi=0;mi<muscles.length;mi++){
+        var mu=muscles[mi];
+        var points=[];
+        for(var i=0;i<dates.length;i++){
+            var dk=dates[i];
+            var vol=muscleDateVols[mu][dk]||0;
+            if(vol>0){
+                var x=padding.left+chartW*i/(dates.length-1||1);
+                var yy=padding.top+chartH*(1-vol/maxVol);
+                points.push({x:x,y:yy,vol:vol,day:parseInt(dk.split('-')[2])});
+            }
+        }
+        if(points.length>1){
+            var pathD='M'+points[0].x+' '+points[0].y;
+            for(var j=1;j<points.length;j++){pathD+=' L'+points[j].x+' '+points[j].y;}
+            htm+='<path class="chart-line" stroke="'+muscleColors[mu]+'" d="'+pathD+'" data-muscle="'+mu+'"/>';
+        }
+        for(var j=0;j<points.length;j++){
+            htm+='<circle class="chart-point" cx="'+points[j].x+'" cy="'+points[j].y+'" r="4" fill="'+muscleColors[mu]+'" data-muscle="'+mu+'">'+
+                '<title>'+points[j].day+'日: '+points[j].vol+'kg</title></circle>';
+        }
+    }
+    htm+='</svg></div>';
+    container.innerHTML=htm;
+}
+function toggleMuscle(mu){
+    var item=document.querySelector('.legend-item[data-muscle="'+mu+'"]');
+    item.classList.toggle('active');
+    var active=item.classList.contains('active');
+    var lines=document.querySelectorAll('.chart-line[data-muscle="'+mu+'"]');
+    var points=document.querySelectorAll('.chart-point[data-muscle="'+mu+'"]');
+    for(var i=0;i<lines.length;i++){lines[i].style.opacity=active?1:0;}
+    for(var i=0;i<points.length;i++){points[i].style.opacity=active?1:0;}
+}
+function exportData(){
+    var jsonStr=JSON.stringify(data,null,2);
+    var blob=new Blob([jsonStr],{type:'application/json'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');
+    a.href=url;
+    a.download='fitness-data-'+new Date().toISOString().slice(0,10)+'.json';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+function importData(input){
+    var file=input.files[0];
+    if(!file)return;
+    var reader=new FileReader();
+    reader.onload=function(e){
+        try{
+            var imported=JSON.parse(e.target.result);
+            if(confirm('确定要导入数据吗？这将覆盖当前所有数据。')){
+                data=imported;
+                save();
+                render();
+                if(selDate)showDetail(selDate);
+                alert('导入成功！');
+            }
+        }catch(err){
+            alert('导入失败：文件格式不正确');
+        }
+    };
+    reader.readAsText(file);
+    input.value='';
+}
+render();
+    </script>
+</body>
+</html>
