@@ -17,15 +17,15 @@
         .nav .month-year { font-size: 20px; font-weight: 600; }
         .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; padding: 10px 5px; }
         .weekday { text-align: center; padding: 10px 5px; font-weight: 600; color: #667eea; font-size: 14px; }
-        .day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background: rgba(200,210,230,0.6); border-radius: 10px; padding: 5px; cursor: pointer; min-height: 60px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background: rgba(200,210,230,0.6); border-radius: 8px; padding: 3px; cursor: pointer; min-height: 45px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
         .day:hover { background: rgba(200,210,230,0.9); box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
         .day.empty { background: transparent; cursor: default; box-shadow: none; }
         .day.today { border: 2px solid #667eea; }
         .day.selected { background: rgba(102,126,234,0.3); }
-        .day-number { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
-        .day-icons { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; }
-        .day-volume { font-size: 10px; color: #764ba2; margin-top: 2px; font-weight: 600; }
-        .muscle-icon { width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .day-number { font-size: 12px; font-weight: 600; margin-bottom: 1px; flex-shrink: 0; }
+        .day-icons { display: flex; flex-wrap: wrap; gap: 1px; justify-content: center; max-height: 28px; overflow: hidden; }
+        .day-volume { font-size: 9px; color: #764ba2; margin-top: 1px; font-weight: 600; flex-shrink: 0; }
+        .muscle-icon { width: 14px; height: 14px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 10px; }
         .chest { background: #667eea; }
         .back { background: #38b000; }
         .shoulder { background: #00b4d8; }
@@ -34,22 +34,22 @@
         .core { background: #9d4edd; }
         .cardio { background: #ff6b6b; }
         .form-group select { width: 100%; padding: 10px; border: none; border-radius: 8px; background: rgba(200,210,230,0.6); color: #3d4f6f; font-size: 16px; cursor: pointer; }
-        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: flex-start; justify-content: center; padding: 10px; }
         .modal.show { display: flex; }
-        .modal-content { background: #e8ecf3; border-radius: 15px; padding: 20px; width: 100%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-header h2 { font-size: 18px; color: #3d4f6f; }
-        .close-btn { background: none; border: none; color: #667eea; font-size: 24px; cursor: pointer; }
-        .muscle-select { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
-        .muscle-btn { padding: 15px; border: none; border-radius: 10px; color: white; font-size: 16px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .modal-content { background: #e8ecf3; border-radius: 12px; padding: 15px; width: 100%; max-width: 400px; max-height: 95vh; overflow-y: auto; margin-top: 10px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .modal-header h2 { font-size: 16px; color: #3d4f6f; }
+        .close-btn { background: none; border: none; color: #667eea; font-size: 20px; cursor: pointer; }
+        .muscle-select { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 15px; }
+        .muscle-btn { padding: 10px; border: none; border-radius: 8px; color: white; font-size: 14px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; }
         .muscle-btn:active { transform: scale(0.95); }
         .muscle-btn.selected { opacity: 0.6; box-shadow: 0 0 0 3px #667eea; }
-        .muscle-btn span { font-size: 24px; }
+        .muscle-btn span { font-size: 20px; }
         .detail-section { background: rgba(200,210,230,0.5); border-radius: 15px; margin: 10px 5px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .detail-header { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: #667eea; }
         .exercise-list { display: flex; flex-direction: column; gap: 10px; }
-        .exercise-item { background: rgba(102,126,234,0.15); border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 10px; }
-        .exercise-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .exercise-item { background: rgba(102,126,234,0.15); border-radius: 10px; padding: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .exercise-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
         .exercise-icon.chest { background: #667eea; }
         .exercise-icon.back { background: #38b000; }
         .exercise-icon.shoulder { background: #00b4d8; }
