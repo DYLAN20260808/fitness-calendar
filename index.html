@@ -425,7 +425,15 @@ function importData(input){
     reader.readAsText(file);
     input.value='';
 }
-render();
+function init(){
+    render();
+    var today = new Date();
+    var dk = today.getFullYear()+'-'+pad(today.getMonth()+1)+'-'+pad(today.getDate());
+    selDate = dk;
+    render();
+    showDetail(dk);
+}
+init();
     </script>
 </body>
 </html>
