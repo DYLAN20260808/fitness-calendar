@@ -200,7 +200,7 @@ function showDetail(dk){
     document.getElementById('tabVolume').textContent='容量: '+vol+'kg';
     if(!ex.length){lst.innerHTML='<div class="no-data">暂无训练记录，点击上方添加</div>';return;}
     var htm='';
-    for(var i=0;i<ex.length;i++){
+    for(var i=ex.length-1;i>=0;i--){
         var e=ex[i];
         htm+='<div class="exercise-item">'+
             '<div class="exercise-row1">'+
