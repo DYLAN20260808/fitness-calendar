@@ -20,7 +20,7 @@
         .day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background: rgba(200,210,230,0.6); border-radius: 8px; padding: 3px; cursor: pointer; min-height: 45px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
         .day:hover { background: rgba(200,210,230,0.9); box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
         .day.empty { background: transparent; cursor: default; box-shadow: none; }
-        .day.today { border: 2px solid #667eea; }
+        .day.today { border: 2px solid #667eea; background: linear-gradient(135deg, #667eea33 0%, #764ba233 100%); }
         .day.selected { background: rgba(102,126,234,0.3); }
         .day-number { font-size: 12px; font-weight: 600; margin-bottom: 1px; flex-shrink: 0; }
         .day-icons { display: flex; flex-wrap: wrap; gap: 1px; justify-content: center; max-height: 28px; overflow: hidden; }
@@ -97,6 +97,20 @@
         .legend-item { display: flex; align-items: center; gap: 4px; font-size: 12px; cursor: pointer; opacity: 0.5; transition: opacity 0.2s; }
         .legend-item.active { opacity: 1; }
         .legend-color { width: 12px; height: 12px; border-radius: 3px; }
+        .stats-container { padding: 10px; }
+        .stats-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .stats-btn { background: rgba(102,126,234,0.15); border: none; padding: 8px 16px; border-radius: 8px; color: #3d4f6f; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .stats-btn.active { background: #667eea; color: white; }
+        .stats-btn:active { transform: scale(0.95); }
+        .stats-card { background: rgba(102,126,234,0.12); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+        .stats-card-title { font-size: 16px; font-weight: 600; color: #667eea; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .stats-card-item { padding: 8px 0; border-bottom: 1px solid rgba(102,126,234,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .stats-card-item:last-child { border-bottom: none; }
+        .stats-label { color: #5a6a8a; font-size: 14px; }
+        .stats-value { color: #3d4f6f; font-size: 16px; font-weight: 600; text-align: right; }
+        .stats-value .highlight { color: #764ba2; font-size: 20px; }
+        .stats-detail { color: #7a8aaa; font-size: 12px; margin-top: 2px; }
+        .stats-empty { text-align: center; color: #7a8aaa; padding: 20px; }
     </style>
 </head>
 <body>
@@ -111,6 +125,7 @@
         <div class="tab-container">
             <button class="tab-btn active" id="tabRecord" onclick="switchTab('record')">训练记录</button>
             <button class="tab-btn" id="tabVolume" onclick="switchTab('volume')">容量: 0kg</button>
+            <button class="tab-btn" id="tabStats" onclick="switchTab('stats')">统计</button>
             <button class="add-btn-small" onclick="openM()">+ 添加</button>
         </div>
         <div class="tab-content active" id="recordContent">
@@ -118,6 +133,9 @@
         </div>
         <div class="tab-content" id="volumeContent">
             <div class="chart-container" id="chartContainer"></div>
+        </div>
+        <div class="tab-content" id="statsContent">
+            <div class="stats-container" id="statsContainer"></div>
         </div>
     </div>
     <div class="modal" id="modal">
@@ -302,9 +320,12 @@ document.getElementById('addExercise').onclick=addEx;
 function switchTab(tab){
     document.getElementById('tabRecord').classList.toggle('active',tab==='record');
     document.getElementById('tabVolume').classList.toggle('active',tab==='volume');
+    document.getElementById('tabStats').classList.toggle('active',tab==='stats');
     document.getElementById('recordContent').classList.toggle('active',tab==='record');
     document.getElementById('volumeContent').classList.toggle('active',tab==='volume');
+    document.getElementById('statsContent').classList.toggle('active',tab==='stats');
     if(tab==='volume')showVolumeChart();
+    if(tab==='stats')showStats();
 }
 function showVolumeChart(){
     var container=document.getElementById('chartContainer');
@@ -338,12 +359,19 @@ function showVolumeChart(){
     var width=320,height=200;
     var chartW=width-padding.left-padding.right;
     var chartH=height-padding.top-padding.bottom;
-    var htm='<div class="muscle-legend">';
     var muscles=['chest','back','shoulder','leg','arm','core'];
+    var htm='<div class="muscle-legend">';
+    var hasData=false;
     for(var i=0;i<muscles.length;i++){
         var mu=muscles[i];
-        htm+='<div class="legend-item active" data-muscle="'+mu+'" onclick="toggleMuscle(\''+mu+'\')"><div class="legend-color" style="background:'+muscleColors[mu]+'"></div>'+icons[mu]+' '+muscleNames[mu]+'</div>';
+        var hasMuscleData=false;
+        for(var dk in muscleDateVols[mu]){if(muscleDateVols[mu][dk]>0){hasMuscleData=true;break;}}
+        if(hasMuscleData){
+            hasData=true;
+            htm+='<div class="legend-item" data-muscle="'+mu+'" onclick="filterMuscle(\''+mu+'\')"><div class="legend-color" style="background:'+muscleColors[mu]+'"></div>'+icons[mu]+' '+muscleNames[mu]+'</div>';
+        }
     }
+    if(hasData)htm+='<div class="legend-item active all" data-muscle="all" onclick="filterMuscle(\'all\')" style="opacity:1;color:#667eea;font-weight:600;">全部</div>';
     htm+='</div>';
     htm+='<div class="line-chart"><svg class="line-chart-svg" viewBox="0 0 '+width+' '+height+'">';
     for(var i=0;i<=4;i++){
@@ -385,14 +413,89 @@ function showVolumeChart(){
     htm+='</svg></div>';
     container.innerHTML=htm;
 }
-function toggleMuscle(mu){
+function filterMuscle(mu){
+    var allLines=document.querySelectorAll('.chart-line');
+    var allPoints=document.querySelectorAll('.chart-point');
+    document.querySelectorAll('.legend-item').forEach(function(item){item.classList.remove('active');item.style.opacity=0.5;});
+    if(mu==='all'){
+        allLines.forEach(function(l){l.style.opacity=1;});
+        allPoints.forEach(function(p){p.style.opacity=1;});
+        var allBtn=document.querySelector('.legend-item.all');
+        if(allBtn){allBtn.classList.add('active');allBtn.style.opacity=1;}
+        return;
+    }
+    allLines.forEach(function(l){l.style.opacity=l.dataset.muscle===mu?1:0;});
+    allPoints.forEach(function(p){p.style.opacity=p.dataset.muscle===mu?1:0;});
     var item=document.querySelector('.legend-item[data-muscle="'+mu+'"]');
-    item.classList.toggle('active');
-    var active=item.classList.contains('active');
-    var lines=document.querySelectorAll('.chart-line[data-muscle="'+mu+'"]');
-    var points=document.querySelectorAll('.chart-point[data-muscle="'+mu+'"]');
-    for(var i=0;i<lines.length;i++){lines[i].style.opacity=active?1:0;}
-    for(var i=0;i<points.length;i++){points[i].style.opacity=active?1:0;}
+    if(item){item.classList.add('active');item.style.opacity=1;}
+}
+var statsSelectedMuscle = null;
+var muscleNames={chest:'胸肌',back:'背部',shoulder:'肩部',leg:'腿部',arm:'手臂',core:'核心'};
+var muscleColors={chest:'#667eea',back:'#764ba2',shoulder:'#00b4d8',leg:'#48cae4',arm:'#38b000',core:'#9d4edd'};
+function calcMuscleStats(mu){
+    var maxWeight=0,maxRecord=null,maxDailyVol=0,maxDailyDate='';
+    var dailyVols={};
+    for(var dk in data){
+        var exs=data[dk];
+        var dayVol=0;
+        for(var i=0;i<exs.length;i++){
+            var e=exs[i];
+            if(e.muscle!==mu)continue;
+            var reps=parseInt(e.reps)||0;
+            var w=e.weight||0;
+            if(w>maxWeight){
+                maxWeight=w;
+                maxRecord={name:e.name,sets:e.sets,reps:e.reps,weight:w,date:dk};
+            }
+            var mvol=e.sets*reps*w;
+            dayVol+=mvol;
+        }
+        if(dayVol>maxDailyVol){
+            maxDailyVol=dayVol;
+            maxDailyDate=dk;
+        }
+    }
+    return {maxWeight:maxWeight,maxRecord:maxRecord,maxDailyVol:maxDailyVol,maxDailyDate:maxDailyDate};
+}
+function showStats(){
+    var container=document.getElementById('statsContainer');
+    var muscles=['chest','back','shoulder','leg','arm','core'];
+    var htm='<div class="stats-buttons">';
+    for(var i=0;i<muscles.length;i++){
+        var mu=muscles[i];
+        var stats=calcMuscleStats(mu);
+        if(stats.maxWeight>0||stats.maxDailyVol>0){
+            htm+='<button class="stats-btn'+(statsSelectedMuscle===mu?' active':'')+'" onclick="selectStats(\''+mu+'\')">'+icons[mu]+' '+muscleNames[mu]+'</button>';
+        }
+    }
+    htm+='</div>';
+    if(statsSelectedMuscle){
+        var s=calcMuscleStats(statsSelectedMuscle);
+        var mu=statsSelectedMuscle;
+        htm+='<div class="stats-card">';
+        htm+='<div class="stats-card-title">'+icons[mu]+' '+muscleNames[mu]+' 统计</div>';
+        if(s.maxRecord){
+            htm+='<div class="stats-card-item"><div><div class="stats-label">🏋️ 最大重量</div><div class="stats-detail">'+s.maxRecord.name+' · '+s.maxRecord.date+'</div></div><div class="stats-value"><span class="highlight">'+s.maxWeight+'</span> kg</div></div>';
+            htm+='<div class="stats-card-item"><div><div class="stats-label">📊 对应组数·次数</div></div><div class="stats-value">'+s.maxRecord.sets+'组 × '+s.maxRecord.reps+'次</div></div>';
+        }else{
+            htm+='<div class="stats-card-item"><div class="stats-label">🏋️ 最大重量</div><div class="stats-value">无重量数据</div></div>';
+        }
+        if(s.maxDailyVol>0){
+            htm+='<div class="stats-card-item"><div><div class="stats-label">📈 单日最大容量</div><div class="stats-detail">'+s.maxDailyDate+'</div></div><div class="stats-value"><span class="highlight">'+s.maxDailyVol+'</span> kg</div></div>';
+        }
+        htm+='</div>';
+    }else{
+        if(htm.indexOf('stats-btn')===-1){
+            htm+='<div class="stats-empty">暂无训练数据</div>';
+        }else{
+            htm+='<div class="stats-empty">👆 点击上方部位查看详细统计</div>';
+        }
+    }
+    container.innerHTML=htm;
+}
+function selectStats(mu){
+    statsSelectedMuscle=(statsSelectedMuscle===mu)?null:mu;
+    showStats();
 }
 function exportData(){
     var jsonStr=JSON.stringify(data,null,2);
