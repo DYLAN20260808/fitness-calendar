@@ -34,9 +34,9 @@
         .core { background: #9d4edd; }
         .cardio { background: #ff6b6b; }
         .form-group select { width: 100%; padding: 10px; border: none; border-radius: 8px; background: rgba(200,210,230,0.6); color: #3d4f6f; font-size: 16px; cursor: pointer; }
-        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: flex-start; justify-content: center; padding: 5px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; padding: 5px; }
         .modal.show { display: flex; }
-        .modal-content { background: #e8ecf3; border-radius: 10px; padding: 10px; width: 100%; max-width: 280px; max-height: 90vh; overflow-y: auto; margin-top: 5px; }
+        .modal-content { background: #e8ecf3; border-radius: 10px; padding: 10px; width: 100%; max-width: 280px; max-height: 90vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .modal-header h2 { font-size: 14px; color: #3d4f6f; }
         .close-btn { background: none; border: none; color: #667eea; font-size: 16px; cursor: pointer; }
@@ -98,8 +98,8 @@
         .legend-item.active { opacity: 1; }
         .legend-color { width: 12px; height: 12px; border-radius: 3px; }
         .stats-container { padding: 10px; }
-        .stats-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
-        .stats-btn { background: rgba(102,126,234,0.15); border: none; padding: 8px 16px; border-radius: 8px; color: #3d4f6f; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .stats-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
+        .stats-btn { background: rgba(102,126,234,0.15); border: none; padding: 8px 10px; border-radius: 8px; color: #3d4f6f; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
         .stats-btn.active { background: #667eea; color: white; }
         .stats-btn:active { transform: scale(0.95); }
         .stats-card { background: rgba(102,126,234,0.12); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
@@ -200,7 +200,7 @@ function render(){
     }
     document.getElementById('monthYear').textContent=y+'年 '+(m+1)+'月';
 }
-function sel(dk){selDate=dk;render();showDetail(dk);if(!data[dk]||!data[dk].length)openM();}
+function sel(dk){selDate=dk;render();showDetail(dk);if(!data[dk]||!data[dk].length)openM();setTimeout(function(){var el=document.getElementById('detailSection');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);}
 function calcVolume(ex){
     var vol=0;
     for(var i=0;i<ex.length;i++){
@@ -262,7 +262,7 @@ function adjWeight(dk,i,d){data[dk][i].weight=Math.max(0,(data[dk][i].weight||0)
 function del(dk,i){data[dk].splice(i,1);if(!data[dk].length)delete data[dk];save();render();showDetail(dk);}
 function adjSets(dk,i,d){data[dk][i].sets=Math.max(1,data[dk][i].sets+d);save();showDetail(dk);}
 function adjReps(dk,i,d){var r=parseInt(data[dk][i].reps)||1;r=Math.max(1,r+d);data[dk][i].reps=String(r);save();showDetail(dk);}
-function openM(){document.getElementById('modal').classList.add('show');document.getElementById('addForm').classList.remove('show');selMuscle=null;document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});}
+function openM(){document.getElementById('modal').classList.add('show');document.getElementById('addForm').classList.remove('show');selMuscle=null;document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});setTimeout(function(){var el=document.getElementById('modal');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);}
 function closeM(){document.getElementById('modal').classList.remove('show');document.getElementById('addForm').classList.remove('show');selMuscle=null;}
 function selM(m){
     selMuscle=m;
@@ -324,112 +324,182 @@ function switchTab(tab){
     document.getElementById('recordContent').classList.toggle('active',tab==='record');
     document.getElementById('volumeContent').classList.toggle('active',tab==='volume');
     document.getElementById('statsContent').classList.toggle('active',tab==='stats');
-    if(tab==='volume')showVolumeChart();
-    if(tab==='stats')showStats();
+    if(tab==='volume'){volumeMuscle=null;showVolumeChart();setTimeout(function(){
+        var el=document.getElementById('detailSection');
+        if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+    },50);}
+    if(tab==='stats'){showStats();setTimeout(function(){
+        var el=document.getElementById('detailSection');
+        if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+    },50);}
+    if(tab==='record')setTimeout(function(){
+        var el=document.getElementById('detailSection');
+        if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+    },50);
 }
 function showVolumeChart(){
     var container=document.getElementById('chartContainer');
     var y=curDate.getFullYear(),m=curDate.getMonth();
-    var muscleNames={chest:'胸肌',back:'背部',shoulder:'肩部',leg:'腿部',arm:'手臂',core:'核心'};
-    var muscleColors={chest:'#667eea',back:'#764ba2',shoulder:'#00b4d8',leg:'#48cae4',arm:'#38b000',core:'#9d4edd'};
-    var dateVols={};
     var muscleDateVols={chest:{},back:{},shoulder:{},leg:{},arm:{},core:{}};
+    var hasAnyMuscle=false;
     for(var dk in data){
         var parts=dk.split('-');
         if(parseInt(parts[0])===y&&parseInt(parts[1])===m+1){
             var ex=data[dk];
-            var vol=calcVolume(ex);
-            if(vol>0){
-                dateVols[dk]=vol;
-                for(var i=0;i<ex.length;i++){
-                    var e=ex[i];
-                    var reps=parseInt(e.reps)||0;
-                    var weight=e.weight||0;
-                    var mvol=e.sets*reps*weight;
-                    if(muscleDateVols[e.muscle])muscleDateVols[e.muscle][dk]=(muscleDateVols[e.muscle][dk]||0)+mvol;
+            for(var i=0;i<ex.length;i++){
+                var e=ex[i];
+                var reps=parseInt(e.reps)||0;
+                var weight=e.weight||0;
+                var mvol=e.sets*reps*weight;
+                if(muscleDateVols[e.muscle]){
+                    muscleDateVols[e.muscle][dk]=(muscleDateVols[e.muscle][dk]||0)+mvol;
+                    hasAnyMuscle=true;
                 }
             }
         }
     }
-    var dates=Object.keys(dateVols).sort();
+    var muscles=['chest','back','shoulder','leg','arm','core'];
+    // collect all dates that have any data for any muscle this month
+    var allDates={};
+    for(var mi=0;mi<muscles.length;mi++){
+        for(var dk in muscleDateVols[muscles[mi]]){
+            if(muscleDateVols[muscles[mi]][dk]>0)allDates[dk]=true;
+        }
+    }
+    var dates=Object.keys(allDates).sort();
     if(!dates.length){container.innerHTML='<div class="no-data">本月暂无训练数据</div>';return;}
-    var maxVol=0;
-    for(var dk in dateVols){if(dateVols[dk]>maxVol)maxVol=dateVols[dk];}
+    // build muscle buttons (only those with data)
+    var htm='<div class="stats-buttons" style="grid-template-columns:repeat(4,1fr);margin-bottom:10px;">';
+    for(var mi=0;mi<muscles.length;mi++){
+        var mu=muscles[mi];
+        var hasD=false;
+        for(var dk in muscleDateVols[mu]){if(muscleDateVols[mu][dk]>0){hasD=true;break;}}
+        if(hasD){
+            var act=(volumeMuscle===mu)?' active':'';
+            htm+='<button class="stats-btn'+act+'" onclick="setVolumeMuscle(\''+mu+'\')" style="background:'+(volumeMuscle===mu?muscleColors[mu]:'')+';">'+icons[mu]+' '+muscleNames[mu]+'</button>';
+        }
+    }
+    var allAct=(volumeMuscle==='all')?' active':'';
+    htm+='<button class="stats-btn'+allAct+'" onclick="setVolumeMuscle(\'all\')" style="'+(volumeMuscle==='all'?'background:#667eea;color:white;':'')+'">📊 全部</button>';
+    htm+='</div>';
+    if(!volumeMuscle){container.innerHTML=htm;return;}
+    // chart for selected muscle(s)
+    var mu=volumeMuscle;
     var padding={top:20,right:20,bottom:30,left:40};
     var width=320,height=200;
     var chartW=width-padding.left-padding.right;
     var chartH=height-padding.top-padding.bottom;
-    var muscles=['chest','back','shoulder','leg','arm','core'];
-    var htm='<div class="muscle-legend">';
-    var hasData=false;
-    for(var i=0;i<muscles.length;i++){
-        var mu=muscles[i];
-        var hasMuscleData=false;
-        for(var dk in muscleDateVols[mu]){if(muscleDateVols[mu][dk]>0){hasMuscleData=true;break;}}
-        if(hasMuscleData){
-            hasData=true;
-            htm+='<div class="legend-item" data-muscle="'+mu+'" onclick="filterMuscle(\''+mu+'\')"><div class="legend-color" style="background:'+muscleColors[mu]+'"></div>'+icons[mu]+' '+muscleNames[mu]+'</div>';
+    htm+='<div class="line-chart"><svg class="line-chart-svg" viewBox="0 0 '+width+' '+height+'">';
+    // determine maxVol for this muscle (or all combined)
+    var maxVol=0;
+    var ptsByMuscle={};
+    if(mu==='all'){
+        // total per day across all muscles
+        for(var di=0;di<dates.length;di++){
+            var dk=dates[di];
+            var total=0;
+            for(var mi=0;mi<muscles.length;mi++){
+                total+=muscleDateVols[muscles[mi]][dk]||0;
+            }
+            if(total>maxVol)maxVol=total;
+            ptsByMuscle['_total']=ptsByMuscle['_total']||[];
+            ptsByMuscle['_total'].push({dk:dk,vol:total});
+        }
+    }else{
+        // only this muscle
+        for(var di=0;di<dates.length;di++){
+            var dk=dates[di];
+            var vol=muscleDateVols[mu][dk]||0;
+            if(vol>0)ptsByMuscle[mu]=ptsByMuscle[mu]||[];
+            if(vol>0)ptsByMuscle[mu].push({dk:dk,vol:vol});
+            if(vol>maxVol)maxVol=vol;
         }
     }
-    if(hasData)htm+='<div class="legend-item active all" data-muscle="all" onclick="filterMuscle(\'all\')" style="opacity:1;color:#667eea;font-weight:600;">全部</div>';
-    htm+='</div>';
-    htm+='<div class="line-chart"><svg class="line-chart-svg" viewBox="0 0 '+width+' '+height+'">';
+    if(maxVol===0)maxVol=1; // avoid division by zero
+    // round up maxVol to nice number
+    maxVol=Math.ceil(maxVol/100)*100||100;
+    // grid lines
     for(var i=0;i<=4;i++){
         var yy=padding.top+chartH*i/4;
         htm+='<line class="chart-grid" x1="'+padding.left+'" y1="'+yy+'" x2="'+(width-padding.right)+'" y2="'+yy+'"/>';
     }
+    // y-axis labels
     for(var i=0;i<=4;i++){
         var yy=padding.top+chartH*i/4;
         var val=Math.round(maxVol*(4-i)/4);
         htm+='<text class="chart-axis" x="'+(padding.left-5)+'" y="'+(yy+4)+'" text-anchor="end">'+val+'</text>';
     }
+    // x-axis labels
     for(var i=0;i<dates.length;i++){
         var x=padding.left+chartW*i/(dates.length-1||1);
         var day=parseInt(dates[i].split('-')[2]);
         htm+='<text class="chart-axis" x="'+x+'" y="'+(height-10)+'" text-anchor="middle">'+day+'日</text>';
     }
-    for(var mi=0;mi<muscles.length;mi++){
-        var mu=muscles[mi];
-        var points=[];
-        for(var i=0;i<dates.length;i++){
-            var dk=dates[i];
-            var vol=muscleDateVols[mu][dk]||0;
-            if(vol>0){
-                var x=padding.left+chartW*i/(dates.length-1||1);
-                var yy=padding.top+chartH*(1-vol/maxVol);
-                points.push({x:x,y:yy,vol:vol,day:parseInt(dk.split('-')[2])});
+    // draw lines
+    if(mu==='all'){
+        // draw each muscle line with its own color, all scaled to same maxVol
+        for(var mi=0;mi<muscles.length;mi++){
+            var mu2=muscles[mi];
+            var pts=[];
+            for(var di=0;di<dates.length;di++){
+                var dk=dates[di];
+                var vol=muscleDateVols[mu2][dk]||0;
+                if(vol>0)pts.push({dk:dk,vol:vol});
+            }
+            if(pts.length>1){
+                var pathD='';
+                for(var pi=0;pi<pts.length;pi++){
+                    var idx=dates.indexOf(pts[pi].dk);
+                    var x=padding.left+chartW*idx/(dates.length-1||1);
+                    var yy=padding.top+chartH*(1-pts[pi].vol/maxVol);
+                    pathD+=(pi===0?'M':' L')+x+' '+yy;
+                }
+                htm+='<path class="chart-line" stroke="'+muscleColors[mu2]+'" d="'+pathD+'" data-muscle="'+mu2+'" style="opacity:1"/>';
+                for(var pi=0;pi<pts.length;pi++){
+                    var idx=dates.indexOf(pts[pi].dk);
+                    var x=padding.left+chartW*idx/(dates.length-1||1);
+                    var yy=padding.top+chartH*(1-pts[pi].vol/maxVol);
+                    htm+='<circle class="chart-point" cx="'+x+'" cy="'+yy+'" r="3" fill="'+muscleColors[mu2]+'" data-muscle="'+mu2+'">'+
+                        '<title>'+icons[mu2]+' '+muscleNames[mu2]+' · '+(muscleDateVols[mu2][dates[di]]||0)+'kg</title></circle>';
+                }
             }
         }
-        if(points.length>1){
-            var pathD='M'+points[0].x+' '+points[0].y;
-            for(var j=1;j<points.length;j++){pathD+=' L'+points[j].x+' '+points[j].y;}
-            htm+='<path class="chart-line" stroke="'+muscleColors[mu]+'" d="'+pathD+'" data-muscle="'+mu+'"/>';
-        }
-        for(var j=0;j<points.length;j++){
-            htm+='<circle class="chart-point" cx="'+points[j].x+'" cy="'+points[j].y+'" r="4" fill="'+muscleColors[mu]+'" data-muscle="'+mu+'">'+
-                '<title>'+points[j].day+'日: '+points[j].vol+'kg</title></circle>';
+    }else{
+        // single muscle line
+        var pts=ptsByMuscle[mu]||[];
+        if(pts.length>1){
+            var pathD='';
+            for(var pi=0;pi<pts.length;pi++){
+                var idx=dates.indexOf(pts[pi].dk);
+                var x=padding.left+chartW*idx/(dates.length-1||1);
+                var yy=padding.top+chartH*(1-pts[pi].vol/maxVol);
+                pathD+=(pi===0?'M':' L')+x+' '+yy;
+            }
+            htm+='<path class="chart-line" stroke="'+muscleColors[mu]+'" d="'+pathD+'"/>';
+            for(var pi=0;pi<pts.length;pi++){
+                var idx=dates.indexOf(pts[pi].dk);
+                var x=padding.left+chartW*idx/(dates.length-1||1);
+                var yy=padding.top+chartH*(1-pts[pi].vol/maxVol);
+                htm+='<circle class="chart-point" cx="'+x+'" cy="'+yy+'" r="4" fill="'+muscleColors[mu]+'">'+
+                    '<title>'+pts[pi].dk.split('-')[2]+'日: '+pts[pi].vol+'kg</title></circle>';
+            }
+        }else if(pts.length===1){
+            htm+='<circle class="chart-point" cx="'+(padding.left+chartW/2)+'" cy="'+(padding.top+chartH/2)+'" r="4" fill="'+muscleColors[mu]+'">'+
+                '<title>'+pts[0].dk.split('-')[2]+'日: '+pts[0].vol+'kg</title></circle>';
         }
     }
     htm+='</svg></div>';
     container.innerHTML=htm;
 }
-function filterMuscle(mu){
-    var allLines=document.querySelectorAll('.chart-line');
-    var allPoints=document.querySelectorAll('.chart-point');
-    document.querySelectorAll('.legend-item').forEach(function(item){item.classList.remove('active');item.style.opacity=0.5;});
-    if(mu==='all'){
-        allLines.forEach(function(l){l.style.opacity=1;});
-        allPoints.forEach(function(p){p.style.opacity=1;});
-        var allBtn=document.querySelector('.legend-item.all');
-        if(allBtn){allBtn.classList.add('active');allBtn.style.opacity=1;}
-        return;
-    }
-    allLines.forEach(function(l){l.style.opacity=l.dataset.muscle===mu?1:0;});
-    allPoints.forEach(function(p){p.style.opacity=p.dataset.muscle===mu?1:0;});
-    var item=document.querySelector('.legend-item[data-muscle="'+mu+'"]');
-    if(item){item.classList.add('active');item.style.opacity=1;}
+function setVolumeMuscle(mu){
+    volumeMuscle=mu;
+    showVolumeChart();
+    setTimeout(function(){
+        var el=document.getElementById('detailSection');
+        if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+    },50);
 }
-var statsSelectedMuscle = null;
+var statsSection = null; // null, '胸肌','背部','肩部','腿部','手臂','核心', 'month', 'year', 'days'
 var muscleNames={chest:'胸肌',back:'背部',shoulder:'肩部',leg:'腿部',arm:'手臂',core:'核心'};
 var muscleColors={chest:'#667eea',back:'#764ba2',shoulder:'#00b4d8',leg:'#48cae4',arm:'#38b000',core:'#9d4edd'};
 function calcMuscleStats(mu){
@@ -457,23 +527,106 @@ function calcMuscleStats(mu){
     }
     return {maxWeight:maxWeight,maxRecord:maxRecord,maxDailyVol:maxDailyVol,maxDailyDate:maxDailyDate};
 }
+function getMonthDays(y,m){
+    return new Date(y,m+1,0).getDate();
+}
+function isLeapYear(y){
+    return (y%4===0&&y%100!==0)||y%400===0;
+}
+function getYearDays(y){
+    return isLeapYear(y)?366:365;
+}
 function showStats(){
     var container=document.getElementById('statsContainer');
+    var y=curDate.getFullYear(),m=curDate.getMonth();
     var muscles=['chest','back','shoulder','leg','arm','core'];
+    var isActive=function(btn){return statsSection===btn;};
     var htm='<div class="stats-buttons">';
     for(var i=0;i<muscles.length;i++){
         var mu=muscles[i];
         var stats=calcMuscleStats(mu);
         if(stats.maxWeight>0||stats.maxDailyVol>0){
-            htm+='<button class="stats-btn'+(statsSelectedMuscle===mu?' active':'')+'" onclick="selectStats(\''+mu+'\')">'+icons[mu]+' '+muscleNames[mu]+'</button>';
+            htm+='<button class="stats-btn'+(isActive(mu)?' active':'')+'" onclick="setStats(\''+mu+'\')">'+icons[mu]+' '+muscleNames[mu]+'</button>';
         }
     }
+    htm+='<button class="stats-btn'+(isActive('month')?' active':'')+'" onclick="setStats(\'month\')">📅 月总</button>';
+    htm+='<button class="stats-btn'+(isActive('year')?' active':'')+'" onclick="setStats(\'year\')">📆 年总</button>';
+    htm+='<button class="stats-btn'+(isActive('days')?' active':'')+'" onclick="setStats(\'days\')">🎯 部位</button>';
     htm+='</div>';
-    if(statsSelectedMuscle){
-        var s=calcMuscleStats(statsSelectedMuscle);
-        var mu=statsSelectedMuscle;
+    // 计算本月各部位训练天数
+    var monthlyDays={};
+    var monthlyMuscleDays={chest:0,back:0,shoulder:0,leg:0,arm:0,core:0};
+    for(var dk in data){
+        var parts=dk.split('-');
+        var y2=parseInt(parts[0]),m2=parseInt(parts[1])-1;
+        if(y2===y&&m2===m){
+            monthlyDays[dk]=true;
+            var exs=data[dk];
+            var seen={};
+            for(var i=0;i<exs.length;i++){
+                var mu=exs[i].muscle;
+                if(!seen[mu]){seen[mu]=true;monthlyMuscleDays[mu]++;}
+            }
+        }
+    }
+    var yearlyWorkoutDays=0;
+    for(var dk in data){
+        var parts=dk.split('-');
+        if(parseInt(parts[0])===y){
+            yearlyWorkoutDays++;
+        }
+    }
+    var monthWorkoutDays=Object.keys(monthlyDays).length;
+    var totalMonthDays=getMonthDays(y,m);
+    var monthRestDays=totalMonthDays-monthWorkoutDays;
+    var totalYearDays=getYearDays(y);
+    var yearlyRestDays=totalYearDays-yearlyWorkoutDays;
+    if(statsSection==='month'){
         htm+='<div class="stats-card">';
-        htm+='<div class="stats-card-title">'+icons[mu]+' '+muscleNames[mu]+' 统计</div>';
+        htm+='<div class="stats-card-title">📅 '+y+'年'+(m+1)+'月 总览</div>';
+        htm+='<div class="stats-card-item"><div class="stats-label">🏋️ 锻炼天数</div><div class="stats-value"><span class="highlight">'+monthWorkoutDays+'</span> 天</div></div>';
+        htm+='<div class="stats-card-item"><div class="stats-label">😴 休息天数</div><div class="stats-value"><span class="highlight">'+monthRestDays+'</span> 天</div></div>';
+        htm+='<div class="stats-card-item"><div class="stats-label">📊 月出勤率</div><div class="stats-value">'+Math.round(monthWorkoutDays/totalMonthDays*100)+'%</div></div>';
+        htm+='</div>';
+    }
+    if(statsSection==='year'){
+        htm+='<div class="stats-card">';
+        htm+='<div class="stats-card-title">📆 '+y+'年 总览</div>';
+        htm+='<div class="stats-card-item"><div class="stats-label">🏋️ 锻炼天数</div><div class="stats-value"><span class="highlight">'+yearlyWorkoutDays+'</span> 天</div></div>';
+        htm+='<div class="stats-card-item"><div class="stats-label">😴 休息天数</div><div class="stats-value"><span class="highlight">'+yearlyRestDays+'</span> 天</div></div>';
+        htm+='<div class="stats-card-item"><div class="stats-label">📊 年出勤率</div><div class="stats-value">'+Math.round(yearlyWorkoutDays/totalYearDays*100)+'%</div></div>';
+        htm+='</div>';
+    }
+    if(statsSection==='days'){
+        htm+='<div class="stats-card">';
+        htm+='<div class="stats-card-title">🎯 本月各部位训练天数</div>';
+        var hasAnyMuscle=false;
+        for(var i=0;i<muscles.length;i++){
+            var mu=muscles[i];
+            var days=monthlyMuscleDays[mu];
+            var hasData=false;
+            for(var dk in data){
+                var parts=dk.split('-');
+                if(parseInt(parts[0])===y&&parseInt(parts[1])-1===m){
+                    var exs=data[dk];
+                    for(var j=0;j<exs.length;j++){
+                        if(exs[j].muscle===mu){hasData=true;break;}
+                    }
+                    if(hasData)break;
+                }
+            }
+            if(hasData){
+                hasAnyMuscle=true;
+                htm+='<div class="stats-card-item"><div class="stats-label"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:'+muscleColors[mu]+';margin-right:6px;vertical-align:middle;"></span>'+icons[mu]+' '+muscleNames[mu]+'</div><div class="stats-value"><span class="highlight">'+days+'</span> 天</div></div>';
+            }
+        }
+        if(!hasAnyMuscle)htm+='<div class="stats-empty">本月暂无部位数据</div>';
+        htm+='</div>';
+    }else if(statsSection&&muscleNames[statsSection]){
+        var mu=statsSection;
+        var s=calcMuscleStats(mu);
+        htm+='<div class="stats-card">';
+        htm+='<div class="stats-card-title">'+icons[mu]+' '+muscleNames[mu]+' 历史统计</div>';
         if(s.maxRecord){
             htm+='<div class="stats-card-item"><div><div class="stats-label">🏋️ 最大重量</div><div class="stats-detail">'+s.maxRecord.name+' · '+s.maxRecord.date+'</div></div><div class="stats-value"><span class="highlight">'+s.maxWeight+'</span> kg</div></div>';
             htm+='<div class="stats-card-item"><div><div class="stats-label">📊 对应组数·次数</div></div><div class="stats-value">'+s.maxRecord.sets+'组 × '+s.maxRecord.reps+'次</div></div>';
@@ -484,18 +637,17 @@ function showStats(){
             htm+='<div class="stats-card-item"><div><div class="stats-label">📈 单日最大容量</div><div class="stats-detail">'+s.maxDailyDate+'</div></div><div class="stats-value"><span class="highlight">'+s.maxDailyVol+'</span> kg</div></div>';
         }
         htm+='</div>';
-    }else{
-        if(htm.indexOf('stats-btn')===-1){
-            htm+='<div class="stats-empty">暂无训练数据</div>';
-        }else{
-            htm+='<div class="stats-empty">👆 点击上方部位查看详细统计</div>';
-        }
     }
     container.innerHTML=htm;
 }
-function selectStats(mu){
-    statsSelectedMuscle=(statsSelectedMuscle===mu)?null:mu;
+function setStats(btn){
+    statsSection=(statsSection===btn)?null:btn;
     showStats();
+    // 点击后自动滚动到页面底部查看卡片内容
+    setTimeout(function(){
+        var el=document.getElementById('statsContainer');
+        if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+    },50);
 }
 function exportData(){
     var jsonStr=JSON.stringify(data,null,2);
