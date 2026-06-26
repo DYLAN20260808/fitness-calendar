@@ -132,6 +132,10 @@
         .stats-value .highlight { color: var(--accent); font-size: 20px; }
         .stats-detail { color: #8e8e93; font-size: 12px; margin-top: 2px; }
         .stats-empty { text-align: center; color: var(--muted); padding: 20px; }
+        .stats-summary-actions { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+        .stats-copy-btn { background: linear-gradient(180deg, rgba(244,247,251,0.92) 0%, rgba(227,233,241,0.8) 100%); border: 1px solid rgba(255,255,255,0.62); border-radius: 10px; padding: 8px 12px; color: #3a3a3c; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.7); }
+        .stats-copy-btn:active { transform: scale(0.98); }
+        .stats-markdown { margin: 0; white-space: pre-wrap; word-break: break-word; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 12px; line-height: 1.65; color: var(--text); background: rgba(255,255,255,0.52); border: 1px solid rgba(255,255,255,0.48); border-radius: 14px; padding: 14px; }
         .milestone-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
         .milestone-title { color: var(--accent); font-size: 14px; font-weight: 600; margin-bottom: 8px; }
         .milestone-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
@@ -562,10 +566,13 @@ function setVolumeMuscle(mu){
         if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
     },50);
 }
-var statsSection = null; // null, '胸肌','背部','肩部','腿部','手臂', 'month', 'year', 'days'
+var statsSection = null; // null, muscle key, 'month', 'year', 'days', 'summary'
 var statsExerciseSelection = {};
 var muscleNames={chest:'胸肌',back:'背部',shoulder:'肩部',leg:'腿部',arm:'手臂',core:'核心'};
 var muscleColors={chest:'#7ccf6b',back:'#7ccf6b',shoulder:'#7ccf6b',leg:'#7ccf6b',arm:'#7ccf6b',core:'#7ccf6b',cardio:'#7ccf6b'};
+function escapeHtml(str){
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 function calcMuscleStats(mu){
     var maxWeight=0,maxRecord=null,maxDailyVol=0,maxDailyDate='';
     var milestones=[];
@@ -610,6 +617,222 @@ function isLeapYear(y){
 function getYearDays(y){
     return isLeapYear(y)?366:365;
 }
+function generateSummaryMarkdown(){
+    var dateKeys=Object.keys(data).sort();
+    if(!dateKeys.length)return '# 健身数据总结\n\n暂无训练数据。';
+    var allMuscles=['chest','back','shoulder','leg','arm','cardio'];
+    var summaryByMuscle={};
+    var exerciseSummary={};
+    var monthSummary={};
+    var dailySummary={};
+    var totalEntries=0,totalSets=0,totalVolume=0,totalWeightEntries=0,totalWeight=0;
+    var maxWeightRecord=null;
+    for(var ai=0;ai<allMuscles.length;ai++){
+        summaryByMuscle[allMuscles[ai]]={days:{},entries:0,maxWeight:0,totalSets:0,totalVolume:0};
+    }
+    for(var di=0;di<dateKeys.length;di++){
+        var dk=dateKeys[di];
+        var exs=data[dk]||[];
+        var monthKey=dk.slice(0,7);
+        if(!monthSummary[monthKey])monthSummary[monthKey]={days:{},entries:0,totalSets:0,totalVolume:0,maxWeight:0};
+        if(!dailySummary[dk])dailySummary[dk]={entries:0,totalSets:0,totalVolume:0,muscles:{},names:[]};
+        for(var i=0;i<exs.length;i++){
+            var e=exs[i];
+            var sets=parseInt(e.sets)||0;
+            var reps=parseInt(e.reps)||0;
+            var weight=e.weight||0;
+            var volume=sets*reps*weight;
+            totalEntries++;
+            totalSets+=sets;
+            totalVolume+=volume;
+            if(weight>0){totalWeightEntries++;totalWeight+=weight;}
+            if(!summaryByMuscle[e.muscle])summaryByMuscle[e.muscle]={days:{},entries:0,maxWeight:0,totalSets:0,totalVolume:0};
+            summaryByMuscle[e.muscle].days[dk]=true;
+            summaryByMuscle[e.muscle].entries++;
+            summaryByMuscle[e.muscle].totalSets+=sets;
+            summaryByMuscle[e.muscle].totalVolume+=volume;
+            if(weight>summaryByMuscle[e.muscle].maxWeight)summaryByMuscle[e.muscle].maxWeight=weight;
+            if(!exerciseSummary[e.name])exerciseSummary[e.name]={muscle:e.muscle,count:0,maxWeight:0,lastDate:dk,totalSets:0,totalVolume:0};
+            exerciseSummary[e.name].count++;
+            exerciseSummary[e.name].lastDate=dk;
+            exerciseSummary[e.name].totalSets+=sets;
+            exerciseSummary[e.name].totalVolume+=volume;
+            if(weight>exerciseSummary[e.name].maxWeight)exerciseSummary[e.name].maxWeight=weight;
+            monthSummary[monthKey].days[dk]=true;
+            monthSummary[monthKey].entries++;
+            monthSummary[monthKey].totalSets+=sets;
+            monthSummary[monthKey].totalVolume+=volume;
+            if(weight>monthSummary[monthKey].maxWeight)monthSummary[monthKey].maxWeight=weight;
+            dailySummary[dk].entries++;
+            dailySummary[dk].totalSets+=sets;
+            dailySummary[dk].totalVolume+=volume;
+            dailySummary[dk].muscles[e.muscle]=true;
+            dailySummary[dk].names.push(e.name);
+            if(weight>0&&(!maxWeightRecord||weight>maxWeightRecord.weight)){
+                maxWeightRecord={name:e.name,muscle:e.muscle,weight:weight,date:dk};
+            }
+        }
+    }
+    var firstDate=new Date(dateKeys[0]);
+    var lastDate=new Date(dateKeys[dateKeys.length-1]);
+    var spanDays=Math.max(1,Math.round((lastDate-firstDate)/86400000)+1);
+    var avgEntriesPerDay=(totalEntries/dateKeys.length).toFixed(1);
+    var avgVolumePerDay=Math.round(totalVolume/dateKeys.length);
+    var avgWeight=totalWeightEntries?Math.round(totalWeight/totalWeightEntries*10)/10:0;
+    var longestStreak=0,currentStreak=0,streak=0,previousTime=null;
+    var todayKey=curDate.getFullYear()+'-'+pad(curDate.getMonth()+1)+'-'+pad(curDate.getDate());
+    for(var si=0;si<dateKeys.length;si++){
+        var currentTime=new Date(dateKeys[si]).getTime();
+        if(previousTime!==null&&currentTime-previousTime===86400000){
+            streak++;
+        }else{
+            streak=1;
+        }
+        if(streak>longestStreak)longestStreak=streak;
+        previousTime=currentTime;
+    }
+    currentStreak=0;
+    var cursor=new Date(todayKey+'T00:00:00');
+    while(true){
+        var key=cursor.getFullYear()+'-'+pad(cursor.getMonth()+1)+'-'+pad(cursor.getDate());
+        if(!data[key])break;
+        currentStreak++;
+        cursor.setDate(cursor.getDate()-1);
+    }
+    var monthKeys=Object.keys(monthSummary).sort();
+    var currentMonthKey=curDate.getFullYear()+'-'+pad(curDate.getMonth()+1);
+    var currentMonthDays=monthSummary[currentMonthKey]?Object.keys(monthSummary[currentMonthKey].days).length:0;
+    var currentMonthEntries=monthSummary[currentMonthKey]?monthSummary[currentMonthKey].entries:0;
+    var currentMonthVolume=monthSummary[currentMonthKey]?Math.round(monthSummary[currentMonthKey].totalVolume):0;
+    var currentMonthAttendance=Math.round(currentMonthDays/Math.max(1,getMonthDays(curDate.getFullYear(),curDate.getMonth()))*100);
+    var lines=[];
+    lines.push('# 健身数据总结');
+    lines.push('');
+    lines.push('统计区间：'+dateKeys[0]+' ~ '+dateKeys[dateKeys.length-1]+'（跨度 '+spanDays+' 天）');
+    lines.push('');
+    for(var mi=0;mi<allMuscles.length;mi++){
+        var mu=allMuscles[mi];
+        var item=summaryByMuscle[mu];
+        if(!item||!item.entries)continue;
+        var muscleExerciseNames=Object.keys(exerciseSummary).filter(function(name){
+            return exerciseSummary[name].muscle===mu;
+        });
+        var muscleTopPr=muscleExerciseNames.slice().sort(function(a,b){
+            if(exerciseSummary[b].maxWeight!==exerciseSummary[a].maxWeight)return exerciseSummary[b].maxWeight-exerciseSummary[a].maxWeight;
+            return exerciseSummary[b].count-exerciseSummary[a].count;
+        }).slice(0,3);
+        var muscleTopFreq=muscleExerciseNames.slice().sort(function(a,b){
+            if(exerciseSummary[b].count!==exerciseSummary[a].count)return exerciseSummary[b].count-exerciseSummary[a].count;
+            return exerciseSummary[b].totalVolume-exerciseSummary[a].totalVolume;
+        }).slice(0,3);
+        var muscleRecentDays=dateKeys.filter(function(dk){
+            var exs=data[dk]||[];
+            for(var i=0;i<exs.length;i++){
+                if(exs[i].muscle===mu)return true;
+            }
+            return false;
+        }).slice(-5).reverse();
+        var muscleBestDay='暂无';
+        var muscleBestDayVolume=0;
+        for(var mdi=0;mdi<muscleRecentDays.length;mdi++){
+            var dayKey=muscleRecentDays[mdi];
+            var exs=data[dayKey]||[];
+            var dayVol=0;
+            for(var exi=0;exi<exs.length;exi++){
+                if(exs[exi].muscle!==mu)continue;
+                dayVol+=(parseInt(exs[exi].sets)||0)*(parseInt(exs[exi].reps)||0)*(exs[exi].weight||0);
+            }
+            if(dayVol>muscleBestDayVolume){
+                muscleBestDayVolume=dayVol;
+                muscleBestDay=dayKey;
+            }
+        }
+        lines.push('## '+(icons[mu]||'💪')+' '+(muscleNames[mu]||mu));
+        lines.push('');
+        lines.push('- 训练天数：'+Object.keys(item.days).length+' 天');
+        lines.push('- 动作记录：'+item.entries+' 条');
+        lines.push('- 累计组数：'+item.totalSets+' 组');
+        lines.push('- 累计容量：'+Math.round(item.totalVolume)+' kg');
+        lines.push('- 最大重量：'+item.maxWeight+' kg');
+        lines.push('- 涉及动作：'+muscleExerciseNames.length+' 个');
+        lines.push('- 最强单日：'+muscleBestDay+' · '+Math.round(muscleBestDayVolume)+' kg');
+        lines.push('');
+        lines.push('### PR 动作');
+        lines.push('');
+        if(muscleTopPr.length){
+            for(var pi=0;pi<muscleTopPr.length;pi++){
+                var prName=muscleTopPr[pi];
+                var prItem=exerciseSummary[prName];
+                lines.push((pi+1)+'. '+prName+' - '+prItem.maxWeight+' kg，'+prItem.count+' 次，最近：'+prItem.lastDate);
+            }
+        }else{
+            lines.push('- 暂无 PR 动作数据');
+        }
+        lines.push('');
+        lines.push('### 高频动作');
+        lines.push('');
+        if(muscleTopFreq.length){
+            for(var fi=0;fi<muscleTopFreq.length;fi++){
+                var freqName=muscleTopFreq[fi];
+                var freqItem=exerciseSummary[freqName];
+                lines.push((fi+1)+'. '+freqName+' - '+freqItem.count+' 次，'+freqItem.totalSets+' 组，'+Math.round(freqItem.totalVolume)+' kg');
+            }
+        }else{
+            lines.push('- 暂无高频动作数据');
+        }
+        lines.push('');
+        lines.push('### 最近训练');
+        lines.push('');
+        if(muscleRecentDays.length){
+            for(var ri=0;ri<muscleRecentDays.length;ri++){
+                var recentDayKey=muscleRecentDays[ri];
+                var recentExs=(data[recentDayKey]||[]).filter(function(e){return e.muscle===mu;});
+                var recentNames=recentExs.map(function(e){return e.name;});
+                var recentSets=0;
+                var recentVol=0;
+                for(var rj=0;rj<recentExs.length;rj++){
+                    recentSets+=(parseInt(recentExs[rj].sets)||0);
+                    recentVol+=(parseInt(recentExs[rj].sets)||0)*(parseInt(recentExs[rj].reps)||0)*(recentExs[rj].weight||0);
+                }
+                lines.push('- '+recentDayKey+'：'+recentNames.join('、')+' | '+recentExs.length+' 条动作 | '+recentSets+' 组 | '+Math.round(recentVol)+' kg');
+            }
+        }else{
+            lines.push('- 暂无最近训练数据');
+        }
+        lines.push('');
+    }
+    return lines.join('\n');
+}
+function copySummaryMarkdown(){
+    var text=generateSummaryMarkdown();
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(function(){
+            alert('Markdown 已复制');
+        }).catch(function(){
+            var textarea=document.createElement('textarea');
+            textarea.value=text;
+            textarea.style.position='fixed';
+            textarea.style.opacity='0';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try{document.execCommand('copy');alert('Markdown 已复制');}
+            catch(e){alert('复制失败，请手动复制');}
+            document.body.removeChild(textarea);
+        });
+        return;
+    }
+    var textarea=document.createElement('textarea');
+    textarea.value=text;
+    textarea.style.position='fixed';
+    textarea.style.opacity='0';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try{document.execCommand('copy');alert('Markdown 已复制');}
+    catch(e){alert('复制失败，请手动复制');}
+    document.body.removeChild(textarea);
+}
 function setStatsExercise(mu, exerciseName){
     statsExerciseSelection[mu]=exerciseName;
     showStats();
@@ -633,6 +856,7 @@ function showStats(){
     htm+='<button class="stats-btn'+(isActive('month')?' active':'')+'" onclick="setStats(\'month\')">📅 月总</button>';
     htm+='<button class="stats-btn'+(isActive('year')?' active':'')+'" onclick="setStats(\'year\')">📆 年总</button>';
     htm+='<button class="stats-btn'+(isActive('days')?' active':'')+'" onclick="setStats(\'days\')">🎯 部位</button>';
+    htm+='<button class="stats-btn'+(isActive('summary')?' active':'')+'" onclick="setStats(\'summary\')">📝 总结</button>';
     htm+='</div>';
     // 计算本月各部位训练天数
     var monthlyDays={};
@@ -702,6 +926,13 @@ function showStats(){
             }
         }
         if(!hasAnyMuscle)htm+='<div class="stats-empty">本月暂无部位数据</div>';
+        htm+='</div>';
+    }
+    if(statsSection==='summary'){
+        htm+='<div class="stats-card">';
+        htm+='<div class="stats-card-title">📝 全量训练总结</div>';
+        htm+='<div class="stats-summary-actions"><button class="stats-copy-btn" onclick="copySummaryMarkdown()">复制 Markdown</button></div>';
+        htm+='<pre class="stats-markdown">'+escapeHtml(generateSummaryMarkdown())+'</pre>';
         htm+='</div>';
     }else if(statsSection&&muscleNames[statsSection]){
         var mu=statsSection;
