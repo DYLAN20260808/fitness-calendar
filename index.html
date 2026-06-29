@@ -432,6 +432,21 @@ function getTopExerciseInfo(dk){
     var topExercise=ex[ex.length-1];
     return {muscle:topExercise.muscle||null,name:topExercise.name||''};
 }
+function getTopSelectedRecordInfo(dk){
+    var ex=data[dk]||[];
+    if(!ex.length)return null;
+    var groups=getExerciseGroups(ex);
+    if(!groups.length)return null;
+    var topGroup=groups[0];
+    var firstAction=topGroup.actions[0];
+    if(!firstAction)return null;
+    var tabKey=getRecordActionTabKey(dk,topGroup.muscle);
+    var activeActionName=recordActionTabs[tabKey];
+    if(!activeActionName||!topGroup.actionMap[activeActionName]){
+        activeActionName=firstAction.name;
+    }
+    return {muscle:topGroup.muscle||null,name:activeActionName||''};
+}
 function editName(dk,i,el){
     var curName=data[dk][i].name;
     var input=document.createElement('input');
@@ -574,7 +589,7 @@ function switchTab(tab){
         if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
     },50);}
     if(tab==='stats'){
-        var topExerciseInfo=getTopExerciseInfo(selDate);
+        var topExerciseInfo=getTopSelectedRecordInfo(selDate)||getTopExerciseInfo(selDate);
         statsSection=topExerciseInfo?topExerciseInfo.muscle:null;
         if(topExerciseInfo&&topExerciseInfo.muscle&&topExerciseInfo.name){
             statsExerciseSelection[topExerciseInfo.muscle]=topExerciseInfo.name;
