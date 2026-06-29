@@ -4,99 +4,150 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0a84ff">
+    <meta name="theme-color" content="#0071e3">
     <title>健身月历</title>
     <style>
         :root {
-            --accent: #0a84ff;
-            --accent-soft: rgba(10, 132, 255, 0.18);
-            --accent-soft-strong: rgba(10, 132, 255, 0.3);
+            --accent: #0071e3;
+            --accent-soft: rgba(0, 113, 227, 0.12);
+            --accent-soft-strong: rgba(0, 113, 227, 0.2);
+            --accent-bright: #59b7ff;
+            --accent-mid: #2997ff;
+            --accent-deep: #0058b0;
             --bg: #f5f5f7;
-            --bg-2: #edf1f5;
-            --card: rgba(255, 255, 255, 0.68);
-            --card-strong: rgba(255, 255, 255, 0.86);
+            --bg-2: #eef1f5;
+            --bg-3: #e6ebf2;
+            --card: rgba(255, 255, 255, 0.76);
+            --card-strong: rgba(255, 255, 255, 0.92);
+            --surface-top: rgba(255,255,255,0.96);
+            --surface-mid: rgba(245,247,250,0.88);
+            --surface-bot: rgba(229,234,241,0.78);
             --text: #1d1d1f;
             --muted: #6e6e73;
-            --line: rgba(60, 60, 67, 0.12);
-            --glass-line: rgba(255, 255, 255, 0.52);
-            --glass-shadow: inset 0 1px 0 rgba(255,255,255,0.72), inset 0 -1px 0 rgba(255,255,255,0.18);
-            --shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
+            --line: rgba(29, 29, 31, 0.08);
+            --glass-line: rgba(255, 255, 255, 0.72);
+            --glass-shadow: inset 0 1px 0 rgba(255,255,255,0.88), inset 0 -1px 0 rgba(255,255,255,0.22);
+            --shadow: 0 16px 40px rgba(17, 24, 39, 0.08);
+            --shadow-deep: 0 24px 56px rgba(17, 24, 39, 0.14);
+            --shadow-lift: 0 14px 28px rgba(17, 24, 39, 0.1), 0 3px 10px rgba(17, 24, 39, 0.05);
+            --highlight: inset 0 1px 0 rgba(255,255,255,0.96), inset 0 -10px 18px rgba(255,255,255,0.1);
+            --primary-gradient: linear-gradient(180deg, var(--accent-bright) 0%, var(--accent-mid) 52%, var(--accent-deep) 100%);
+            --neutral-gradient: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(241,244,248,0.92) 100%);
+            --danger-top: #ff8f86;
+            --danger-mid: #ff5f57;
+            --danger-bottom: #d9342b;
+            --today-ring: rgba(48, 209, 88, 0.88);
+            --today-glow: rgba(48, 209, 88, 0.16);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: radial-gradient(circle at top left, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 32%), radial-gradient(circle at top right, rgba(10,132,255,0.1) 0%, rgba(10,132,255,0) 26%), linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%); min-height: 100vh; color: var(--text); padding-bottom: 20px; }
-        .header { background: linear-gradient(180deg, rgba(255,255,255,0.74) 0%, rgba(255,255,255,0.58) 100%); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%); border-bottom: 1px solid var(--glass-line); padding: 15px 0; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: var(--glass-shadow), 0 6px 18px rgba(15,23,42,0.05); }
-        .header h1 { font-size: 24px; font-weight: 600; color: var(--text); }
-        .nav { display: flex; justify-content: space-between; align-items: center; padding: 3px 5px; background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.32) 100%); -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%); border-bottom: 1px solid rgba(255,255,255,0.46); box-shadow: inset 0 1px 0 rgba(255,255,255,0.45); }
-        .nav button { background: linear-gradient(180deg, #33a1ff 0%, #0a84ff 100%); border: none; color: white; padding: 3px 10px; border-radius: 10px; font-size: 14px; cursor: pointer; box-shadow: 0 6px 14px rgba(10,132,255,0.28); }
-        .nav button:active { transform: scale(0.95); }
-        .nav .month-year { font-size: 15px; font-weight: 600; color: var(--text); }
-        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; padding: 10px 5px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: radial-gradient(circle at top left, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 30%), radial-gradient(circle at top right, rgba(90,181,255,0.14) 0%, rgba(90,181,255,0) 32%), radial-gradient(circle at center top, rgba(255,255,255,0.76) 0%, rgba(255,255,255,0) 44%), linear-gradient(180deg, #fbfbfd 0%, var(--bg) 22%, var(--bg-2) 58%, var(--bg-3) 100%); min-height: 100vh; color: var(--text); padding-bottom: 20px; position: relative; overflow-x: hidden; }
+        body::before { content: ''; position: fixed; inset: -12% -10% auto; height: 38vh; background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.35) 28%, rgba(255,255,255,0) 72%); pointer-events: none; z-index: 0; }
+        body::after { content: ''; position: fixed; right: -70px; bottom: 10vh; width: 220px; height: 220px; background: radial-gradient(circle, rgba(41,151,255,0.14) 0%, rgba(41,151,255,0.03) 44%, rgba(41,151,255,0) 76%); filter: blur(12px); pointer-events: none; z-index: 0; }
+        .header { background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(250,250,252,0.78) 100%); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%); border-bottom: 1px solid var(--glass-line); padding: 10px 0; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: var(--highlight), 0 12px 30px rgba(17,24,39,0.1), 0 2px 0 rgba(255,255,255,0.92); }
+        .header h1 { font-size: 18px; font-weight: 600; color: var(--text); }
+        .header-action { position: absolute; top: 50%; transform: translateY(-50%); background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(243,246,250,0.9) 100%); border: 1px solid rgba(255,255,255,0.82); color: var(--accent); padding: 3px 8px; border-radius: 8px; cursor: pointer; font-size: 9px; font-weight: 700; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 8px 14px rgba(17,24,39,0.06); }
+        .header-action.left { left: 15px; }
+        .header-action.right { right: 15px; }
+        .header-action:active { transform: translateY(calc(-50% + 1px)); }
+        #importFile { display: none; }
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: 1px 6px; margin: 10px 5px 4px; border-radius: 10px; background: linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(242,244,248,0.62) 100%); -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%); border: 1px solid rgba(255,255,255,0.72); box-shadow: var(--highlight), var(--shadow-lift); position: relative; z-index: 1; }
+        .nav button { background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.42); color: white; padding: 2px 10px; border-radius: 10px; font-size: 12px; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.38), inset 0 -2px 0 rgba(0,88,176,0.24), 0 8px 14px rgba(0,113,227,0.2); transition: transform 0.2s, box-shadow 0.2s; }
+        .nav button:active { transform: translateY(2px) scale(0.97); box-shadow: inset 0 1px 0 rgba(255,255,255,0.32), 0 4px 10px rgba(0,113,227,0.16); }
+        .nav .month-year { font-size: 13px; font-weight: 600; color: var(--text); }
+        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; padding: 12px 5px; position: relative; z-index: 1; }
         .weekday { text-align: center; padding: 10px 5px; font-weight: 600; color: var(--accent); font-size: 14px; }
-        .day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background: linear-gradient(180deg, rgba(255,255,255,0.62) 0%, rgba(255,255,255,0.42) 100%); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); border: 1px solid rgba(255,255,255,0.5); border-radius: 12px; padding: 3px; cursor: pointer; min-height: 45px; box-shadow: var(--glass-shadow), 0 2px 8px rgba(15,23,42,0.05); overflow: hidden; }
-        .day:hover { background: linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(255,255,255,0.56) 100%); box-shadow: var(--glass-shadow), 0 6px 16px rgba(15,23,42,0.08); }
+        .day { aspect-ratio: 1.1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background: linear-gradient(180deg, var(--surface-top) 0%, var(--surface-mid) 42%, var(--surface-bot) 100%); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); border: 1px solid rgba(255,255,255,0.82); border-radius: 15px; padding: 3px 2px; cursor: pointer; min-height: 50px; box-shadow: var(--highlight), 0 10px 18px rgba(17,24,39,0.08), 0 2px 0 rgba(255,255,255,0.9); overflow: hidden; transform: translateY(0); transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
+        .day:hover { background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(248,250,253,0.92) 44%, rgba(232,238,246,0.82) 100%); box-shadow: var(--highlight), 0 16px 26px rgba(17,24,39,0.12), 0 2px 0 rgba(255,255,255,0.9); transform: translateY(-3px); }
         .day.empty { background: transparent; cursor: default; box-shadow: none; }
-        .day.today { border: 2px solid rgba(52, 199, 89, 0.82); background: linear-gradient(135deg, rgba(255,255,255,0.78) 0%, rgba(52,199,89,0.16) 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.82), 0 0 0 1px rgba(255,255,255,0.4), 0 8px 18px rgba(52,199,89,0.16); }
-        .day.selected { background: linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(10,132,255,0.28) 100%); border: 2px solid rgba(10,132,255,0.9); box-shadow: inset 0 1px 0 rgba(255,255,255,0.82), 0 0 0 1px rgba(255,255,255,0.45), 0 10px 22px rgba(10,132,255,0.22); }
-        .day-number { font-size: 12px; font-weight: 600; margin-bottom: 1px; flex-shrink: 0; }
-        .day-icons { display: flex; flex-wrap: wrap; gap: 1px; justify-content: center; max-height: 28px; overflow: hidden; }
-        .day-volume { font-size: 9px; color: var(--accent); margin-top: 1px; font-weight: 600; flex-shrink: 0; }
-        .muscle-icon { width: 11px; height: 11px; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 8px; }
-        .chest { background: #7ccf6b; }
-        .back { background: #7ccf6b; }
-        .shoulder { background: #7ccf6b; }
-        .leg { background: #7ccf6b; }
-        .arm { background: #7ccf6b; }
-        .core { background: #7ccf6b; }
-        .cardio { background: #7ccf6b; }
+        .day.today { border: 2px solid var(--today-ring); background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(235,250,240,0.98) 42%, rgba(48,209,88,0.16) 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), inset 0 -10px 18px rgba(48,209,88,0.06), 0 0 0 1px rgba(255,255,255,0.48), 0 14px 24px var(--today-glow); }
+        .day.selected { background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(236,245,255,0.98) 42%, rgba(0,113,227,0.2) 100%); border: 2px solid rgba(0,113,227,0.82); box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), inset 0 -10px 18px rgba(0,113,227,0.06), 0 0 0 1px rgba(255,255,255,0.52), 0 18px 28px rgba(0,113,227,0.16); transform: translateY(-2px); }
+        .day-number { font-size: 11px; font-weight: 700; margin-bottom: 1px; line-height: 1; flex-shrink: 0; width: 100%; text-align: center; }
+        .day-icons { display: flex; flex: 1; flex-wrap: wrap; gap: 2px; justify-content: center; align-items: center; align-content: center; width: 100%; max-height: none; overflow: hidden; }
+        .day-icons.count-3,
+        .day-icons.count-4,
+        .day-icons.count-5,
+        .day-icons.count-6,
+        .day-icons.count-7 { gap: 1px; padding-top: 1px; }
+        .day-volume { font-size: 8px; color: var(--accent); margin-top: 1px; font-weight: 700; line-height: 1; flex-shrink: 0; }
+        .muscle-icon { width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; margin: 1px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.24), 0 3px 6px rgba(15,23,42,0.12); }
+        .day-icons.count-3 .muscle-icon,
+        .day-icons.count-4 .muscle-icon,
+        .day-icons.count-5 .muscle-icon,
+        .day-icons.count-6 .muscle-icon,
+        .day-icons.count-7 .muscle-icon { width: 13px; height: 13px; font-size: 9px; margin: 0; border-radius: 3px; }
+        .chest { background: linear-gradient(180deg, #ffb27d 0%, #ff8a4c 100%); }
+        .back { background: linear-gradient(180deg, #8da2ff 0%, #5b6cff 100%); }
+        .shoulder { background: linear-gradient(180deg, #b287ff 0%, #8a63ff 100%); }
+        .leg { background: linear-gradient(180deg, #66d4c1 0%, #2fb59f 100%); }
+        .arm { background: linear-gradient(180deg, #7fd3ff 0%, #3aa0ff 100%); }
+        .core { background: linear-gradient(180deg, #ffd86f 0%, #ffb340 100%); }
+        .cardio { background: linear-gradient(180deg, #ff8f86 0%, #ff5f57 100%); }
         .form-group select { width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,0.88); color: var(--text); font-size: 16px; cursor: pointer; }
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.28); z-index: 200; align-items: center; justify-content: center; padding: 5px; }
         .modal.show { display: flex; }
-        .modal-content { background: linear-gradient(180deg, rgba(255,255,255,0.84) 0%, rgba(255,255,255,0.66) 100%); -webkit-backdrop-filter: blur(28px) saturate(185%); backdrop-filter: blur(28px) saturate(185%); border: 1px solid rgba(255,255,255,0.68); border-radius: 16px; padding: 10px; width: 100%; max-width: 280px; max-height: 90vh; overflow-y: auto; box-shadow: var(--glass-shadow), var(--shadow); }
+        .modal-content { background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(247,248,251,0.9) 40%, rgba(232,236,242,0.82) 100%); -webkit-backdrop-filter: blur(28px) saturate(185%); backdrop-filter: blur(28px) saturate(185%); border: 1px solid rgba(255,255,255,0.8); border-radius: 20px; padding: 12px; width: 100%; max-width: 280px; max-height: 90vh; overflow-y: auto; box-shadow: var(--highlight), var(--shadow-deep), 0 2px 0 rgba(255,255,255,0.9); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .modal-header h2 { font-size: 14px; color: var(--text); }
         .close-btn { background: none; border: none; color: var(--accent); font-size: 16px; cursor: pointer; }
         .muscle-select { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 10px; }
-        .muscle-btn { padding: 6px; border: none; border-radius: 6px; color: white; font-size: 11px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
-        .muscle-btn:active { transform: scale(0.95); }
-        .muscle-btn.selected { opacity: 0.82; box-shadow: 0 0 0 2px var(--accent), 0 6px 12px rgba(10,132,255,0.18); }
+        .muscle-btn { padding: 8px 6px; border: 1px solid rgba(255,255,255,0.32); border-radius: 10px; color: white; font-size: 11px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.26), inset 0 -4px 10px rgba(0,0,0,0.08), 0 8px 16px rgba(15,23,42,0.12); transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease; }
+        .muscle-btn:active { transform: translateY(2px) scale(0.97); }
+        .muscle-btn.selected { opacity: 0.92; box-shadow: 0 0 0 2px var(--accent), inset 0 1px 0 rgba(255,255,255,0.3), 0 12px 20px rgba(0,113,227,0.18); transform: translateY(-1px); }
         .muscle-btn span { font-size: 16px; }
-        .detail-section { background: linear-gradient(180deg, rgba(255,255,255,0.74) 0%, rgba(255,255,255,0.54) 100%); -webkit-backdrop-filter: blur(24px) saturate(175%); backdrop-filter: blur(24px) saturate(175%); border: 1px solid rgba(255,255,255,0.58); border-radius: 18px; margin: 10px 5px; padding: 15px; box-shadow: var(--glass-shadow), var(--shadow); }
+        .detail-section { background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(247,248,251,0.8) 44%, rgba(232,236,242,0.72) 100%); -webkit-backdrop-filter: blur(24px) saturate(175%); backdrop-filter: blur(24px) saturate(175%); border: 1px solid rgba(255,255,255,0.74); border-radius: 22px; margin: 12px 5px; padding: 15px; box-shadow: var(--highlight), var(--shadow-deep), 0 2px 0 rgba(255,255,255,0.9); position: relative; z-index: 1; }
         .detail-header { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: var(--accent); }
         .exercise-list { display: flex; flex-direction: column; gap: 10px; }
-        .exercise-item { background: linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.56) 100%); -webkit-backdrop-filter: blur(18px) saturate(165%); backdrop-filter: blur(18px) saturate(165%); border: 1px solid rgba(255,255,255,0.56); border-radius: 14px; padding: 10px; display: flex; flex-direction: column; gap: 6px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.58); }
-        .exercise-row1 { display: flex; align-items: center; gap: 8px; }
-        .exercise-row2 { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; padding-left: 40px; font-size: 12px; }
-        .exercise-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-        .exercise-icon.chest { background: #7ccf6b; }
-        .exercise-icon.back { background: #7ccf6b; }
-        .exercise-icon.shoulder { background: #7ccf6b; }
-        .exercise-icon.leg { background: #7ccf6b; }
-        .exercise-icon.arm { background: #7ccf6b; }
-        .exercise-icon.core { background: #7ccf6b; }
-        .exercise-icon.cardio { background: #7ccf6b; }
+        .exercise-item { background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(247,248,251,0.9) 45%, rgba(233,237,243,0.8) 100%); -webkit-backdrop-filter: blur(18px) saturate(165%); backdrop-filter: blur(18px) saturate(165%); border: 1px solid rgba(255,255,255,0.72); border-radius: 16px; padding: 11px; display: flex; flex-direction: column; gap: 6px; box-shadow: var(--highlight), 0 12px 22px rgba(17,24,39,0.08), 0 2px 0 rgba(255,255,255,0.88); }
+        .exercise-row1 { display: flex; align-items: center; gap: 6px; min-height: 24px; }
+        .exercise-row1 .exercise-name { padding: 0; cursor: default; font-size: 12px; line-height: 1; }
+        .exercise-row1 .exercise-name:hover { background: transparent; }
+        .group-order-controls { margin-left: auto; display: flex; gap: 4px; }
+        .reorder-btn { width: 22px; height: 22px; border: 1px solid rgba(0,113,227,0.12); border-radius: 7px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent); font-size: 10px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); }
+        .reorder-btn:active { transform: translateY(1px); }
+        .reorder-btn:disabled { opacity: 0.35; cursor: default; box-shadow: none; }
+        .exercise-row2 { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; font-size: 12px; }
+        .exercise-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+        .exercise-tab-btn { border: 1px solid rgba(0,113,227,0.12); border-radius: 999px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); padding: 4px 10px; font-size: 10px; font-weight: 600; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.06); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .exercise-tab-btn.active { background: var(--primary-gradient); color: #fff; border-color: rgba(255,255,255,0.34); box-shadow: inset 0 1px 0 rgba(255,255,255,0.36), 0 8px 14px rgba(0,113,227,0.18); }
+        .exercise-action-group { display: flex; flex-direction: column; gap: 6px; }
+        .exercise-tab-panel { display: flex; flex-direction: column; gap: 6px; }
+        .exercise-subitem { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; font-size: 12px; }
+        .exercise-subitem + .exercise-subitem { border-top: 1px dashed var(--line); padding-top: 6px; }
+        .exercise-subitem .delete-btn { margin-left: auto; }
+        .exercise-icon { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+        .exercise-icon.chest { background: linear-gradient(180deg, #ffb27d 0%, #ff8a4c 100%); }
+        .exercise-icon.back { background: linear-gradient(180deg, #8da2ff 0%, #5b6cff 100%); }
+        .exercise-icon.shoulder { background: linear-gradient(180deg, #b287ff 0%, #8a63ff 100%); }
+        .exercise-icon.leg { background: linear-gradient(180deg, #66d4c1 0%, #2fb59f 100%); }
+        .exercise-icon.arm { background: linear-gradient(180deg, #7fd3ff 0%, #3aa0ff 100%); }
+        .exercise-icon.core { background: linear-gradient(180deg, #ffd86f 0%, #ffb340 100%); }
+        .exercise-icon.cardio { background: linear-gradient(180deg, #ff8f86 0%, #ff5f57 100%); }
         .exercise-content { flex: 1; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
         .exercise-name { font-weight: 600; cursor: pointer; padding: 4px 8px; border-radius: 4px; transition: background 0.2s; min-width: 60px; }
-        .exercise-name:hover { background: rgba(10,132,255,0.14); }
+        .exercise-name:hover { background: var(--accent-soft); }
         .exercise-name-input { font-weight: 600; background: rgba(255,255,255,0.96); border: 1px solid var(--accent); color: var(--text); padding: 4px 8px; border-radius: 8px; font-size: 14px; min-width: 80px; max-width: 150px; }
         .exercise-sets { color: var(--muted); font-size: 14px; display: flex; align-items: center; gap: 4px; }
-        .adjust-btn { background: rgba(10,132,255,0.18); border: 1px solid rgba(10,132,255,0.14); color: var(--accent); width: 20px; height: 20px; border-radius: 6px; cursor: pointer; font-size: 12px; }
-        .adjust-btn:active { background: var(--accent-soft-strong); }
+        .adjust-btn { background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); border: 1px solid rgba(0,113,227,0.12); color: var(--accent); width: 20px; height: 20px; border-radius: 7px; cursor: pointer; font-size: 12px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); }
+        .adjust-btn:active { background: linear-gradient(180deg, rgba(240,245,252,0.98) 0%, rgba(221,233,247,0.92) 100%); transform: translateY(1px); }
         .adjust-value { display: inline-block; min-width: 18px; text-align: center; font-size: 12px; }
-        .delete-btn { background: #ff453a; border: none; color: white; padding: 4px 8px; border-radius: 8px; cursor: pointer; font-size: 11px; flex-shrink: 0; }
+        .metric-input { width: 52px; padding: 2px 4px; border: 1px solid rgba(0,113,227,0.14); border-radius: 7px; background: rgba(255,255,255,0.96); color: var(--text); font-size: 12px; text-align: center; }
+        .metric-input:focus { outline: none; border-color: rgba(0,113,227,0.42); box-shadow: 0 0 0 2px rgba(0,113,227,0.12); }
+        .delete-btn { background: linear-gradient(180deg, var(--danger-top) 0%, var(--danger-mid) 58%, var(--danger-bottom) 100%); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 4px 8px; border-radius: 9px; cursor: pointer; font-size: 11px; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(217,52,43,0.18); }
+        .copy-btn { background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 4px 8px; border-radius: 9px; cursor: pointer; font-size: 11px; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(0,113,227,0.18); }
         .param-group { display: flex; align-items: center; gap: 1px; }
         .param-label { color: var(--muted); font-size: 12px; margin-left: 2px; }
         .no-data { text-align: center; color: var(--muted); padding: 20px; }
-        .add-form { display: none; background: linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.54) 100%); -webkit-backdrop-filter: blur(18px) saturate(165%); backdrop-filter: blur(18px) saturate(165%); border: 1px solid rgba(255,255,255,0.56); border-radius: 14px; padding: 15px; margin-top: 15px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.58); }
+        .add-form { display: none; background: linear-gradient(180deg, rgba(255,255,255,0.93) 0%, rgba(246,247,250,0.82) 100%); -webkit-backdrop-filter: blur(18px) saturate(165%); backdrop-filter: blur(18px) saturate(165%); border: 1px solid rgba(255,255,255,0.72); border-radius: 16px; padding: 15px; margin-top: 15px; box-shadow: var(--highlight), 0 10px 18px rgba(17,24,39,0.06); }
         .add-form.show { display: block; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-size: 14px; color: var(--text); }
         .form-group input { width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,0.88); color: var(--text); font-size: 16px; }
         .form-group input::placeholder { color: #8e8e93; }
-        .add-exercise-btn { width: 100%; padding: 12px; background: linear-gradient(180deg, #33a1ff 0%, #0a84ff 100%); border: none; border-radius: 12px; color: white; font-size: 16px; cursor: pointer; margin-top: 10px; box-shadow: 0 8px 18px rgba(10,132,255,0.28); }
-        .add-btn-small { margin-left: 10px; padding: 5px 15px; font-size: 14px; background: linear-gradient(180deg, #33a1ff 0%, #0a84ff 100%); border: none; border-radius: 10px; color: white; cursor: pointer; box-shadow: 0 8px 18px rgba(10,132,255,0.24); }
-        .tab-container { display: flex; gap: 5px; margin-bottom: 15px; }
-        .tab-btn { flex: 1; padding: 10px; border: none; border-radius: 12px; background: linear-gradient(180deg, rgba(244,247,251,0.92) 0%, rgba(227,233,241,0.8) 100%); -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%); color: #3a3a3c; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.62); box-shadow: inset 0 1px 0 rgba(255,255,255,0.7); }
-        .tab-btn.active { background: linear-gradient(180deg, #33a1ff 0%, #0a84ff 100%); color: white; box-shadow: 0 8px 18px rgba(10,132,255,0.24); }
+        .add-exercise-btn { width: 100%; padding: 12px; background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.32); border-radius: 14px; color: white; font-size: 16px; cursor: pointer; margin-top: 10px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.38), inset 0 -3px 0 rgba(0,88,176,0.2), 0 12px 22px rgba(0,113,227,0.22); }
+        .add-btn-small { margin-left: 8px; padding: 4px 12px; font-size: 12px; background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.32); border-radius: 10px; color: white; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.38), inset 0 -3px 0 rgba(0,88,176,0.2), 0 10px 18px rgba(0,113,227,0.18); }
+        .tab-container { display: flex; gap: 4px; margin-bottom: 12px; }
+        .tab-btn { flex: 1; padding: 7px 8px; border: none; border-radius: 12px; background: var(--neutral-gradient); -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%); color: #3a3a3c; font-size: 12px; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; border: 1px solid rgba(255,255,255,0.78); box-shadow: inset 0 1px 0 rgba(255,255,255,0.88), 0 8px 16px rgba(17,24,39,0.06); }
+        .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -3px 0 rgba(0,88,176,0.22), 0 14px 24px rgba(0,113,227,0.22); transform: translateY(-2px); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .chart-container { padding: 10px; }
@@ -120,10 +171,10 @@
         .legend-color { width: 12px; height: 12px; border-radius: 3px; }
         .stats-container { padding: 10px; }
         .stats-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
-        .stats-btn { background: linear-gradient(180deg, rgba(244,247,251,0.92) 0%, rgba(227,233,241,0.8) 100%); -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%); border: 1px solid rgba(255,255,255,0.62); padding: 8px 10px; border-radius: 12px; color: #3a3a3c; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.7); }
-        .stats-btn.active { background: linear-gradient(180deg, #33a1ff 0%, #0a84ff 100%); color: white; box-shadow: 0 8px 18px rgba(10,132,255,0.24); }
-        .stats-btn:active { transform: scale(0.95); }
-        .stats-card { background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.58) 100%); -webkit-backdrop-filter: blur(20px) saturate(165%); backdrop-filter: blur(20px) saturate(165%); border: 1px solid rgba(255,255,255,0.56); border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: var(--glass-shadow), var(--shadow); }
+        .stats-btn { background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(241,244,248,0.9) 100%); -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%); border: 1px solid rgba(255,255,255,0.74); padding: 5px 8px; border-radius: 11px; color: #3a3a3c; font-size: 11px; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.86), 0 9px 18px rgba(17,24,39,0.06); }
+        .stats-btn.active { background: var(--primary-gradient); color: white; box-shadow: inset 0 1px 0 rgba(255,255,255,0.34), inset 0 -3px 0 rgba(0,88,176,0.22), 0 14px 24px rgba(0,113,227,0.22); transform: translateY(-2px); }
+        .stats-btn:active { transform: translateY(2px) scale(0.98); }
+        .stats-card { background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(247,248,251,0.9) 45%, rgba(233,237,243,0.82) 100%); -webkit-backdrop-filter: blur(20px) saturate(165%); backdrop-filter: blur(20px) saturate(165%); border: 1px solid rgba(255,255,255,0.76); border-radius: 18px; padding: 15px; margin-bottom: 15px; box-shadow: var(--highlight), var(--shadow-lift), 0 2px 0 rgba(255,255,255,0.9); }
         .stats-card-title { font-size: 16px; font-weight: 600; color: var(--accent); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
         .stats-card-item { padding: 8px 0; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
         .stats-card-item:last-child { border-bottom: none; }
@@ -133,23 +184,24 @@
         .stats-detail { color: #8e8e93; font-size: 12px; margin-top: 2px; }
         .stats-empty { text-align: center; color: var(--muted); padding: 20px; }
         .stats-summary-actions { display: flex; justify-content: flex-end; margin-bottom: 10px; }
-        .stats-copy-btn { background: linear-gradient(180deg, rgba(244,247,251,0.92) 0%, rgba(227,233,241,0.8) 100%); border: 1px solid rgba(255,255,255,0.62); border-radius: 10px; padding: 8px 12px; color: #3a3a3c; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.7); }
+        .stats-copy-btn { background: var(--neutral-gradient); border: 1px solid rgba(255,255,255,0.74); border-radius: 12px; padding: 8px 12px; color: #3a3a3c; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.84), 0 8px 14px rgba(17,24,39,0.06); }
         .stats-copy-btn:active { transform: scale(0.98); }
-        .stats-markdown { margin: 0; white-space: pre-wrap; word-break: break-word; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 12px; line-height: 1.65; color: var(--text); background: rgba(255,255,255,0.52); border: 1px solid rgba(255,255,255,0.48); border-radius: 14px; padding: 14px; }
+        .stats-markdown { margin: 0; white-space: pre-wrap; word-break: break-word; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 12px; line-height: 1.65; color: var(--text); background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(243,245,249,0.88) 100%); border: 1px solid rgba(255,255,255,0.72); border-radius: 16px; padding: 14px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), inset 0 -8px 16px rgba(220,226,234,0.24); }
         .milestone-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
         .milestone-title { color: var(--accent); font-size: 14px; font-weight: 600; margin-bottom: 8px; }
-        .milestone-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-        .milestone-action-btn { background: linear-gradient(180deg, rgba(244,247,251,0.92) 0%, rgba(227,233,241,0.8) 100%); border: 1px solid rgba(255,255,255,0.62); border-radius: 999px; padding: 6px 12px; color: #3a3a3c; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.7); }
-        .milestone-action-btn.active { background: linear-gradient(180deg, #33a1ff 0%, #0a84ff 100%); color: white; box-shadow: 0 8px 18px rgba(10,132,255,0.24); }
+        .milestone-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+        .milestone-action-btn { width: 100%; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(241,244,248,0.9) 100%); border: 1px solid rgba(255,255,255,0.74); border-radius: 999px; padding: 6px 8px; color: #3a3a3c; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.82); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .milestone-action-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 8px 18px rgba(0,113,227,0.2); }
         .milestone-group { padding: 8px 0 4px; }
         .milestone-exercise-name { color: var(--accent); font-size: 15px; font-weight: 700; background: rgba(10,132,255,0.12); border: 1px solid rgba(10,132,255,0.14); border-radius: 10px; padding: 6px 10px; display: inline-block; }
         .milestone-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--line); }
         .milestone-item:last-child { border-bottom: none; }
+        .milestone-meta { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .milestone-value { color: var(--text); font-size: 14px; font-weight: 600; white-space: nowrap; }
     </style>
 </head>
 <body>
-    <div class="header"><h1>💪 健身月历</h1><button onclick="exportData()" style="position:absolute;left:15px;top:50%;transform:translateY(-50%);background:rgba(10,132,255,0.12);border:1px solid rgba(10,132,255,0.1);color:#0a84ff;padding:3px 7px;border-radius:8px;cursor:pointer;font-size:10px;">导出</button><button onclick="document.getElementById('importFile').click()" style="position:absolute;right:15px;top:50%;transform:translateY(-50%);background:rgba(10,132,255,0.12);border:1px solid rgba(10,132,255,0.1);color:#0a84ff;padding:3px 7px;border-radius:8px;cursor:pointer;font-size:10px;">导入</button><input type="file" id="importFile" accept=".json" style="display:none;" onchange="importData(this)"></div>
+    <div class="header"><h1>💪 健身月历</h1><button class="header-action left" onclick="exportData()">导出</button><button class="header-action right" onclick="document.getElementById('importFile').click()">导入</button><input type="file" id="importFile" accept=".json" onchange="importData(this)"></div>
     <div class="nav">
         <button id="prevMonth">◀</button>
         <span class="month-year" id="monthYear"></span>
@@ -188,7 +240,7 @@
                 <button class="muscle-btn cardio" data-muscle="cardio"><span>🏃</span>有氧</button>
             </div>
             <div class="add-form" id="addForm">
-                <div class="form-group"><label>动作名称</label><select id="exerciseName"></select></div>
+                <div class="form-group"><label>动作名称</label><input type="text" id="exerciseName" list="exerciseNameOptions" placeholder="可选择或手动输入"><datalist id="exerciseNameOptions"></datalist></div>
                 <div class="form-group"><label>组数</label><input type="number" id="exerciseSets" placeholder="如：4" min="1"></div>
                 <div class="form-group"><label>次数/组</label><input type="text" id="exerciseReps" placeholder="如：12 或 8-12"></div>
                 <div class="form-group"><label>重量(kg)</label><input type="number" id="exerciseWeight" placeholder="如：60" step="0.5"></div>
@@ -199,6 +251,7 @@
     <script>
 var data = JSON.parse(localStorage.getItem('fd')||'{}');
 var curDate = new Date(), selDate = null, selMuscle = null, editIdx = -1;
+var recordActionTabs = {};
 var icons = {chest:'❤️',back:'🛡️',shoulder:'🏋️',leg:'🦵',arm:'💪',core:'🎯',cardio:'🏃'};
 var exerciseNames = {
     chest:['卧推','上斜卧推','下斜卧推','哑铃飞鸟','器械夹胸','俯卧撑'],
@@ -211,6 +264,14 @@ var exerciseNames = {
 };
 function save(){localStorage.setItem('fd',JSON.stringify(data));}
 function pad(n){return String(n).padStart(2,'0');}
+function fillExerciseNameOptions(m){
+    var options=document.getElementById('exerciseNameOptions');
+    options.innerHTML='';
+    var names=exerciseNames[m]||[];
+    for(var i=0;i<names.length;i++){
+        options.innerHTML+='<option value="'+names[i]+'"></option>';
+    }
+}
 function getTodayKey(){
     var today=new Date();
     return today.getFullYear()+'-'+pad(today.getMonth()+1)+'-'+pad(today.getDate());
@@ -229,14 +290,13 @@ function render(){
         var cls='day';
         if(td.getFullYear()===y&&td.getMonth()===m&&td.getDate()===d)cls+=' today';
         if(selDate===dk)cls+=' selected';
-        var ic='',dayStatStr='';
+        var ic='',iconCount=0;
         if(data[dk]){
             var ms=new Set(data[dk].map(function(e){return e.muscle;}));
+            iconCount=ms.size;
             ms.forEach(function(mu){ic+='<div class="muscle-icon '+mu+'">'+(icons[mu]||'💪')+'</div>';});
-            var maxWeight=calcMaxWeight(data[dk]);
-            if(maxWeight>0)dayStatStr='<div class="day-volume">'+maxWeight+'kg</div>';
         }
-        c.innerHTML+='<div class="'+cls+'" onclick="sel(\''+dk+'\')"><div class="day-number">'+d+'</div><div class="day-icons">'+ic+'</div>'+dayStatStr+'</div>';
+        c.innerHTML+='<div class="'+cls+'" onclick="sel(\''+dk+'\')" title="'+(m+1)+'月'+d+'日"><div class="day-number">'+d+'</div><div class="day-icons count-'+iconCount+'">'+ic+'</div></div>';
     }
     document.getElementById('monthYear').textContent=y+'年 '+(m+1)+'月';
 }
@@ -259,27 +319,118 @@ function calcMaxWeight(ex){
     }
     return maxWeight;
 }
+function getExerciseGroups(ex){
+    var groups=[];
+    var groupMap={};
+    for(var i=ex.length-1;i>=0;i--){
+        var e=ex[i];
+        if(!groupMap[e.muscle]){
+            groupMap[e.muscle]={muscle:e.muscle,actions:[],actionMap:{}};
+            groups.push(groupMap[e.muscle]);
+        }
+        var muscleGroup=groupMap[e.muscle];
+        if(!muscleGroup.actionMap[e.name]){
+            muscleGroup.actionMap[e.name]={name:e.name,items:[]};
+            muscleGroup.actions.push(muscleGroup.actionMap[e.name]);
+        }
+        muscleGroup.actionMap[e.name].items.push({index:i,exercise:e});
+    }
+    return groups;
+}
+function reorderExercisesByGroups(groups){
+    var reordered=[];
+    for(var gi=groups.length-1;gi>=0;gi--){
+        var actions=groups[gi].actions;
+        for(var ai=actions.length-1;ai>=0;ai--){
+            var items=actions[ai].items;
+            for(var ii=items.length-1;ii>=0;ii--){
+                reordered.push(items[ii].exercise);
+            }
+        }
+    }
+    return reordered;
+}
+function getRecordActionTabKey(dk,muscle){
+    return dk+'__'+muscle;
+}
+function setRecordActionTab(dk,muscle,actionName){
+    recordActionTabs[getRecordActionTabKey(dk,muscle)]=actionName;
+    showDetail(dk);
+}
 function showDetail(dk){
     var lst=document.getElementById('exerciseList');
     var ex=data[dk]||[];
     if(!ex.length){lst.innerHTML='<div class="no-data">暂无训练记录，点击上方添加</div>';return;}
     var htm='';
-    for(var i=ex.length-1;i>=0;i--){
-        var e=ex[i];
+    var groups=getExerciseGroups(ex);
+    for(var gi=0;gi<groups.length;gi++){
+        var group=groups[gi];
+        var firstAction=group.actions[0];
+        var e=firstAction.items[0].exercise;
+        var tabKey=getRecordActionTabKey(dk,e.muscle);
+        var activeActionName=recordActionTabs[tabKey];
+        if(!activeActionName||!group.actionMap[activeActionName]){
+            activeActionName=firstAction.name;
+            recordActionTabs[tabKey]=activeActionName;
+        }
+        var disableUp=gi===0?' disabled':'';
+        var disableDown=gi===groups.length-1?' disabled':'';
         htm+='<div class="exercise-item">'+
             '<div class="exercise-row1">'+
                 '<div class="exercise-icon '+e.muscle+'">'+(icons[e.muscle]||'💪')+'</div>'+
-                '<div class="exercise-name" onclick="editName(\''+dk+'\','+i+',this)">'+e.name+'</div>'+
-                '<button class="delete-btn" onclick="del(\''+dk+'\','+i+')">删除</button>'+
+                '<div class="exercise-name">'+(muscleNames[e.muscle]||e.muscle)+'</div>'+
+                '<div class="group-order-controls">'+
+                    '<button class="reorder-btn" onclick="moveExerciseGroup(\''+dk+'\','+gi+',-1)"'+disableUp+'>↑</button>'+
+                    '<button class="reorder-btn" onclick="moveExerciseGroup(\''+dk+'\','+gi+',1)"'+disableDown+'>↓</button>'+
+                '</div>'+
             '</div>'+
-            '<div class="exercise-row2">'+
-                '<div class="param-group"><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+i+',-1)">-</button><span class="adjust-value">'+e.sets+'</span><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+i+',1)">+</button><span class="param-label">组</span></div>'+
-                '<div class="param-group"><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+i+',-1)">-</button><span class="adjust-value">'+e.reps+'</span><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+i+',1)">+</button><span class="param-label">次</span></div>'+
-                (e.weight?'<div class="param-group"><button class="adjust-btn" onclick="adjWeight(\''+dk+'\','+i+',-1)">-</button><span class="adjust-value">'+e.weight+'</span><button class="adjust-btn" onclick="adjWeight(\''+dk+'\','+i+',1)">+</button><span class="param-label">kg</span></div>':'')+
-            '</div>'+
-        '</div>';
+            '<div class="exercise-tabs">';
+        for(var ai=0;ai<group.actions.length;ai++){
+            var action=group.actions[ai];
+            htm+='<button class="exercise-tab-btn'+(action.name===activeActionName?' active':'')+'" onclick="setRecordActionTab(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\')">'+action.name+'</button>';
+        }
+        htm+='</div>';
+        var activeAction=group.actionMap[activeActionName];
+        htm+='<div class="exercise-action-group">'+
+            '<div class="exercise-tab-panel">';
+        for(var ii=0;ii<activeAction.items.length;ii++){
+            var item=activeAction.items[ii];
+            htm+=
+            '<div class="exercise-subitem">'+
+                '<div class="param-group"><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value">'+item.exercise.sets+'</span><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">组</span></div>'+
+                '<div class="param-group"><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value">'+item.exercise.reps+'</span><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">次</span></div>'+
+                '<div class="param-group"><input type="number" class="metric-input" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="0.5" min="0" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><span class="param-label">kg</span></div>'+
+                '<button class="delete-btn" onclick="del(\''+dk+'\','+item.index+')">删除</button>'+
+                '<button class="copy-btn" onclick="dup(\''+dk+'\','+item.index+')">复制</button>'+
+            '</div>';
+        }
+        htm+='</div></div></div>';
     }
     lst.innerHTML=htm;
+}
+function moveExerciseGroup(dk,groupIdx,delta){
+    var ex=data[dk]||[];
+    if(!ex.length)return;
+    var groups=getExerciseGroups(ex);
+    var targetIdx=groupIdx+delta;
+    if(targetIdx<0||targetIdx>=groups.length)return;
+    var movedGroup=groups.splice(groupIdx,1)[0];
+    groups.splice(targetIdx,0,movedGroup);
+    data[dk]=reorderExercisesByGroups(groups);
+    save();
+    render();
+    showDetail(dk);
+}
+function getTopExerciseMuscle(dk){
+    var ex=data[dk]||[];
+    if(!ex.length)return null;
+    return ex[ex.length-1].muscle||null;
+}
+function getTopExerciseInfo(dk){
+    var ex=data[dk]||[];
+    if(!ex.length)return null;
+    var topExercise=ex[ex.length-1];
+    return {muscle:topExercise.muscle||null,name:topExercise.name||''};
 }
 function editName(dk,i,el){
     var curName=data[dk][i].name;
@@ -304,7 +455,51 @@ function editName(dk,i,el){
     input.focus();
     input.select();
 }
+function editNameGroup(dk,i,el){
+    var curName=data[dk][i].name;
+    var curMuscle=data[dk][i].muscle;
+    var input=document.createElement('input');
+    input.type='text';
+    input.className='exercise-name-input';
+    input.value=curName;
+    input.onblur=function(){
+        var newName=this.value.trim();
+        if(newName&&newName!==curName){
+            for(var idx=0;idx<data[dk].length;idx++){
+                if(data[dk][idx].name===curName&&data[dk][idx].muscle===curMuscle){
+                    data[dk][idx].name=newName;
+                }
+            }
+            save();
+        }
+        showDetail(dk);
+    };
+    input.onkeydown=function(e){
+        if(e.key==='Enter')this.blur();
+        if(e.key==='Escape'){this.value=curName;this.blur();}
+    };
+    el.innerHTML='';
+    el.appendChild(input);
+    input.focus();
+    input.select();
+}
+function setWeightValue(dk,i,val){
+    var nextValue=val===''?null:parseFloat(val);
+    if(nextValue!==null&&isNaN(nextValue))return;
+    data[dk][i].weight=nextValue===null?null:Math.max(0,nextValue);
+    save();
+    showDetail(dk);
+}
 function adjWeight(dk,i,d){data[dk][i].weight=Math.max(0,(data[dk][i].weight||0)+d*2.5);save();showDetail(dk);}
+function dup(dk,i){
+    if(!data[dk]||!data[dk][i])return;
+    var source=data[dk][i];
+    data[dk].push({muscle:source.muscle,name:source.name,sets:source.sets,reps:source.reps,weight:source.weight});
+    recordActionTabs[getRecordActionTabKey(dk,source.muscle)]=source.name;
+    save();
+    render();
+    showDetail(dk);
+}
 function del(dk,i){data[dk].splice(i,1);if(!data[dk].length)delete data[dk];save();render();showDetail(dk);}
 function adjSets(dk,i,d){data[dk][i].sets=Math.max(1,data[dk][i].sets+d);save();showDetail(dk);}
 function adjReps(dk,i,d){var r=parseInt(data[dk][i].reps)||1;r=Math.max(1,r+d);data[dk][i].reps=String(r);save();showDetail(dk);}
@@ -315,12 +510,9 @@ function selM(m){
     document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});
     document.querySelector('.muscle-btn[data-muscle="'+m+'"]').classList.add('selected');
     document.getElementById('addForm').classList.add('show');
-    var sel=document.getElementById('exerciseName');
-    sel.innerHTML='';
-    var names=exerciseNames[m]||[];
-    for(var i=0;i<names.length;i++){
-        sel.innerHTML+='<option value="'+names[i]+'">'+names[i]+'</option>';
-    }
+    fillExerciseNameOptions(m);
+    var exerciseNameInput=document.getElementById('exerciseName');
+    if(!exerciseNameInput.value)exerciseNameInput.value=(exerciseNames[m]||[])[0]||'';
     document.getElementById('exerciseSets').value='1';
     document.getElementById('exerciseReps').value='9';
     var defaultWeight = (m==='chest'||m==='back')?'100':'20';
@@ -337,6 +529,7 @@ function editEx(dk,i){
     document.getElementById('addExercise').textContent='保存修改';
     document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});
     document.querySelector('.muscle-btn[data-muscle="'+e.muscle+'"]').classList.add('selected');
+    fillExerciseNameOptions(e.muscle);
     document.getElementById('exerciseName').value=e.name;
     document.getElementById('exerciseSets').value=e.sets;
     document.getElementById('exerciseReps').value=e.reps;
@@ -346,14 +539,17 @@ function addEx(){
     var n=document.getElementById('exerciseName').value.trim(),s=document.getElementById('exerciseSets').value,r=document.getElementById('exerciseReps').value.trim(),w=document.getElementById('exerciseWeight').value;
     if(!n||!s||!r||!selMuscle||!selDate){alert('请填写完整信息');return;}
     if(editIdx<0)selDate=getTodayKey();
+    var targetDate=selDate;
     var ex={muscle:selMuscle,name:n,sets:parseInt(s),reps:r,weight:w?parseFloat(w):null};
     if(editIdx>=0){
-        data[selDate][editIdx]=ex;
+        data[targetDate][editIdx]=ex;
         editIdx=-1;
     }else{
-        if(!data[selDate])data[selDate]=[];
-        data[selDate].push(ex);
+        if(!data[targetDate])data[targetDate]=[];
+        data[targetDate].push(ex);
     }
+    recordActionTabs[getRecordActionTabKey(targetDate,selMuscle)]=n;
+    selDate=targetDate;
     save();closeM();render();switchTab('record');showDetail(selDate);setTimeout(scrollToPageBottom,50);
     document.getElementById('exerciseName').value='';document.getElementById('exerciseSets').value='';document.getElementById('exerciseReps').value='';document.getElementById('exerciseWeight').value='';
     document.querySelector('.modal-header h2').textContent='添加训练';
@@ -371,11 +567,19 @@ function switchTab(tab){
     document.getElementById('recordContent').classList.toggle('active',tab==='record');
     document.getElementById('volumeContent').classList.toggle('active',tab==='volume');
     document.getElementById('statsContent').classList.toggle('active',tab==='stats');
-    if(tab==='volume'){volumeMuscle=null;showVolumeChart();setTimeout(function(){
+    if(tab==='volume'){
+        volumeMuscle=getTopExerciseMuscle(selDate);
+        showVolumeChart();setTimeout(function(){
         var el=document.getElementById('detailSection');
         if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
     },50);}
-    if(tab==='stats'){showStats();setTimeout(function(){
+    if(tab==='stats'){
+        var topExerciseInfo=getTopExerciseInfo(selDate);
+        statsSection=topExerciseInfo?topExerciseInfo.muscle:null;
+        if(topExerciseInfo&&topExerciseInfo.muscle&&topExerciseInfo.name){
+            statsExerciseSelection[topExerciseInfo.muscle]=topExerciseInfo.name;
+        }
+        showStats();setTimeout(function(){
         var el=document.getElementById('detailSection');
         if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
     },50);}
@@ -569,7 +773,7 @@ function setVolumeMuscle(mu){
 var statsSection = null; // null, muscle key, 'month', 'year', 'days', 'summary'
 var statsExerciseSelection = {};
 var muscleNames={chest:'胸肌',back:'背部',shoulder:'肩部',leg:'腿部',arm:'手臂',core:'核心'};
-var muscleColors={chest:'#7ccf6b',back:'#7ccf6b',shoulder:'#7ccf6b',leg:'#7ccf6b',arm:'#7ccf6b',core:'#7ccf6b',cardio:'#7ccf6b'};
+var muscleColors={chest:'#ff8a4c',back:'#5b6cff',shoulder:'#8a63ff',leg:'#2fb59f',arm:'#3aa0ff',core:'#ffb340',cardio:'#ff5f57'};
 function escapeHtml(str){
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
@@ -938,7 +1142,6 @@ function showStats(){
         var mu=statsSection;
         var s=calcMuscleStats(mu);
         htm+='<div class="stats-card">';
-        htm+='<div class="stats-card-title">'+icons[mu]+' '+muscleNames[mu]+' 统计</div>';
         if(s.milestones&&s.milestones.length){
             htm+='<div class="milestone-section">';
             htm+='<div class="milestone-title">🏁 最大重量 Milestone</div>';
@@ -962,7 +1165,7 @@ function showStats(){
                 for(var mi=0;mi<milestoneList.length;mi++){
                     var milestone=milestoneList[mi];
                     htm+='<div class="milestone-item">'+
-                        '<div><div class="stats-label">'+milestone.date+'</div><div class="stats-detail">'+milestone.sets+'组 × '+milestone.reps+'次</div></div>'+
+                        '<div class="milestone-meta">'+milestone.date+' · '+milestone.sets+'组 × '+milestone.reps+'次</div>'+
                         '<div class="milestone-value">'+milestone.weight+' kg</div>'+
                     '</div>';
                 }
