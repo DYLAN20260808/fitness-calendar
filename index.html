@@ -669,8 +669,8 @@ function showVolumeChart(){
             if(muscleDateVols[muscleKey][dk2]>0)allDates[dk2]=true;
         }
     }
-    var dates=Object.keys(allDates).sort();
-    if(!dates.length){
+    var allDataDates=Object.keys(allDates).sort();
+    if(!allDataDates.length){
         container.innerHTML='<div class="no-data">本月暂无训练数据</div>';
         return;
     }
@@ -696,6 +696,15 @@ function showVolumeChart(){
     }
 
     var selectedMuscle=volumeMuscle;
+    var dates=selectedMuscle==='all'
+        ? allDataDates
+        : Object.keys(muscleDateVols[selectedMuscle]||{}).filter(function(dateKey){
+            return (muscleDateVols[selectedMuscle][dateKey]||0)>0;
+        }).sort();
+    if(!dates.length){
+        container.innerHTML=htm+'<div class="no-data">本月暂无训练数据</div>';
+        return;
+    }
     var padding={top:20,right:20,bottom:30,left:40};
     var width=320,height=200;
     var chartW=width-padding.left-padding.right;
