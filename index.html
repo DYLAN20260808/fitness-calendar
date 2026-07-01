@@ -459,6 +459,9 @@ function getTopExerciseMuscle(dk){
     if(!ex.length)return null;
     return ex[ex.length-1].muscle||null;
 }
+function getActiveRecordMuscle(dk){
+    return recordMuscleTabs[getRecordMuscleTabKey(dk)]||getTopExerciseMuscle(dk);
+}
 function getTopExerciseInfo(dk){
     var ex=data[dk]||[];
     if(!ex.length)return null;
@@ -627,7 +630,7 @@ function switchTab(tab){
     document.getElementById('volumeContent').classList.toggle('active',tab==='volume');
     document.getElementById('statsContent').classList.toggle('active',tab==='stats');
     if(tab==='volume'){
-        volumeMuscle=getTopExerciseMuscle(selDate);
+        volumeMuscle=getActiveRecordMuscle(selDate);
         showVolumeChart();setTimeout(function(){
         var el=document.getElementById('detailSection');
         if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
