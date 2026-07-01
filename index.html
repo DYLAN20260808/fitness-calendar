@@ -1146,17 +1146,34 @@ function showStats(){
             }
         }
     }
+    var dataDateKeys=Object.keys(data).sort();
+    var today=new Date();
+    today.setHours(0,0,0,0);
+    var firstWorkoutKey='';
+    var firstWorkoutDate=null;
+    for(var dki=0;dki<dataDateKeys.length;dki++){
+        var keyParts=dataDateKeys[dki].split('-');
+        var keyDate=new Date(parseInt(keyParts[0]),parseInt(keyParts[1])-1,parseInt(keyParts[2]));
+        keyDate.setHours(0,0,0,0);
+        if(keyDate<=today){
+            firstWorkoutKey=dataDateKeys[dki];
+            firstWorkoutDate=keyDate;
+            break;
+        }
+    }
     var yearlyWorkoutDays=0;
     for(var dk in data){
         var parts=dk.split('-');
-        if(parseInt(parts[0])===y){
+        var workoutDate=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+        workoutDate.setHours(0,0,0,0);
+        if(firstWorkoutDate&&workoutDate>=firstWorkoutDate&&workoutDate<=today){
             yearlyWorkoutDays++;
         }
     }
     var monthWorkoutDays=Object.keys(monthlyDays).length;
     var totalMonthDays=getMonthDays(y,m);
     var monthRestDays=totalMonthDays-monthWorkoutDays;
-    var totalYearDays=getYearDays(y);
+    var totalYearDays=firstWorkoutDate?Math.max(1,Math.round((today-firstWorkoutDate)/86400000)+1):0;
     var yearlyRestDays=totalYearDays-yearlyWorkoutDays;
     if(statsSection==='month'){
         htm+='<div class="stats-card">';
@@ -1168,10 +1185,13 @@ function showStats(){
     }
     if(statsSection==='year'){
         htm+='<div class="stats-card">';
-        htm+='<div class="stats-card-title">📆 '+y+'年 总览</div>';
+        htm+='<div class="stats-card-title">📆 累计总览</div>';
+        if(firstWorkoutKey){
+            htm+='<div class="stats-card-item"><div class="stats-label">🗓️ 统计区间</div><div class="stats-value">'+firstWorkoutKey+' 至 '+getTodayKey()+'</div></div>';
+        }
         htm+='<div class="stats-card-item"><div class="stats-label">🏋️ 锻炼天数</div><div class="stats-value"><span class="highlight">'+yearlyWorkoutDays+'</span> 天</div></div>';
         htm+='<div class="stats-card-item"><div class="stats-label">😴 休息天数</div><div class="stats-value"><span class="highlight">'+yearlyRestDays+'</span> 天</div></div>';
-        htm+='<div class="stats-card-item"><div class="stats-label">📊 年出勤率</div><div class="stats-value">'+Math.round(yearlyWorkoutDays/totalYearDays*100)+'%</div></div>';
+        htm+='<div class="stats-card-item"><div class="stats-label">📊 累计出勤率</div><div class="stats-value">'+(totalYearDays?Math.round(yearlyWorkoutDays/totalYearDays*100):0)+'%</div></div>';
         htm+='</div>';
     }
     if(statsSection==='days'){
