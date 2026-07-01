@@ -770,7 +770,7 @@ function showVolumeChart(){
         htm+='<line class="chart-guide-line chart-guide-max" x1="'+padding.left+'" y1="'+maxGuideY+'" x2="'+(width-padding.right)+'" y2="'+maxGuideY+'"/>';
         htm+='<text class="chart-guide-label chart-guide-label-max" x="'+(width-padding.right-2)+'" y="'+(maxGuideY-4)+'" text-anchor="end">MAX '+displayedMaxVol+'</text>';
         htm+='<line class="chart-guide-line chart-guide-min" x1="'+padding.left+'" y1="'+minGuideY+'" x2="'+(width-padding.right)+'" y2="'+minGuideY+'"/>';
-        htm+='<text class="chart-guide-label chart-guide-label-min" x="'+(width-padding.right-2)+'" y="'+(minGuideY-4)+'" text-anchor="end">MIN '+displayedMinVol+'</text>';
+        htm+='<text class="chart-guide-label chart-guide-label-min" x="'+(width-padding.right-2)+'" y="'+(minGuideY+14)+'" text-anchor="end">MIN '+displayedMinVol+'</text>';
     }
 
     for(var key in seriesMap){
