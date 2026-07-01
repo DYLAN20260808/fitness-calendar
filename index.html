@@ -97,9 +97,11 @@
         .detail-section { background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(247,248,251,0.8) 44%, rgba(232,236,242,0.72) 100%); -webkit-backdrop-filter: blur(24px) saturate(175%); backdrop-filter: blur(24px) saturate(175%); border: 1px solid rgba(255,255,255,0.74); border-radius: 22px; margin: 12px 5px; padding: 15px; box-shadow: var(--highlight), var(--shadow-deep), 0 2px 0 rgba(255,255,255,0.9); position: relative; z-index: 1; }
         .detail-header { font-size: 18px; font-weight: 600; margin-bottom: 15px; color: var(--accent); }
         .exercise-list { display: flex; flex-direction: column; gap: 10px; }
-        .record-muscle-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
-        .record-muscle-btn { display: flex; align-items: center; justify-content: center; gap: 4px; border: 1px solid rgba(0,113,227,0.12); border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); padding: 5px 8px; font-size: 11px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.06); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .record-muscle-btn.active { color: #fff; border-color: rgba(255,255,255,0.34); box-shadow: inset 0 1px 0 rgba(255,255,255,0.36), 0 8px 14px rgba(0,113,227,0.18); }
+        .record-muscle-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .record-muscle-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; width: 32px; min-height: 56px; border: 1px solid rgba(0,113,227,0.12); border-radius: 16px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); padding: 8px 0; font-size: 11px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.06); white-space: normal; overflow: hidden; text-overflow: clip; text-align: center; line-height: 1.1; flex: 0 0 auto; }
+        .record-muscle-btn.active { border-width: 2px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.56), 0 6px 12px rgba(17,24,39,0.08); }
+        .record-muscle-icon { display: block; font-size: 16px; line-height: 1; }
+        .record-muscle-label { display: block; max-width: 100%; font-size: 10px; line-height: 1.1; word-break: break-all; }
         .exercise-item { background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(247,248,251,0.9) 45%, rgba(233,237,243,0.8) 100%); -webkit-backdrop-filter: blur(18px) saturate(165%); backdrop-filter: blur(18px) saturate(165%); border: 1px solid rgba(255,255,255,0.72); border-radius: 16px; padding: 11px; display: flex; flex-direction: column; gap: 6px; box-shadow: var(--highlight), 0 12px 22px rgba(17,24,39,0.08), 0 2px 0 rgba(255,255,255,0.88); }
         .exercise-row1 { display: flex; align-items: center; gap: 6px; min-height: 24px; }
         .exercise-row1 .exercise-name { padding: 0; cursor: default; font-size: 12px; line-height: 1; }
@@ -114,7 +116,7 @@
         .exercise-tab-btn.active { background: var(--primary-gradient); color: #fff; border-color: rgba(255,255,255,0.34); box-shadow: inset 0 1px 0 rgba(255,255,255,0.36), 0 8px 14px rgba(0,113,227,0.18); }
         .exercise-action-group { display: flex; flex-direction: column; gap: 6px; }
         .exercise-tab-panel { display: flex; flex-direction: column; gap: 6px; }
-        .exercise-subitem { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; font-size: 12px; }
+        .exercise-subitem { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-height: 24px; min-width: 0; font-size: clamp(13px, 3.4vw, 16px); }
         .exercise-subitem + .exercise-subitem { border-top: 1px dashed var(--line); padding-top: 6px; }
         .exercise-subitem .delete-btn { margin-left: auto; }
         .exercise-icon { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
@@ -130,15 +132,15 @@
         .exercise-name:hover { background: var(--accent-soft); }
         .exercise-name-input { font-weight: 600; background: rgba(255,255,255,0.96); border: 1px solid var(--accent); color: var(--text); padding: 4px 8px; border-radius: 8px; font-size: 14px; min-width: 80px; max-width: 150px; }
         .exercise-sets { color: var(--muted); font-size: 14px; display: flex; align-items: center; gap: 4px; }
-        .adjust-btn { background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); border: 1px solid rgba(0,113,227,0.12); color: var(--accent); width: 20px; height: 20px; border-radius: 7px; cursor: pointer; font-size: 12px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); }
+        .adjust-btn { background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); border: 1px solid rgba(0,113,227,0.12); color: var(--accent); width: clamp(22px, 6vw, 24px); height: clamp(22px, 6vw, 24px); border-radius: 9px; cursor: pointer; font-size: clamp(14px, 3.8vw, 16px); line-height: 1; display: inline-flex; align-items: center; justify-content: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); flex-shrink: 0; }
         .adjust-btn:active { background: linear-gradient(180deg, rgba(240,245,252,0.98) 0%, rgba(221,233,247,0.92) 100%); transform: translateY(1px); }
-        .adjust-value { display: inline-block; min-width: 18px; text-align: center; font-size: 12px; }
-        .metric-input { width: 52px; padding: 2px 4px; border: 1px solid rgba(0,113,227,0.14); border-radius: 7px; background: rgba(255,255,255,0.96); color: var(--text); font-size: 12px; text-align: center; }
+        .adjust-value { display: inline-block; min-width: 20px; text-align: center; font-size: clamp(13px, 3.4vw, 16px); font-weight: 600; line-height: clamp(22px, 6vw, 24px); }
+        .metric-input { width: clamp(46px, 13vw, 56px); height: clamp(22px, 6vw, 24px); padding: 0 4px; border: 1px solid rgba(0,113,227,0.14); border-radius: 7px; background: rgba(255,255,255,0.96); color: var(--text); font-size: clamp(13px, 3.4vw, 16px); text-align: center; min-width: 0; }
         .metric-input:focus { outline: none; border-color: rgba(0,113,227,0.42); box-shadow: 0 0 0 2px rgba(0,113,227,0.12); }
-        .delete-btn { background: linear-gradient(180deg, var(--danger-top) 0%, var(--danger-mid) 58%, var(--danger-bottom) 100%); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 4px 8px; border-radius: 9px; cursor: pointer; font-size: 11px; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(217,52,43,0.18); }
-        .copy-btn { background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 4px 8px; border-radius: 9px; cursor: pointer; font-size: 11px; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(0,113,227,0.18); }
-        .param-group { display: flex; align-items: center; gap: 1px; }
-        .param-label { color: var(--muted); font-size: 12px; margin-left: 2px; }
+        .delete-btn { background: linear-gradient(180deg, var(--danger-top) 0%, var(--danger-mid) 58%, var(--danger-bottom) 100%); border: 1px solid rgba(255,255,255,0.3); color: white; width: clamp(22px, 6vw, 24px); height: clamp(22px, 6vw, 24px); padding: 0; border-radius: 9px; cursor: pointer; font-size: clamp(14px, 3.8vw, 16px); line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(217,52,43,0.18); }
+        .copy-btn { background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.3); color: white; width: clamp(22px, 6vw, 24px); height: clamp(22px, 6vw, 24px); padding: 0; border-radius: 9px; cursor: pointer; font-size: clamp(14px, 3.8vw, 16px); line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(0,113,227,0.18); }
+        .param-group { display: flex; align-items: center; gap: 3px; flex: 0 1 auto; min-width: 0; }
+        .param-label { color: var(--muted); font-size: clamp(13px, 3.4vw, 16px); margin-left: 2px; line-height: clamp(22px, 6vw, 24px); white-space: nowrap; }
         .no-data { text-align: center; color: var(--muted); padding: 20px; }
         .add-form { display: none; background: linear-gradient(180deg, rgba(255,255,255,0.93) 0%, rgba(246,247,250,0.82) 100%); -webkit-backdrop-filter: blur(18px) saturate(165%); backdrop-filter: blur(18px) saturate(165%); border: 1px solid rgba(255,255,255,0.72); border-radius: 16px; padding: 15px; margin-top: 15px; box-shadow: var(--highlight), 0 10px 18px rgba(17,24,39,0.06); }
         .add-form.show { display: block; }
@@ -173,17 +175,22 @@
         .legend-item.active { opacity: 1; }
         .legend-color { width: 12px; height: 12px; border-radius: 3px; }
         .stats-container { padding: 10px; }
-        .stats-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
-        .stats-btn { background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(241,244,248,0.9) 100%); -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%); border: 1px solid rgba(255,255,255,0.74); padding: 5px 8px; border-radius: 11px; color: #3a3a3c; font-size: 11px; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.86), 0 9px 18px rgba(17,24,39,0.06); }
-        .stats-btn.active { color: white; box-shadow: inset 0 1px 0 rgba(255,255,255,0.34), inset 0 -3px 0 rgba(0,88,176,0.22), 0 14px 24px rgba(0,113,227,0.22); transform: translateY(-2px); }
+        .stats-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .stats-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; width: 32px; min-height: 56px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(241,244,248,0.9) 100%); -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%); border: 1px solid rgba(255,255,255,0.74); padding: 8px 0; border-radius: 16px; color: #3a3a3c; font-size: 11px; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.86), 0 9px 18px rgba(17,24,39,0.06); text-align: center; line-height: 1.1; flex: 0 0 auto; }
+        .stats-buttons-nine { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 6px; }
+        .stats-buttons-nine .stats-btn { width: 100%; min-width: 0; min-height: 52px; padding: 6px 0; }
+        .stats-btn.active { background: linear-gradient(180deg, rgba(122,136,160,0.16) 0%, rgba(94,109,132,0.1) 100%); color: var(--text); border-color: rgba(94,109,132,0.34); box-shadow: inset 0 1px 0 rgba(255,255,255,0.62), 0 10px 18px rgba(17,24,39,0.08); transform: translateY(-2px); }
         .stats-btn:active { transform: translateY(2px) scale(0.98); }
-        .record-muscle-btn.chest.active, .stats-btn.chest.active { background: linear-gradient(180deg, #ffb27d 0%, #ff8a4c 100%); }
-        .record-muscle-btn.back.active, .stats-btn.back.active { background: linear-gradient(180deg, #8da2ff 0%, #5b6cff 100%); }
-        .record-muscle-btn.shoulder.active, .stats-btn.shoulder.active { background: linear-gradient(180deg, #b287ff 0%, #8a63ff 100%); }
-        .record-muscle-btn.leg.active, .stats-btn.leg.active { background: linear-gradient(180deg, #66d4c1 0%, #2fb59f 100%); }
-        .record-muscle-btn.arm.active, .stats-btn.arm.active { background: linear-gradient(180deg, #7fd3ff 0%, #3aa0ff 100%); }
-        .record-muscle-btn.core.active, .stats-btn.core.active { background: linear-gradient(180deg, #ffd86f 0%, #ffb340 100%); }
-        .record-muscle-btn.cardio.active, .stats-btn.cardio.active { background: linear-gradient(180deg, #ff8f86 0%, #ff5f57 100%); }
+        .stats-btn-icon { display: block; font-size: 16px; line-height: 1; }
+        .stats-btn-label { display: block; max-width: 100%; font-size: 10px; line-height: 1.1; word-break: break-all; }
+        .muscle-filter-btn.active { box-shadow: inset 0 1px 0 rgba(255,255,255,0.56), 0 6px 12px rgba(17,24,39,0.08); }
+        .record-muscle-btn.chest.active, .stats-btn.muscle-filter-btn.chest.active { background: linear-gradient(180deg, rgba(255,178,125,0.28) 0%, rgba(255,138,76,0.16) 100%); border-color: rgba(255,138,76,0.58); color: #b7581d; }
+        .record-muscle-btn.back.active, .stats-btn.muscle-filter-btn.back.active { background: linear-gradient(180deg, rgba(141,162,255,0.28) 0%, rgba(91,108,255,0.16) 100%); border-color: rgba(91,108,255,0.58); color: #3f4fd1; }
+        .record-muscle-btn.shoulder.active, .stats-btn.muscle-filter-btn.shoulder.active { background: linear-gradient(180deg, rgba(178,135,255,0.28) 0%, rgba(138,99,255,0.16) 100%); border-color: rgba(138,99,255,0.58); color: #6b44d6; }
+        .record-muscle-btn.leg.active, .stats-btn.muscle-filter-btn.leg.active { background: linear-gradient(180deg, rgba(102,212,193,0.28) 0%, rgba(47,181,159,0.16) 100%); border-color: rgba(47,181,159,0.58); color: #1f8d79; }
+        .record-muscle-btn.arm.active, .stats-btn.muscle-filter-btn.arm.active { background: linear-gradient(180deg, rgba(127,211,255,0.28) 0%, rgba(58,160,255,0.16) 100%); border-color: rgba(58,160,255,0.58); color: #1f73c7; }
+        .record-muscle-btn.core.active, .stats-btn.muscle-filter-btn.core.active { background: linear-gradient(180deg, rgba(255,216,111,0.3) 0%, rgba(255,179,64,0.16) 100%); border-color: rgba(255,179,64,0.58); color: #b37417; }
+        .record-muscle-btn.cardio.active, .stats-btn.muscle-filter-btn.cardio.active { background: linear-gradient(180deg, rgba(255,143,134,0.28) 0%, rgba(255,95,87,0.16) 100%); border-color: rgba(255,95,87,0.58); color: #c9473f; }
         .stats-card { background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(247,248,251,0.9) 45%, rgba(233,237,243,0.82) 100%); -webkit-backdrop-filter: blur(20px) saturate(165%); backdrop-filter: blur(20px) saturate(165%); border: 1px solid rgba(255,255,255,0.76); border-radius: 18px; padding: 15px; margin-bottom: 15px; box-shadow: var(--highlight), var(--shadow-lift), 0 2px 0 rgba(255,255,255,0.9); }
         .stats-card-title { font-size: 16px; font-weight: 600; color: var(--accent); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
         .stats-card-item { padding: 8px 0; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
@@ -390,7 +397,7 @@ function showDetail(dk){
     htm+='<div class="record-muscle-tabs">';
     for(var gi=0;gi<groups.length;gi++){
         var muscleGroup=groups[gi];
-        htm+='<button class="record-muscle-btn '+muscleGroup.muscle+(muscleGroup.muscle===activeMuscle?' active':'')+'" onclick="setRecordMuscleTab(\''+dk+'\',\''+muscleGroup.muscle+'\')">'+(icons[muscleGroup.muscle]||'💪')+' '+(muscleNames[muscleGroup.muscle]||muscleGroup.muscle)+'</button>';
+        htm+='<button class="record-muscle-btn '+muscleGroup.muscle+(muscleGroup.muscle===activeMuscle?' active':'')+'" onclick="setRecordMuscleTab(\''+dk+'\',\''+muscleGroup.muscle+'\')"><span class="record-muscle-icon">'+(icons[muscleGroup.muscle]||'💪')+'</span><span class="record-muscle-label">'+(muscleNames[muscleGroup.muscle]||muscleGroup.muscle)+'</span></button>';
     }
     htm+='</div>';
     var groupIndex=0;
@@ -423,8 +430,8 @@ function showDetail(dk){
             '<div class="param-group"><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value">'+item.exercise.sets+'</span><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">组</span></div>'+
             '<div class="param-group"><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value">'+item.exercise.reps+'</span><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">次</span></div>'+
             '<div class="param-group"><input type="number" class="metric-input" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="0.5" min="0" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><span class="param-label">kg</span></div>'+
-            '<button class="delete-btn" onclick="del(\''+dk+'\','+item.index+')">删除</button>'+
-            '<button class="copy-btn" onclick="dup(\''+dk+'\','+item.index+')">复制</button>'+
+            '<button class="delete-btn" onclick="del(\''+dk+'\','+item.index+')" title="删除" aria-label="删除">-</button>'+
+            '<button class="copy-btn" onclick="dup(\''+dk+'\','+item.index+')" title="复制" aria-label="复制">+</button>'+
         '</div>';
     }
     htm+='</div></div></div>';
@@ -668,7 +675,7 @@ function showVolumeChart(){
         return;
     }
 
-    var htm='<div class="stats-buttons" style="grid-template-columns:repeat(4,1fr);margin-bottom:10px;">';
+    var htm='<div class="stats-buttons" style="margin-bottom:10px;">';
     for(var bi=0;bi<muscles.length;bi++){
         var muBtn=muscles[bi];
         var hasData=false;
@@ -677,11 +684,11 @@ function showVolumeChart(){
         }
         if(hasData){
             var btnActive=(volumeMuscle===muBtn)?' active':'';
-            htm+='<button class="stats-btn '+muBtn+btnActive+'" onclick="setVolumeMuscle(\''+muBtn+'\')">'+icons[muBtn]+' '+muscleNames[muBtn]+'</button>';
+            htm+='<button class="stats-btn muscle-filter-btn '+muBtn+btnActive+'" onclick="setVolumeMuscle(\''+muBtn+'\')"><span class="stats-btn-icon">'+icons[muBtn]+'</span><span class="stats-btn-label">'+muscleNames[muBtn]+'</span></button>';
         }
     }
     var allActive=(volumeMuscle==='all')?' active':'';
-    htm+='<button class="stats-btn'+allActive+'" onclick="setVolumeMuscle(\'all\')" style="'+(volumeMuscle==='all'?'background:#667eea;color:white;':'')+'">📊 全部</button>';
+    htm+='<button class="stats-btn'+allActive+'" onclick="setVolumeMuscle(\'all\')"><span class="stats-btn-icon">📊</span><span class="stats-btn-label">全部</span></button>';
     htm+='</div>';
     if(!volumeMuscle){
         container.innerHTML=htm;
@@ -1097,18 +1104,18 @@ function showStats(){
     var y=curDate.getFullYear(),m=curDate.getMonth();
     var muscles=['chest','back','shoulder','leg','arm'];
     var isActive=function(btn){return statsSection===btn;};
-    var htm='<div class="stats-buttons">';
+    var htm='<div class="stats-buttons stats-buttons-nine">';
     for(var i=0;i<muscles.length;i++){
         var mu=muscles[i];
         var stats=calcMuscleStats(mu);
         if(stats.maxWeight>0||stats.maxDailyVol>0){
-            htm+='<button class="stats-btn '+mu+(isActive(mu)?' active':'')+'" onclick="setStats(\''+mu+'\')">'+icons[mu]+' '+muscleNames[mu]+'</button>';
+            htm+='<button class="stats-btn muscle-filter-btn '+mu+(isActive(mu)?' active':'')+'" onclick="setStats(\''+mu+'\')"><span class="stats-btn-icon">'+icons[mu]+'</span><span class="stats-btn-label">'+muscleNames[mu]+'</span></button>';
         }
     }
-    htm+='<button class="stats-btn'+(isActive('month')?' active':'')+'" onclick="setStats(\'month\')">📅 月总</button>';
-    htm+='<button class="stats-btn'+(isActive('year')?' active':'')+'" onclick="setStats(\'year\')">📆 年总</button>';
-    htm+='<button class="stats-btn'+(isActive('days')?' active':'')+'" onclick="setStats(\'days\')">🎯 部位</button>';
-    htm+='<button class="stats-btn'+(isActive('summary')?' active':'')+'" onclick="setStats(\'summary\')">📝 总结</button>';
+    htm+='<button class="stats-btn'+(isActive('month')?' active':'')+'" onclick="setStats(\'month\')"><span class="stats-btn-icon">📅</span><span class="stats-btn-label">月总</span></button>';
+    htm+='<button class="stats-btn'+(isActive('year')?' active':'')+'" onclick="setStats(\'year\')"><span class="stats-btn-icon">📆</span><span class="stats-btn-label">年总</span></button>';
+    htm+='<button class="stats-btn'+(isActive('days')?' active':'')+'" onclick="setStats(\'days\')"><span class="stats-btn-icon">🎯</span><span class="stats-btn-label">部位</span></button>';
+    htm+='<button class="stats-btn'+(isActive('summary')?' active':'')+'" onclick="setStats(\'summary\')"><span class="stats-btn-icon">📝</span><span class="stats-btn-label">总结</span></button>';
     htm+='</div>';
     // 计算本月各部位训练天数
     var monthlyDays={};
