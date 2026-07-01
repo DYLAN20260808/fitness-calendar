@@ -156,7 +156,7 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .chart-container { padding: 10px; }
-        .line-chart { position: relative; height: 200px; margin: 20px 0; }
+        .line-chart { position: relative; height: 144px; margin: 20px 0; }
         .line-chart-svg { width: 100%; height: 100%; }
         .chart-axis { font-size: 10px; fill: var(--muted); }
         .chart-grid { stroke: rgba(60,60,67,0.12); stroke-width: 1; }
@@ -710,7 +710,7 @@ function showVolumeChart(){
         return;
     }
     var padding={top:20,right:20,bottom:30,left:40};
-    var width=320,height=200;
+    var width=320,height=144;
     var chartW=width-padding.left-padding.right;
     var chartH=height-padding.top-padding.bottom;
     var seriesMap={};
@@ -1232,7 +1232,6 @@ function showStats(){
         htm+='<div class="stats-card">';
         if(s.milestones&&s.milestones.length){
             htm+='<div class="milestone-section">';
-            htm+='<div class="milestone-title">🏁 最大重量 Milestone</div>';
             var milestoneNames=Object.keys(s.exerciseMilestones||{}).filter(function(name){
                 return s.exerciseMilestones[name]&&s.exerciseMilestones[name].length;
             });
