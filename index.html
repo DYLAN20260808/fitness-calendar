@@ -148,6 +148,16 @@
         .form-group label { display: block; margin-bottom: 5px; font-size: 14px; color: var(--text); }
         .form-group input { width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,0.88); color: var(--text); font-size: 16px; }
         .form-group input::placeholder { color: #8e8e93; }
+        .dropdown-field { position: relative; }
+        .dropdown-control { display: flex; align-items: center; gap: 8px; }
+        .dropdown-input { flex: 1; min-width: 0; }
+        .dropdown-toggle-btn { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.78); border-radius: 10px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 6px 12px rgba(0,113,227,0.08); flex-shrink: 0; }
+        .dropdown-toggle-btn:active { transform: translateY(1px); }
+        .dropdown-list { position: absolute; top: calc(100% + 6px); left: 0; right: 0; display: none; max-height: 180px; overflow-y: auto; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(243,245,249,0.94) 100%); border: 1px solid rgba(255,255,255,0.78); border-radius: 12px; box-shadow: var(--highlight), 0 12px 24px rgba(17,24,39,0.12); z-index: 20; }
+        .dropdown-list.show { display: block; }
+        .dropdown-item { width: 100%; padding: 10px 12px; border: none; background: transparent; color: var(--text); text-align: left; font-size: 14px; cursor: pointer; }
+        .dropdown-item + .dropdown-item { border-top: 1px solid var(--line); }
+        .dropdown-item:active { background: var(--accent-soft); }
         .add-exercise-btn { width: 100%; padding: 12px; background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.32); border-radius: 14px; color: white; font-size: 16px; cursor: pointer; margin-top: 10px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.38), inset 0 -3px 0 rgba(0,88,176,0.2), 0 12px 22px rgba(0,113,227,0.22); }
         .add-btn-small { margin-left: 8px; padding: 4px 12px; font-size: 12px; background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.32); border-radius: 10px; color: white; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.38), inset 0 -3px 0 rgba(0,88,176,0.2), 0 10px 18px rgba(0,113,227,0.18); }
         .tab-container { display: flex; gap: 4px; margin: 0 0 2px; }
@@ -258,7 +268,7 @@
                 <button class="muscle-btn cardio" data-muscle="cardio"><span>🏃</span>有氧</button>
             </div>
             <div class="add-form" id="addForm">
-                <div class="form-group"><label>动作名称</label><input type="text" id="exerciseName" list="exerciseNameOptions" placeholder="可选择或手动输入"><datalist id="exerciseNameOptions"></datalist></div>
+                <div class="form-group"><label>动作名称</label><div class="dropdown-field"><div class="dropdown-control"><input type="text" id="exerciseName" class="dropdown-input" placeholder="可选择或手动输入" autocomplete="off"><button type="button" class="dropdown-toggle-btn" id="exerciseNameToggle" aria-label="展开动作名称下拉" aria-expanded="false">▾</button></div><div class="dropdown-list" id="exerciseNameOptions"></div></div></div>
                 <div class="form-group"><label>组数</label><input type="number" id="exerciseSets" placeholder="如：4" min="1"></div>
                 <div class="form-group"><label>次数/组</label><input type="text" id="exerciseReps" placeholder="如：12 或 8-12"></div>
                 <div class="form-group"><label>重量(kg)</label><input type="number" id="exerciseWeight" placeholder="如：60" step="0.5"></div>
@@ -270,6 +280,8 @@
 var data = JSON.parse(localStorage.getItem('fd')||'{}');
 var customExerciseNames = JSON.parse(localStorage.getItem('fd_custom_exercise_names')||'{}');
 var curDate = new Date(), selDate = null, selMuscle = null, editIdx = -1;
+var exerciseDropdownOpen = false;
+var recordActionClickTimers = {};
 var recordActionTabs = {};
 var recordMuscleTabs = {};
 var icons = {chest:'❤️',back:'🛡️',shoulder:'🏋️',leg:'🦵',arm:'💪',core:'🎯',cardio:'🏃'};
@@ -340,8 +352,50 @@ function fillExerciseNameOptions(m){
     options.innerHTML='';
     var names=getExerciseNamesFromData(m);
     for(var i=0;i<names.length;i++){
-        options.innerHTML+='<option value="'+names[i]+'"></option>';
+        options.innerHTML+='<button type="button" class="dropdown-item" onclick="selectExerciseNameOption(\''+names[i].replace(/'/g,"&#39;")+'\')">'+names[i]+'</button>';
     }
+    closeExerciseNameDropdown();
+}
+function hasExerciseNameOptions(){
+    return !!document.querySelector('#exerciseNameOptions .dropdown-item');
+}
+function openExerciseNameDropdown(){
+    if(!hasExerciseNameOptions())return;
+    document.getElementById('exerciseNameOptions').classList.add('show');
+    document.getElementById('exerciseNameToggle').setAttribute('aria-expanded','true');
+    exerciseDropdownOpen=true;
+}
+function closeExerciseNameDropdown(){
+    document.getElementById('exerciseNameOptions').classList.remove('show');
+    document.getElementById('exerciseNameToggle').setAttribute('aria-expanded','false');
+    exerciseDropdownOpen=false;
+}
+function toggleExerciseNameDropdown(){
+    if(exerciseDropdownOpen){
+        closeExerciseNameDropdown();
+        return;
+    }
+    openExerciseNameDropdown();
+}
+function selectExerciseNameOption(name){
+    document.getElementById('exerciseName').value=name;
+    closeExerciseNameDropdown();
+}
+function bindExerciseNameDropdown(){
+    var input=document.getElementById('exerciseName');
+    var toggleBtn=document.getElementById('exerciseNameToggle');
+    input.onclick=function(e){
+        e.stopPropagation();
+        closeExerciseNameDropdown();
+    };
+    toggleBtn.onclick=function(e){
+        e.stopPropagation();
+        toggleExerciseNameDropdown();
+    };
+    document.addEventListener('click',function(e){
+        var field=document.querySelector('.dropdown-field');
+        if(field&&!field.contains(e.target))closeExerciseNameDropdown();
+    });
 }
 function getTodayKey(){
     var today=new Date();
@@ -439,6 +493,25 @@ function setRecordActionTab(dk,muscle,actionName){
     recordActionTabs[getRecordActionTabKey(dk,muscle)]=actionName;
     showDetail(dk);
 }
+function getRecordActionClickKey(dk,muscle,actionName){
+    return dk+'__'+muscle+'__'+actionName;
+}
+function handleRecordActionTabClick(dk,muscle,actionName){
+    var timerKey=getRecordActionClickKey(dk,muscle,actionName);
+    if(recordActionClickTimers[timerKey])clearTimeout(recordActionClickTimers[timerKey]);
+    recordActionClickTimers[timerKey]=setTimeout(function(){
+        delete recordActionClickTimers[timerKey];
+        setRecordActionTab(dk,muscle,actionName);
+    },220);
+}
+function handleRecordActionTabDoubleClick(dk,muscle,actionName,index,el){
+    var timerKey=getRecordActionClickKey(dk,muscle,actionName);
+    if(recordActionClickTimers[timerKey]){
+        clearTimeout(recordActionClickTimers[timerKey]);
+        delete recordActionClickTimers[timerKey];
+    }
+    editNameGroup(dk,index,el);
+}
 function showDetail(dk){
     var lst=document.getElementById('exerciseList');
     var ex=data[dk]||[];
@@ -473,7 +546,7 @@ function showDetail(dk){
         '<div class="exercise-tabs">';
     for(var ai=0;ai<group.actions.length;ai++){
         var action=group.actions[ai];
-        htm+='<button class="exercise-tab-btn'+(action.name===activeActionName?' active':'')+'" onclick="setRecordActionTab(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\')">'+action.name+'</button>';
+        htm+='<button class="exercise-tab-btn'+(action.name===activeActionName?' active':'')+'" onclick="handleRecordActionTabClick(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\')" ondblclick="handleRecordActionTabDoubleClick(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\','+action.items[0].index+',this)">'+action.name+'</button>';
     }
     htm+='</div>';
     var activeAction=group.actionMap[activeActionName];
@@ -582,6 +655,7 @@ function editNameGroup(dk,i,el){
                     data[dk][idx].name=newName;
                 }
             }
+            recordActionTabs[getRecordActionTabKey(dk,curMuscle)]=newName;
             save();
         }
         showDetail(dk);
@@ -624,7 +698,13 @@ function selM(m){
     document.querySelector('.muscle-btn[data-muscle="'+m+'"]').classList.add('selected');
     document.getElementById('addForm').classList.add('show');
     fillExerciseNameOptions(m);
-    document.getElementById('exerciseName').value='';
+    var exerciseNameInput=document.getElementById('exerciseName');
+    exerciseNameInput.value='';
+    exerciseNameInput.focus();
+    setTimeout(function(){
+        exerciseNameInput.focus();
+        openExerciseNameDropdown();
+    },0);
     document.getElementById('exerciseSets').value='1';
     document.getElementById('exerciseReps').value='9';
     var defaultWeight = (m==='chest'||m==='back')?'100':'20';
@@ -674,6 +754,7 @@ document.getElementById('nextMonth').onclick=function(){curDate.setMonth(curDate
 document.getElementById('closeModal').onclick=closeM;
 document.querySelectorAll('.muscle-btn').forEach(function(b){b.onclick=function(){selM(this.dataset.muscle);};});
 document.getElementById('addExercise').onclick=addEx;
+bindExerciseNameDropdown();
 function switchTab(tab){
     document.getElementById('tabRecord').classList.toggle('active',tab==='record');
     document.getElementById('tabVolume').classList.toggle('active',tab==='volume');
