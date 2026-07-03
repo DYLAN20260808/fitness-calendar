@@ -268,6 +268,7 @@
     </div>
     <script>
 var data = JSON.parse(localStorage.getItem('fd')||'{}');
+var customExerciseNames = JSON.parse(localStorage.getItem('fd_custom_exercise_names')||'{}');
 var curDate = new Date(), selDate = null, selMuscle = null, editIdx = -1;
 var recordActionTabs = {};
 var recordMuscleTabs = {};
@@ -282,11 +283,62 @@ var exerciseNames = {
     cardio:['跑步','椭圆机','动感单车','跳绳','游泳','爬楼梯','划船机']
 };
 function save(){localStorage.setItem('fd',JSON.stringify(data));}
+function saveCustomExerciseNames(){localStorage.setItem('fd_custom_exercise_names',JSON.stringify(customExerciseNames));}
+function getCustomExerciseNames(m){
+    var names=customExerciseNames[m];
+    return Array.isArray(names)?names:[];
+}
+function hydrateCustomExerciseNamesFromData(){
+    var changed=false;
+    for(var dk in data){
+        var exercises=data[dk]||[];
+        for(var i=0;i<exercises.length;i++){
+            var exercise=exercises[i];
+            var muscle=exercise.muscle;
+            var name=(exercise.name||'').trim();
+            if(!muscle||!name)continue;
+            if((exerciseNames[muscle]||[]).indexOf(name)>=0)continue;
+            var names=getCustomExerciseNames(muscle).slice();
+            if(names.indexOf(name)>=0)continue;
+            names.push(name);
+            customExerciseNames[muscle]=names;
+            changed=true;
+        }
+    }
+    if(changed)saveCustomExerciseNames();
+}
+function rememberCustomExerciseName(m,name){
+    var trimmed=(name||'').trim();
+    if(!m||!trimmed)return;
+    if((exerciseNames[m]||[]).indexOf(trimmed)>=0)return;
+    var names=getCustomExerciseNames(m).slice();
+    if(names.indexOf(trimmed)>=0)return;
+    names.push(trimmed);
+    customExerciseNames[m]=names;
+    saveCustomExerciseNames();
+}
+hydrateCustomExerciseNamesFromData();
 function pad(n){return String(n).padStart(2,'0');}
+function getExerciseNamesFromData(m){
+    var seen={};
+    var names=[];
+    var dateKeys=Object.keys(data).sort().reverse();
+    for(var di=0;di<dateKeys.length;di++){
+        var exercises=data[dateKeys[di]]||[];
+        for(var ei=exercises.length-1;ei>=0;ei--){
+            var exercise=exercises[ei];
+            var name=(exercise.name||'').trim();
+            if(exercise.muscle!==m||!name||seen[name])continue;
+            seen[name]=true;
+            names.push(name);
+        }
+    }
+    return names;
+}
 function fillExerciseNameOptions(m){
     var options=document.getElementById('exerciseNameOptions');
     options.innerHTML='';
-    var names=exerciseNames[m]||[];
+    var names=getExerciseNamesFromData(m);
     for(var i=0;i<names.length;i++){
         options.innerHTML+='<option value="'+names[i]+'"></option>';
     }
@@ -572,8 +624,7 @@ function selM(m){
     document.querySelector('.muscle-btn[data-muscle="'+m+'"]').classList.add('selected');
     document.getElementById('addForm').classList.add('show');
     fillExerciseNameOptions(m);
-    var exerciseNameInput=document.getElementById('exerciseName');
-    if(!exerciseNameInput.value)exerciseNameInput.value=(exerciseNames[m]||[])[0]||'';
+    document.getElementById('exerciseName').value='';
     document.getElementById('exerciseSets').value='1';
     document.getElementById('exerciseReps').value='9';
     var defaultWeight = (m==='chest'||m==='back')?'100':'20';
@@ -602,6 +653,7 @@ function addEx(){
     if(editIdx<0)selDate=getTodayKey();
     var targetDate=selDate;
     var ex={muscle:selMuscle,name:n,sets:parseInt(s),reps:r,weight:w?parseFloat(w):null};
+    rememberCustomExerciseName(selMuscle,n);
     if(editIdx>=0){
         data[targetDate][editIdx]=ex;
         editIdx=-1;
@@ -652,12 +704,9 @@ function switchTab(tab){
 }
 function showVolumeChart(){
     var container=document.getElementById('chartContainer');
-    var y=curDate.getFullYear(),m=curDate.getMonth();
     var muscles=['chest','back','shoulder','leg','arm'];
     var muscleDateVols={chest:{},back:{},shoulder:{},leg:{},arm:{}};
     for(var dk in data){
-        var parts=dk.split('-');
-        if(parseInt(parts[0])!==y||parseInt(parts[1])!==m+1)continue;
         var ex=data[dk];
         for(var i=0;i<ex.length;i++){
             var e=ex[i];
@@ -678,7 +727,7 @@ function showVolumeChart(){
     }
     var allDataDates=Object.keys(allDates).sort();
     if(!allDataDates.length){
-        container.innerHTML='<div class="no-data">本月暂无训练数据</div>';
+        container.innerHTML='<div class="no-data">暂无训练数据</div>';
         return;
     }
 
@@ -708,8 +757,9 @@ function showVolumeChart(){
         : Object.keys(muscleDateVols[selectedMuscle]||{}).filter(function(dateKey){
             return (muscleDateVols[selectedMuscle][dateKey]||0)>0;
         }).sort();
+    if(dates.length>10)dates=dates.slice(-10);
     if(!dates.length){
-        container.innerHTML=htm+'<div class="no-data">本月暂无训练数据</div>';
+        container.innerHTML=htm+'<div class="no-data">暂无训练数据</div>';
         return;
     }
     var padding={top:20,right:20,bottom:30,left:40};
@@ -750,7 +800,7 @@ function showVolumeChart(){
     }
 
     if(displayedMaxVol===0){
-        container.innerHTML=htm+'<div class="no-data">本月暂无训练数据</div>';
+        container.innerHTML=htm+'<div class="no-data">暂无训练数据</div>';
         return;
     }
 
