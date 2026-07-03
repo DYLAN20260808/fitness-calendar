@@ -752,6 +752,7 @@ function addEx(){
 document.getElementById('prevMonth').onclick=function(){curDate.setMonth(curDate.getMonth()-1);render();};
 document.getElementById('nextMonth').onclick=function(){curDate.setMonth(curDate.getMonth()+1);render();};
 document.getElementById('closeModal').onclick=closeM;
+document.getElementById('modal').onclick=function(e){if(e.target===this)closeM();};
 document.querySelectorAll('.muscle-btn').forEach(function(b){b.onclick=function(){selM(this.dataset.muscle);};});
 document.getElementById('addExercise').onclick=addEx;
 bindExerciseNameDropdown();
