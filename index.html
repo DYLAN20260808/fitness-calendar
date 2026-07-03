@@ -348,6 +348,24 @@ function getExerciseNamesFromData(m){
     }
     return names;
 }
+function getExerciseHistoryDefaults(m,name){
+    var bestMatch=null;
+    var dateKeys=Object.keys(data).sort().reverse();
+    for(var di=0;di<dateKeys.length;di++){
+        var exercises=data[dateKeys[di]]||[];
+        for(var ei=exercises.length-1;ei>=0;ei--){
+            var exercise=exercises[ei];
+            var exerciseName=(exercise.name||'').trim();
+            if(exercise.muscle!==m||exerciseName!==name)continue;
+            var weight=exercise.weight==null?null:Number(exercise.weight);
+            if(weight===null||isNaN(weight))weight=null;
+            if(!bestMatch||((weight||0)>(bestMatch.weight||0))){
+                bestMatch={reps:exercise.reps||'',weight:weight};
+            }
+        }
+    }
+    return bestMatch;
+}
 function fillExerciseNameOptions(m){
     var options=document.getElementById('exerciseNameOptions');
     options.innerHTML='';
@@ -380,6 +398,11 @@ function toggleExerciseNameDropdown(){
 }
 function selectExerciseNameOption(name){
     document.getElementById('exerciseName').value=name;
+    var defaults=getExerciseHistoryDefaults(selMuscle,name);
+    if(defaults){
+        document.getElementById('exerciseReps').value=defaults.reps||'';
+        document.getElementById('exerciseWeight').value=defaults.weight==null?'':defaults.weight;
+    }
     closeExerciseNameDropdown();
 }
 function bindExerciseNameDropdown(){
