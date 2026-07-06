@@ -295,6 +295,7 @@ var data = JSON.parse(localStorage.getItem('fd')||'{}');
 var customExerciseNames = JSON.parse(localStorage.getItem('fd_custom_exercise_names')||'{}');
 var curDate = new Date(), selDate = null, selMuscle = null, editIdx = -1;
 var volumeMuscle = null;
+var volumeExerciseSelection = {};
 var volumeMetricMode = 'maxWeight';
 var exerciseDropdownOpen = false;
 var recordActionClickTimers = {};
@@ -907,6 +908,10 @@ function switchTab(tab){
     document.getElementById('statsContent').classList.toggle('active',tab==='stats');
     if(tab==='volume'){
         volumeMuscle=getActiveRecordMuscle(selDate);
+        var topVolumeExerciseInfo=getTopSelectedRecordInfo(selDate)||getTopExerciseInfo(selDate);
+        if(topVolumeExerciseInfo&&topVolumeExerciseInfo.muscle&&topVolumeExerciseInfo.name){
+            volumeExerciseSelection[topVolumeExerciseInfo.muscle]=topVolumeExerciseInfo.name;
+        }
         showVolumeChart();setTimeout(function(){
         var el=document.getElementById('detailSection');
         if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
@@ -931,6 +936,8 @@ function showVolumeChart(){
     var muscles=['chest','back','shoulder','leg','biceps','triceps','core'];
     var muscleDateVols={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleDateMaxWeights={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
+    var muscleExerciseDateVols={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
+    var muscleExerciseDateMaxWeights={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     for(var dk in data){
         var ex=data[dk]||[];
         var exercisesByMuscle={};
@@ -946,6 +953,18 @@ function showVolumeChart(){
             if(!muscleExercises.length)continue;
             muscleDateVols[muscleKey][dk]=calcVolume(muscleExercises);
             muscleDateMaxWeights[muscleKey][dk]=calcMaxWeight(muscleExercises);
+            var exercisesByName={};
+            for(var mxi=0;mxi<muscleExercises.length;mxi++){
+                var muscleExercise=muscleExercises[mxi];
+                if(!exercisesByName[muscleExercise.name])exercisesByName[muscleExercise.name]=[];
+                exercisesByName[muscleExercise.name].push(muscleExercise);
+            }
+            for(var exerciseName in exercisesByName){
+                if(!muscleExerciseDateVols[muscleKey][exerciseName])muscleExerciseDateVols[muscleKey][exerciseName]={};
+                if(!muscleExerciseDateMaxWeights[muscleKey][exerciseName])muscleExerciseDateMaxWeights[muscleKey][exerciseName]={};
+                muscleExerciseDateVols[muscleKey][exerciseName][dk]=calcVolume(exercisesByName[exerciseName]);
+                muscleExerciseDateMaxWeights[muscleKey][exerciseName][dk]=calcMaxWeight(exercisesByName[exerciseName]);
+            }
         }
     }
     var activeMetricMap=volumeMetricMode==='maxWeight'?muscleDateMaxWeights:muscleDateVols;
@@ -984,8 +1003,39 @@ function showVolumeChart(){
     }
 
     var selectedMuscle=volumeMuscle;
+    var selectedExercise='';
+    if(selectedMuscle!=='all'){
+        var activeExerciseMap=volumeMetricMode==='maxWeight'
+            ? (muscleExerciseDateMaxWeights[selectedMuscle]||{})
+            : (muscleExerciseDateVols[selectedMuscle]||{});
+        var availableExercises=Object.keys(activeExerciseMap).filter(function(exerciseName){
+            var dateMap=activeExerciseMap[exerciseName]||{};
+            for(var dateKey in dateMap){
+                if(dateMap[dateKey]>0)return true;
+            }
+            return false;
+        });
+        if(availableExercises.length){
+            selectedExercise=volumeExerciseSelection[selectedMuscle];
+            if(!selectedExercise||availableExercises.indexOf(selectedExercise)<0){
+                selectedExercise=availableExercises[0];
+                volumeExerciseSelection[selectedMuscle]=selectedExercise;
+            }
+            htm+='<div class="milestone-actions">';
+            for(var vei=0;vei<availableExercises.length;vei++){
+                var exerciseBtnName=availableExercises[vei];
+                var escapedVolumeExerciseName=escapeJsSingleQuotedString(exerciseBtnName);
+                htm+='<button class="milestone-action-btn'+(exerciseBtnName===selectedExercise?' active':'')+'" onclick="setVolumeExercise(\''+selectedMuscle+'\',\''+escapedVolumeExerciseName+'\')">'+escapeHtml(exerciseBtnName)+'</button>';
+            }
+            htm+='</div>';
+        }
+    }
     var dates=selectedMuscle==='all'
         ? allDataDates
+        : (selectedExercise&&volumeMetricMode!=='muscleTotal')
+        ? Object.keys(((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{}).filter(function(dateKey){
+            return ((((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{})[dateKey]||0)>0;
+        }).sort()
         : Object.keys(activeMetricMap[selectedMuscle]||{}).filter(function(dateKey){
             return (activeMetricMap[selectedMuscle][dateKey]||0)>0;
         }).sort();
@@ -1017,6 +1067,19 @@ function showVolumeChart(){
             }
             if(allPts.length)seriesMap[allMuscle]=allPts;
         }
+    }else if(selectedExercise&&volumeMetricMode!=='muscleTotal'){
+        var exercisePts=[];
+        var selectedExerciseDateMap=((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{};
+        for(var sei=0;sei<dates.length;sei++){
+            var exerciseDate=dates[sei];
+            var exerciseVol=selectedExerciseDateMap[exerciseDate]||0;
+            if(exerciseVol>0){
+                exercisePts.push({dk:exerciseDate,vol:exerciseVol});
+                if(exerciseVol>displayedMaxVol)displayedMaxVol=exerciseVol;
+                if(exerciseVol<displayedMinVol)displayedMinVol=exerciseVol;
+            }
+        }
+        if(exercisePts.length)seriesMap[selectedMuscle]=exercisePts;
     }else{
         var singlePts=[];
         for(var si=0;si<dates.length;si++){
@@ -1078,7 +1141,7 @@ function showVolumeChart(){
             var pointY=padding.top+chartH*(1-pts[pj].vol/axisMax);
             var isMaxPoint=pts[pj].vol===displayedMaxVol;
             var pointR=selectedMuscle==='all'?(isMaxPoint?4:3):(isMaxPoint?5:4);
-            var pointTitle=(selectedMuscle==='all'?getMuscleIconText(key)+' '+muscleNames[key]+' · ':pts[pj].dk.split('-')[2]+'日: ')+pts[pj].vol+'kg';
+            var pointTitle=(selectedMuscle==='all'?getMuscleIconText(key)+' '+muscleNames[key]+' · ':((selectedExercise&&volumeMetricMode!=='muscleTotal')?selectedExercise+' · ':'' )+pts[pj].dk.split('-')[2]+'日: ')+pts[pj].vol+'kg';
             htm+='<circle class="chart-point'+(isMaxPoint?' chart-point-max':'')+'" cx="'+pointX+'" cy="'+pointY+'" r="'+pointR+'"'+(isMaxPoint?'':' fill="'+muscleColors[key]+'"')+' data-muscle="'+key+'" data-date="'+pts[pj].dk+'" data-vol="'+pts[pj].vol+'"><title>'+pointTitle+'</title></circle>';
         }
     }
@@ -1087,6 +1150,7 @@ function showVolumeChart(){
         '<div class="chart-mode-pill">'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='maxWeight'?' active':'')+'" onclick="setVolumeMetricMode(\'maxWeight\')">最大重量</button>'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='total'?' active':'')+'" onclick="setVolumeMetricMode(\'total\')">全部容量</button>'+
+            '<button class="chart-mode-toggle'+(volumeMetricMode==='muscleTotal'?' active':'')+'" onclick="setVolumeMetricMode(\'muscleTotal\')">总容量</button>'+
         '</div>'+
     '</div>';
     container.innerHTML=htm;
@@ -1131,8 +1195,12 @@ function setVolumeMuscle(mu){
         if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
     },50);
 }
+function setVolumeExercise(mu,exerciseName){
+    volumeExerciseSelection[mu]=exerciseName;
+    showVolumeChart();
+}
 function setVolumeMetricMode(mode){
-    if(mode!=='maxWeight'&&mode!=='total')return;
+    if(mode!=='maxWeight'&&mode!=='total'&&mode!=='muscleTotal')return;
     volumeMetricMode=mode;
     showVolumeChart();
 }
