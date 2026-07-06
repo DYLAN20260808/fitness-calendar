@@ -184,6 +184,7 @@
         .chart-guide-label-min { fill: rgba(52, 199, 89, 0.92); }
         .chart-line { fill: none; stroke-width: 2; }
         .chart-point { cursor: pointer; }
+        .chart-point-max { fill: #ffb340; stroke: #ff5f57; stroke-width: 2; }
         .chart-point:hover { r: 6; }
         .chart-tooltip { position: absolute; background: rgba(28,28,30,0.88); color: white; padding: 4px 8px; border-radius: 8px; font-size: 11px; pointer-events: none; white-space: nowrap; z-index: 2; box-shadow: 0 8px 18px rgba(0,0,0,0.18); }
         .chart-footer { display: flex; justify-content: flex-end; margin-top: 8px; }
@@ -522,18 +523,6 @@ function calcMaxWeight(ex){
         if(weight>maxWeight)maxWeight=weight;
     }
     return maxWeight;
-}
-function calcMaxWeightVolume(ex){
-    var maxWeight=calcMaxWeight(ex);
-    if(maxWeight<=0)return 0;
-    var vol=0;
-    for(var i=0;i<ex.length;i++){
-        var item=ex[i];
-        var weight=item.weight||0;
-        if(weight!==maxWeight)continue;
-        vol+=item.sets*(parseInt(item.reps)||0)*weight;
-    }
-    return vol;
 }
 function getExerciseGroups(ex){
     var groups=[];
@@ -917,7 +906,7 @@ function showVolumeChart(){
     var container=document.getElementById('chartContainer');
     var muscles=['chest','back','shoulder','leg','biceps','triceps','core'];
     var muscleDateVols={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
-    var muscleDateMaxWeightVols={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
+    var muscleDateMaxWeights={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     for(var dk in data){
         var ex=data[dk]||[];
         var exercisesByMuscle={};
@@ -932,10 +921,10 @@ function showVolumeChart(){
             var muscleExercises=exercisesByMuscle[muscleKey]||[];
             if(!muscleExercises.length)continue;
             muscleDateVols[muscleKey][dk]=calcVolume(muscleExercises);
-            muscleDateMaxWeightVols[muscleKey][dk]=calcMaxWeightVolume(muscleExercises);
+            muscleDateMaxWeights[muscleKey][dk]=calcMaxWeight(muscleExercises);
         }
     }
-    var activeMetricMap=volumeMetricMode==='maxWeight'?muscleDateMaxWeightVols:muscleDateVols;
+    var activeMetricMap=volumeMetricMode==='maxWeight'?muscleDateMaxWeights:muscleDateVols;
 
     var allDates={};
     for(var mi2=0;mi2<muscles.length;mi2++){
@@ -1023,7 +1012,8 @@ function showVolumeChart(){
         return;
     }
 
-    var axisMax=Math.ceil(displayedMaxVol/100)*100||100;
+    var axisStep=volumeMetricMode==='maxWeight'?10:100;
+    var axisMax=Math.ceil(displayedMaxVol/axisStep)*axisStep||axisStep;
     htm+='<div class="line-chart"><svg class="line-chart-svg" viewBox="0 0 '+width+' '+height+'">';
     for(var gi=0;gi<=4;gi++){
         var gridY=padding.top+chartH*gi/4;
@@ -1062,15 +1052,16 @@ function showVolumeChart(){
             var pointIdx=dates.indexOf(pts[pj].dk);
             var pointX=padding.left+chartW*pointIdx/(dates.length-1||1);
             var pointY=padding.top+chartH*(1-pts[pj].vol/axisMax);
-            var pointR=selectedMuscle==='all'?3:4;
+            var isMaxPoint=pts[pj].vol===displayedMaxVol;
+            var pointR=selectedMuscle==='all'?(isMaxPoint?4:3):(isMaxPoint?5:4);
             var pointTitle=(selectedMuscle==='all'?getMuscleIconText(key)+' '+muscleNames[key]+' · ':pts[pj].dk.split('-')[2]+'日: ')+pts[pj].vol+'kg';
-            htm+='<circle class="chart-point" cx="'+pointX+'" cy="'+pointY+'" r="'+pointR+'" fill="'+muscleColors[key]+'" data-muscle="'+key+'" data-date="'+pts[pj].dk+'" data-vol="'+pts[pj].vol+'"><title>'+pointTitle+'</title></circle>';
+            htm+='<circle class="chart-point'+(isMaxPoint?' chart-point-max':'')+'" cx="'+pointX+'" cy="'+pointY+'" r="'+pointR+'"'+(isMaxPoint?'':' fill="'+muscleColors[key]+'"')+' data-muscle="'+key+'" data-date="'+pts[pj].dk+'" data-vol="'+pts[pj].vol+'"><title>'+pointTitle+'</title></circle>';
         }
     }
     htm+='</svg></div>';
     htm+='<div class="chart-footer">'+
         '<div class="chart-mode-pill">'+
-            '<button class="chart-mode-toggle'+(volumeMetricMode==='maxWeight'?' active':'')+'" onclick="setVolumeMetricMode(\'maxWeight\')">最大容量</button>'+
+            '<button class="chart-mode-toggle'+(volumeMetricMode==='maxWeight'?' active':'')+'" onclick="setVolumeMetricMode(\'maxWeight\')">最大重量</button>'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='total'?' active':'')+'" onclick="setVolumeMetricMode(\'total\')">全部容量</button>'+
         '</div>'+
     '</div>';
