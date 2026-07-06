@@ -298,6 +298,8 @@ var volumeMuscle = null;
 var volumeMetricMode = 'maxWeight';
 var exerciseDropdownOpen = false;
 var recordActionClickTimers = {};
+var recordActionLongPressTimers = {};
+var recordActionLongPressTriggered = {};
 var statsActionClickTimers = {};
 var statsActionLongPressTimers = {};
 var statsActionLongPressTriggered = {};
@@ -574,6 +576,10 @@ function getRecordActionClickKey(dk,muscle,actionName){
 }
 function handleRecordActionTabClick(dk,muscle,actionName){
     var timerKey=getRecordActionClickKey(dk,muscle,actionName);
+    if(recordActionLongPressTriggered[timerKey]){
+        delete recordActionLongPressTriggered[timerKey];
+        return;
+    }
     if(recordActionClickTimers[timerKey])clearTimeout(recordActionClickTimers[timerKey]);
     recordActionClickTimers[timerKey]=setTimeout(function(){
         delete recordActionClickTimers[timerKey];
@@ -586,7 +592,25 @@ function handleRecordActionTabDoubleClick(dk,muscle,actionName,index,el){
         clearTimeout(recordActionClickTimers[timerKey]);
         delete recordActionClickTimers[timerKey];
     }
+    cancelRecordActionLongPress(dk,muscle,actionName);
     editNameGroup(dk,index,el);
+}
+function startRecordActionLongPress(dk,muscle,actionName,index,el){
+    var timerKey=getRecordActionClickKey(dk,muscle,actionName);
+    cancelRecordActionLongPress(dk,muscle,actionName);
+    recordActionLongPressTriggered[timerKey]=false;
+    recordActionLongPressTimers[timerKey]=setTimeout(function(){
+        delete recordActionLongPressTimers[timerKey];
+        recordActionLongPressTriggered[timerKey]=true;
+        editNameGroup(dk,index,el);
+    },450);
+}
+function cancelRecordActionLongPress(dk,muscle,actionName){
+    var timerKey=getRecordActionClickKey(dk,muscle,actionName);
+    if(recordActionLongPressTimers[timerKey]){
+        clearTimeout(recordActionLongPressTimers[timerKey]);
+        delete recordActionLongPressTimers[timerKey];
+    }
 }
 function showDetail(dk){
     var lst=document.getElementById('exerciseList');
@@ -622,7 +646,7 @@ function showDetail(dk){
         '<div class="exercise-tabs">';
     for(var ai=0;ai<group.actions.length;ai++){
         var action=group.actions[ai];
-        htm+='<button class="exercise-tab-btn'+(action.name===activeActionName?' active':'')+'" onclick="handleRecordActionTabClick(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\')" ondblclick="handleRecordActionTabDoubleClick(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\','+action.items[0].index+',this)">'+action.name+'</button>';
+        htm+='<button class="exercise-tab-btn'+(action.name===activeActionName?' active':'')+'" onclick="handleRecordActionTabClick(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\')" ondblclick="handleRecordActionTabDoubleClick(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\','+action.items[0].index+',this)" onmousedown="startRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\','+action.items[0].index+',this)" onmouseup="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\')" onmouseleave="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\')" ontouchstart="startRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\','+action.items[0].index+',this)" ontouchend="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\')" ontouchcancel="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\')" ontouchmove="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\')" title="双击或长按修改动作名称">'+action.name+'</button>';
     }
     htm+='</div>';
     var activeAction=group.actionMap[activeActionName];
