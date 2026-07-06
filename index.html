@@ -186,6 +186,10 @@
         .chart-point { cursor: pointer; }
         .chart-point:hover { r: 6; }
         .chart-tooltip { position: absolute; background: rgba(28,28,30,0.88); color: white; padding: 4px 8px; border-radius: 8px; font-size: 11px; pointer-events: none; white-space: nowrap; z-index: 2; box-shadow: 0 8px 18px rgba(0,0,0,0.18); }
+        .chart-footer { display: flex; justify-content: flex-end; margin-top: 8px; }
+        .chart-mode-pill { display: inline-flex; padding: 2px; border-radius: 999px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(241,244,248,0.9) 100%); border: 1px solid rgba(255,255,255,0.74); box-shadow: inset 0 1px 0 rgba(255,255,255,0.84), 0 8px 14px rgba(17,24,39,0.06); gap: 2px; }
+        .chart-mode-toggle { border: none; background: transparent; border-radius: 999px; padding: 6px 10px; color: #3a3a3c; font-size: 11px; font-weight: 700; cursor: pointer; transition: background 0.2s, color 0.2s, box-shadow 0.2s; }
+        .chart-mode-toggle.active { background: var(--primary-gradient); color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,0.36), 0 8px 18px rgba(0,113,227,0.18); }
         .muscle-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
         .legend-item { display: flex; align-items: center; gap: 4px; font-size: 12px; cursor: pointer; opacity: 0.5; transition: opacity 0.2s; }
         .legend-item.active { opacity: 1; }
@@ -289,8 +293,13 @@
 var data = JSON.parse(localStorage.getItem('fd')||'{}');
 var customExerciseNames = JSON.parse(localStorage.getItem('fd_custom_exercise_names')||'{}');
 var curDate = new Date(), selDate = null, selMuscle = null, editIdx = -1;
+var volumeMuscle = null;
+var volumeMetricMode = 'maxWeight';
 var exerciseDropdownOpen = false;
 var recordActionClickTimers = {};
+var statsActionClickTimers = {};
+var statsActionLongPressTimers = {};
+var statsActionLongPressTriggered = {};
 var recordActionTabs = {};
 var recordMuscleTabs = {};
 var icons = {chest:'❤️',back:'🛡️',shoulder:'🏋️',leg:'🦵',biceps:'💪',triceps:'🔱',core:'♎',cardio:'🏃'};
@@ -514,6 +523,18 @@ function calcMaxWeight(ex){
     }
     return maxWeight;
 }
+function calcMaxWeightVolume(ex){
+    var maxWeight=calcMaxWeight(ex);
+    if(maxWeight<=0)return 0;
+    var vol=0;
+    for(var i=0;i<ex.length;i++){
+        var item=ex[i];
+        var weight=item.weight||0;
+        if(weight!==maxWeight)continue;
+        vol+=item.sets*(parseInt(item.reps)||0)*weight;
+    }
+    return vol;
+}
 function getExerciseGroups(ex){
     var groups=[];
     var groupMap={};
@@ -735,6 +756,50 @@ function editNameGroup(dk,i,el){
     input.focus();
     input.select();
 }
+function renameExerciseAcrossData(targetMuscle,oldName,newName){
+    var changed=false;
+    for(var dk in data){
+        var exercises=data[dk]||[];
+        for(var i=0;i<exercises.length;i++){
+            if(exercises[i].muscle===targetMuscle&&exercises[i].name===oldName){
+                exercises[i].name=newName;
+                changed=true;
+            }
+        }
+    }
+    if(!changed)return false;
+    for(var tabKey in recordActionTabs){
+        if(recordActionTabs[tabKey]===oldName&&tabKey.split('__')[1]===targetMuscle){
+            recordActionTabs[tabKey]=newName;
+        }
+    }
+    if(statsExerciseSelection[targetMuscle]===oldName){
+        statsExerciseSelection[targetMuscle]=newName;
+    }
+    var customNames=getCustomExerciseNames(targetMuscle).slice();
+    var customNameIdx=customNames.indexOf(oldName);
+    if(customNameIdx>=0){
+        if(customNames.indexOf(newName)<0){
+            customNames[customNameIdx]=newName;
+        }else{
+            customNames.splice(customNameIdx,1);
+        }
+        customExerciseNames[targetMuscle]=customNames;
+        saveCustomExerciseNames();
+    }
+    if(selDate&&data[selDate])showDetail(selDate);
+    if(selMuscle===targetMuscle){
+        fillExerciseNameOptions(targetMuscle);
+        var exerciseNameInput=document.getElementById('exerciseName');
+        if(exerciseNameInput&&exerciseNameInput.value===oldName){
+            exerciseNameInput.value=newName;
+        }
+    }
+    return true;
+}
+function escapeJsSingleQuotedString(str){
+    return String(str).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+}
 function setWeightValue(dk,i,val){
     var nextValue=val===''?null:parseFloat(val);
     if(nextValue!==null&&isNaN(nextValue))return;
@@ -852,23 +917,31 @@ function showVolumeChart(){
     var container=document.getElementById('chartContainer');
     var muscles=['chest','back','shoulder','leg','biceps','triceps','core'];
     var muscleDateVols={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
+    var muscleDateMaxWeightVols={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     for(var dk in data){
-        var ex=data[dk];
+        var ex=data[dk]||[];
+        var exercisesByMuscle={};
         for(var i=0;i<ex.length;i++){
             var e=ex[i];
             if(!muscleDateVols[e.muscle])continue;
-            var reps=parseInt(e.reps)||0;
-            var weight=e.weight||0;
-            var dayVolume=e.sets*reps*weight;
-            muscleDateVols[e.muscle][dk]=(muscleDateVols[e.muscle][dk]||0)+dayVolume;
+            if(!exercisesByMuscle[e.muscle])exercisesByMuscle[e.muscle]=[];
+            exercisesByMuscle[e.muscle].push(e);
+        }
+        for(var mi=0;mi<muscles.length;mi++){
+            var muscleKey=muscles[mi];
+            var muscleExercises=exercisesByMuscle[muscleKey]||[];
+            if(!muscleExercises.length)continue;
+            muscleDateVols[muscleKey][dk]=calcVolume(muscleExercises);
+            muscleDateMaxWeightVols[muscleKey][dk]=calcMaxWeightVolume(muscleExercises);
         }
     }
+    var activeMetricMap=volumeMetricMode==='maxWeight'?muscleDateMaxWeightVols:muscleDateVols;
 
     var allDates={};
-    for(var mi=0;mi<muscles.length;mi++){
-        var muscleKey=muscles[mi];
-        for(var dk2 in muscleDateVols[muscleKey]){
-            if(muscleDateVols[muscleKey][dk2]>0)allDates[dk2]=true;
+    for(var mi2=0;mi2<muscles.length;mi2++){
+        var muscleKey2=muscles[mi2];
+        for(var dk2 in activeMetricMap[muscleKey2]){
+            if(activeMetricMap[muscleKey2][dk2]>0)allDates[dk2]=true;
         }
     }
     var allDataDates=Object.keys(allDates).sort();
@@ -881,8 +954,8 @@ function showVolumeChart(){
     for(var bi=0;bi<muscles.length;bi++){
         var muBtn=muscles[bi];
         var hasData=false;
-        for(var dateKey in muscleDateVols[muBtn]){
-            if(muscleDateVols[muBtn][dateKey]>0){hasData=true;break;}
+        for(var dateKey in activeMetricMap[muBtn]){
+            if(activeMetricMap[muBtn][dateKey]>0){hasData=true;break;}
         }
         if(hasData){
             var btnActive=(volumeMuscle===muBtn)?' active':'';
@@ -900,8 +973,8 @@ function showVolumeChart(){
     var selectedMuscle=volumeMuscle;
     var dates=selectedMuscle==='all'
         ? allDataDates
-        : Object.keys(muscleDateVols[selectedMuscle]||{}).filter(function(dateKey){
-            return (muscleDateVols[selectedMuscle][dateKey]||0)>0;
+        : Object.keys(activeMetricMap[selectedMuscle]||{}).filter(function(dateKey){
+            return (activeMetricMap[selectedMuscle][dateKey]||0)>0;
         }).sort();
     if(dates.length>10)dates=dates.slice(-10);
     if(!dates.length){
@@ -922,7 +995,7 @@ function showVolumeChart(){
             var allPts=[];
             for(var di=0;di<dates.length;di++){
                 var allDate=dates[di];
-                var allVol=muscleDateVols[allMuscle][allDate]||0;
+                var allVol=activeMetricMap[allMuscle][allDate]||0;
                 if(allVol>0){
                     allPts.push({dk:allDate,vol:allVol});
                     if(allVol>displayedMaxVol)displayedMaxVol=allVol;
@@ -935,7 +1008,7 @@ function showVolumeChart(){
         var singlePts=[];
         for(var si=0;si<dates.length;si++){
             var singleDate=dates[si];
-            var singleVol=muscleDateVols[selectedMuscle][singleDate]||0;
+            var singleVol=activeMetricMap[selectedMuscle][singleDate]||0;
             if(singleVol>0){
                 singlePts.push({dk:singleDate,vol:singleVol});
                 if(singleVol>displayedMaxVol)displayedMaxVol=singleVol;
@@ -995,6 +1068,12 @@ function showVolumeChart(){
         }
     }
     htm+='</svg></div>';
+    htm+='<div class="chart-footer">'+
+        '<div class="chart-mode-pill">'+
+            '<button class="chart-mode-toggle'+(volumeMetricMode==='maxWeight'?' active':'')+'" onclick="setVolumeMetricMode(\'maxWeight\')">最大容量</button>'+
+            '<button class="chart-mode-toggle'+(volumeMetricMode==='total'?' active':'')+'" onclick="setVolumeMetricMode(\'total\')">全部容量</button>'+
+        '</div>'+
+    '</div>';
     container.innerHTML=htm;
     bindChartPointTooltips();
 }
@@ -1036,6 +1115,11 @@ function setVolumeMuscle(mu){
         var el=document.getElementById('detailSection');
         if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
     },50);
+}
+function setVolumeMetricMode(mode){
+    if(mode!=='maxWeight'&&mode!=='total')return;
+    volumeMetricMode=mode;
+    showVolumeChart();
 }
 var statsSection = null; // null, muscle key, 'month', 'year', 'days', 'summary'
 var statsExerciseSelection = {};
@@ -1311,6 +1395,72 @@ function setStatsExercise(mu, exerciseName){
         window.scrollTo({top:document.documentElement.scrollHeight,behavior:'auto'});
     },50);
 }
+function getStatsActionKey(mu,exerciseName){
+    return mu+'__'+exerciseName;
+}
+function handleStatsExerciseClick(mu,exerciseName){
+    var actionKey=getStatsActionKey(mu,exerciseName);
+    if(statsActionLongPressTriggered[actionKey]){
+        delete statsActionLongPressTriggered[actionKey];
+        return;
+    }
+    if(statsActionClickTimers[actionKey])clearTimeout(statsActionClickTimers[actionKey]);
+    statsActionClickTimers[actionKey]=setTimeout(function(){
+        delete statsActionClickTimers[actionKey];
+        setStatsExercise(mu,exerciseName);
+    },220);
+}
+function handleStatsExerciseDoubleClick(mu,exerciseName,el){
+    var actionKey=getStatsActionKey(mu,exerciseName);
+    if(statsActionClickTimers[actionKey]){
+        clearTimeout(statsActionClickTimers[actionKey]);
+        delete statsActionClickTimers[actionKey];
+    }
+    cancelStatsExerciseLongPress(mu,exerciseName);
+    editStatsExerciseName(mu,exerciseName,el);
+}
+function startStatsExerciseLongPress(mu,exerciseName,el){
+    var actionKey=getStatsActionKey(mu,exerciseName);
+    cancelStatsExerciseLongPress(mu,exerciseName);
+    statsActionLongPressTriggered[actionKey]=false;
+    statsActionLongPressTimers[actionKey]=setTimeout(function(){
+        delete statsActionLongPressTimers[actionKey];
+        statsActionLongPressTriggered[actionKey]=true;
+        editStatsExerciseName(mu,exerciseName,el);
+    },450);
+}
+function cancelStatsExerciseLongPress(mu,exerciseName){
+    var actionKey=getStatsActionKey(mu,exerciseName);
+    if(statsActionLongPressTimers[actionKey]){
+        clearTimeout(statsActionLongPressTimers[actionKey]);
+        delete statsActionLongPressTimers[actionKey];
+    }
+}
+function editStatsExerciseName(mu, exerciseName, el){
+    var input=document.createElement('input');
+    input.type='text';
+    input.className='exercise-name-input';
+    input.value=exerciseName;
+    input.onblur=function(){
+        var newName=this.value.trim();
+        if(newName&&newName!==exerciseName&&renameExerciseAcrossData(mu,exerciseName,newName)){
+            save();
+        }
+        showStats();
+        setTimeout(function(){
+            var statsEl=document.getElementById('statsContainer');
+            if(statsEl)statsEl.scrollIntoView({behavior:'auto',block:'start'});
+        },0);
+    };
+    input.onkeydown=function(e){
+        if(e.key==='Enter')this.blur();
+        if(e.key==='Escape'){this.value=exerciseName;this.blur();}
+    };
+    el.innerHTML='';
+    el.appendChild(input);
+    input.focus();
+    input.select();
+}
 function showStats(){
     var container=document.getElementById('statsContainer');
     var y=curDate.getFullYear(),m=curDate.getMonth();
@@ -1443,8 +1593,8 @@ function showStats(){
                 htm+='<div class="milestone-actions">';
                 for(var mni=0;mni<milestoneNames.length;mni++){
                     var exerciseName=milestoneNames[mni];
-                    var escapedExerciseName=exerciseName.replace(/'/g,"\\'");
-                    htm+='<button class="milestone-action-btn'+(exerciseName===activeExercise?' active':'')+'" onclick="setStatsExercise(\''+mu+'\',\''+escapedExerciseName+'\')">'+exerciseName+'</button>';
+                    var escapedExerciseName=escapeJsSingleQuotedString(exerciseName);
+                    htm+='<button class="milestone-action-btn'+(exerciseName===activeExercise?' active':'')+'" onclick="handleStatsExerciseClick(\''+mu+'\',\''+escapedExerciseName+'\')" ondblclick="handleStatsExerciseDoubleClick(\''+mu+'\',\''+escapedExerciseName+'\',this)" onmousedown="startStatsExerciseLongPress(\''+mu+'\',\''+escapedExerciseName+'\',this)" onmouseup="cancelStatsExerciseLongPress(\''+mu+'\',\''+escapedExerciseName+'\')" onmouseleave="cancelStatsExerciseLongPress(\''+mu+'\',\''+escapedExerciseName+'\')" ontouchstart="startStatsExerciseLongPress(\''+mu+'\',\''+escapedExerciseName+'\',this)" ontouchend="cancelStatsExerciseLongPress(\''+mu+'\',\''+escapedExerciseName+'\')" ontouchcancel="cancelStatsExerciseLongPress(\''+mu+'\',\''+escapedExerciseName+'\')" ontouchmove="cancelStatsExerciseLongPress(\''+mu+'\',\''+escapedExerciseName+'\')" title="双击或长按修改动作名称">'+escapeHtml(exerciseName)+'</button>';
                 }
                 htm+='</div>';
                 var milestoneList=s.exerciseMilestones[activeExercise].slice(-3).reverse();
