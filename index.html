@@ -527,6 +527,18 @@ function calcMaxWeight(ex){
     }
     return maxWeight;
 }
+function calcMaxWeightVolume(ex){
+    var maxWeight=calcMaxWeight(ex);
+    if(maxWeight<=0)return 0;
+    var vol=0;
+    for(var i=0;i<ex.length;i++){
+        var e=ex[i];
+        if((e.weight||0)!==maxWeight)continue;
+        var reps=parseInt(e.reps)||0;
+        vol+=e.sets*reps*maxWeight;
+    }
+    return vol;
+}
 function getExerciseGroups(ex){
     var groups=[];
     var groupMap={};
@@ -936,8 +948,10 @@ function showVolumeChart(){
     var muscles=['chest','back','shoulder','leg','biceps','triceps','core'];
     var muscleDateVols={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleDateMaxWeights={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
+    var muscleDateMaxVolumeByExercise={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleExerciseDateVols={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleExerciseDateMaxWeights={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
+    var muscleExerciseDateMaxVolumes={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     for(var dk in data){
         var ex=data[dk]||[];
         var exercisesByMuscle={};
@@ -959,15 +973,24 @@ function showVolumeChart(){
                 if(!exercisesByName[muscleExercise.name])exercisesByName[muscleExercise.name]=[];
                 exercisesByName[muscleExercise.name].push(muscleExercise);
             }
+            var muscleDayMaxVolume=0;
             for(var exerciseName in exercisesByName){
                 if(!muscleExerciseDateVols[muscleKey][exerciseName])muscleExerciseDateVols[muscleKey][exerciseName]={};
                 if(!muscleExerciseDateMaxWeights[muscleKey][exerciseName])muscleExerciseDateMaxWeights[muscleKey][exerciseName]={};
+                if(!muscleExerciseDateMaxVolumes[muscleKey][exerciseName])muscleExerciseDateMaxVolumes[muscleKey][exerciseName]={};
                 muscleExerciseDateVols[muscleKey][exerciseName][dk]=calcVolume(exercisesByName[exerciseName]);
                 muscleExerciseDateMaxWeights[muscleKey][exerciseName][dk]=calcMaxWeight(exercisesByName[exerciseName]);
+                muscleExerciseDateMaxVolumes[muscleKey][exerciseName][dk]=calcMaxWeightVolume(exercisesByName[exerciseName]);
+                muscleDayMaxVolume+=muscleExerciseDateMaxVolumes[muscleKey][exerciseName][dk];
             }
+            muscleDateMaxVolumeByExercise[muscleKey][dk]=muscleDayMaxVolume;
         }
     }
-    var activeMetricMap=volumeMetricMode==='maxWeight'?muscleDateMaxWeights:muscleDateVols;
+    var activeMetricMap=volumeMetricMode==='maxWeight'
+        ? muscleDateMaxWeights
+        : volumeMetricMode==='total'
+        ? muscleDateMaxVolumeByExercise
+        : muscleDateVols;
 
     var allDates={};
     for(var mi2=0;mi2<muscles.length;mi2++){
@@ -1007,6 +1030,8 @@ function showVolumeChart(){
     if(selectedMuscle!=='all'){
         var activeExerciseMap=volumeMetricMode==='maxWeight'
             ? (muscleExerciseDateMaxWeights[selectedMuscle]||{})
+            : volumeMetricMode==='total'
+            ? (muscleExerciseDateMaxVolumes[selectedMuscle]||{})
             : (muscleExerciseDateVols[selectedMuscle]||{});
         var availableExercises=Object.keys(activeExerciseMap).filter(function(exerciseName){
             var dateMap=activeExerciseMap[exerciseName]||{};
@@ -1033,8 +1058,8 @@ function showVolumeChart(){
     var dates=selectedMuscle==='all'
         ? allDataDates
         : (selectedExercise&&volumeMetricMode!=='muscleTotal')
-        ? Object.keys(((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{}).filter(function(dateKey){
-            return ((((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{})[dateKey]||0)>0;
+        ? Object.keys(((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{}).filter(function(dateKey){
+            return ((((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{})[dateKey]||0)>0;
         }).sort()
         : Object.keys(activeMetricMap[selectedMuscle]||{}).filter(function(dateKey){
             return (activeMetricMap[selectedMuscle][dateKey]||0)>0;
@@ -1069,7 +1094,7 @@ function showVolumeChart(){
         }
     }else if(selectedExercise&&volumeMetricMode!=='muscleTotal'){
         var exercisePts=[];
-        var selectedExerciseDateMap=((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{};
+        var selectedExerciseDateMap=((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{};
         for(var sei=0;sei<dates.length;sei++){
             var exerciseDate=dates[sei];
             var exerciseVol=selectedExerciseDateMap[exerciseDate]||0;
@@ -1149,7 +1174,7 @@ function showVolumeChart(){
     htm+='<div class="chart-footer">'+
         '<div class="chart-mode-pill">'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='maxWeight'?' active':'')+'" onclick="setVolumeMetricMode(\'maxWeight\')">最大重量</button>'+
-            '<button class="chart-mode-toggle'+(volumeMetricMode==='total'?' active':'')+'" onclick="setVolumeMetricMode(\'total\')">全部容量</button>'+
+            '<button class="chart-mode-toggle'+(volumeMetricMode==='total'?' active':'')+'" onclick="setVolumeMetricMode(\'total\')">最大容量</button>'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='muscleTotal'?' active':'')+'" onclick="setVolumeMetricMode(\'muscleTotal\')">总容量</button>'+
         '</div>'+
     '</div>';
