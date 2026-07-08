@@ -1147,18 +1147,33 @@ function showVolumeChart(){
         htm+='<text class="chart-guide-label chart-guide-label-min" x="'+(width-padding.right-2)+'" y="'+(minGuideY+14)+'" text-anchor="end">MIN '+displayedMinVol+'</text>';
     }
 
+    var chartRiseColor='#ff3b30';
+    var chartFallColor='#34c759';
     for(var key in seriesMap){
         var pts=seriesMap[key];
         if(!pts.length)continue;
         if(pts.length>1){
-            var pathD='';
-            for(var pi=0;pi<pts.length;pi++){
-                var idx=dates.indexOf(pts[pi].dk);
-                var px=padding.left+chartW*idx/(dates.length-1||1);
-                var py=padding.top+chartH*(1-pts[pi].vol/axisMax);
-                pathD+=(pi===0?'M':' L')+px+' '+py;
+            if(selectedMuscle==='all'){
+                var pathD='';
+                for(var pi=0;pi<pts.length;pi++){
+                    var idx=dates.indexOf(pts[pi].dk);
+                    var px=padding.left+chartW*idx/(dates.length-1||1);
+                    var py=padding.top+chartH*(1-pts[pi].vol/axisMax);
+                    pathD+=(pi===0?'M':' L')+px+' '+py;
+                }
+                htm+='<path class="chart-line" stroke="'+muscleColors[key]+'" d="'+pathD+'" data-muscle="'+key+'" style="opacity:1"/>';
+            }else{
+                for(var pi=1;pi<pts.length;pi++){
+                    var prevIdx=dates.indexOf(pts[pi-1].dk);
+                    var currIdx=dates.indexOf(pts[pi].dk);
+                    var prevX=padding.left+chartW*prevIdx/(dates.length-1||1);
+                    var prevY=padding.top+chartH*(1-pts[pi-1].vol/axisMax);
+                    var currX=padding.left+chartW*currIdx/(dates.length-1||1);
+                    var currY=padding.top+chartH*(1-pts[pi].vol/axisMax);
+                    var segmentColor=pts[pi].vol>=pts[pi-1].vol?chartRiseColor:chartFallColor;
+                    htm+='<path class="chart-line" stroke="'+segmentColor+'" d="M'+prevX+' '+prevY+' L'+currX+' '+currY+'"/>';
+                }
             }
-            htm+='<path class="chart-line" stroke="'+muscleColors[key]+'" d="'+pathD+'"'+(selectedMuscle==='all'?' data-muscle="'+key+'" style="opacity:1"':'')+'/>';
         }
         for(var pj=0;pj<pts.length;pj++){
             var pointIdx=dates.indexOf(pts[pj].dk);
