@@ -40,6 +40,19 @@
             --today-glow: rgba(48, 209, 88, 0.16);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        button { position: relative; transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease, opacity 0.16s ease, background 0.16s ease, color 0.16s ease; }
+        button::after { content: ''; position: absolute; inset: -4px; border-radius: inherit; border: 2px solid rgba(89,183,255,0); box-shadow: 0 0 0 0 rgba(41,151,255,0); opacity: 0; pointer-events: none; }
+        button:not(:disabled):active { filter: brightness(0.98) saturate(1.06); }
+        button.tap-feedback::after { animation: buttonTapRing 0.42s ease-out; }
+        button.tap-feedback { animation: buttonTapFlash 0.42s ease-out; }
+        @keyframes buttonTapRing {
+            0% { opacity: 0.95; border-color: rgba(89,183,255,0.72); box-shadow: 0 0 0 0 rgba(41,151,255,0.24); }
+            100% { opacity: 0; border-color: rgba(89,183,255,0); box-shadow: 0 0 0 12px rgba(41,151,255,0); }
+        }
+        @keyframes buttonTapFlash {
+            0% { filter: brightness(1.12) saturate(1.08); }
+            100% { filter: brightness(1) saturate(1); }
+        }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: radial-gradient(circle at top left, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 30%), radial-gradient(circle at top right, rgba(90,181,255,0.14) 0%, rgba(90,181,255,0) 32%), radial-gradient(circle at center top, rgba(255,255,255,0.76) 0%, rgba(255,255,255,0) 44%), linear-gradient(180deg, #fbfbfd 0%, var(--bg) 22%, var(--bg-2) 58%, var(--bg-3) 100%); min-height: 100vh; color: var(--text); padding-bottom: 20px; position: relative; overflow-x: hidden; }
         body::before { content: ''; position: fixed; inset: -12% -10% auto; height: 38vh; background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.35) 28%, rgba(255,255,255,0) 72%); pointer-events: none; z-index: 0; }
         body::after { content: ''; position: fixed; right: -70px; bottom: 10vh; width: 220px; height: 220px; background: radial-gradient(circle, rgba(41,151,255,0.14) 0%, rgba(41,151,255,0.03) 44%, rgba(41,151,255,0) 76%); filter: blur(12px); pointer-events: none; z-index: 0; }
@@ -90,6 +103,7 @@
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .modal-header h2 { font-size: 14px; color: var(--text); }
         .close-btn { background: none; border: none; color: var(--accent); font-size: 16px; cursor: pointer; }
+        .close-btn:active { transform: scale(0.9) rotate(-8deg); }
         .muscle-select { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 10px; }
         .muscle-btn { padding: 8px 6px; border: 1px solid rgba(255,255,255,0.32); border-radius: 10px; color: white; font-size: 11px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.26), inset 0 -4px 10px rgba(0,0,0,0.08), 0 8px 16px rgba(15,23,42,0.12); transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease; }
         .muscle-btn:active { transform: translateY(2px) scale(0.97); }
@@ -104,6 +118,7 @@
         .record-muscle-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
         .record-muscle-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; width: 32px; min-height: 56px; border: 1px solid rgba(0,113,227,0.12); border-radius: 16px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); padding: 8px 0; font-size: 11px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.06); white-space: normal; overflow: hidden; text-overflow: clip; text-align: center; line-height: 1.1; flex: 0 0 auto; }
         .record-muscle-btn.active { border-width: 2px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.56), 0 6px 12px rgba(17,24,39,0.08); }
+        .record-muscle-btn:active { transform: translateY(2px) scale(0.97); box-shadow: inset 0 1px 0 rgba(255,255,255,0.88), 0 3px 8px rgba(0,113,227,0.08); }
         .record-muscle-icon { display: block; font-size: 16px; line-height: 1; }
         .record-muscle-label { display: block; max-width: 100%; font-size: 10px; line-height: 1.1; word-break: break-all; }
         .exercise-item { background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(247,248,251,0.9) 45%, rgba(233,237,243,0.8) 100%); -webkit-backdrop-filter: blur(18px) saturate(165%); backdrop-filter: blur(18px) saturate(165%); border: 1px solid rgba(255,255,255,0.72); border-radius: 16px; padding: 11px; display: flex; flex-direction: column; gap: 6px; box-shadow: var(--highlight), 0 12px 22px rgba(17,24,39,0.08), 0 2px 0 rgba(255,255,255,0.88); }
@@ -118,7 +133,13 @@
         .exercise-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-bottom: 4px; }
         .exercise-tab-btn { border: 1px solid rgba(0,113,227,0.12); border-radius: 999px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); padding: 4px 10px; font-size: 10px; font-weight: 600; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.06); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .exercise-tab-btn.active { background: var(--primary-gradient); color: #fff; border-color: rgba(255,255,255,0.34); box-shadow: inset 0 1px 0 rgba(255,255,255,0.36), 0 8px 14px rgba(0,113,227,0.18); }
-        .exercise-action-group { display: flex; flex-direction: column; gap: 48px; }
+        .exercise-tab-btn:active { transform: translateY(1px) scale(0.98); box-shadow: inset 0 1px 0 rgba(255,255,255,0.84), 0 3px 8px rgba(0,113,227,0.12); }
+        .exercise-summary { display: flex; align-items: center; gap: 10px; margin: 4px 0 6px; padding: 10px 12px; border-radius: 14px; background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(241,246,252,0.92) 100%); border: 1px solid rgba(0,113,227,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 8px 16px rgba(17,24,39,0.04); }
+        .exercise-summary-icon { width: 30px; height: 30px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.32), 0 5px 12px rgba(17,24,39,0.1); }
+        .exercise-summary-body { min-width: 0; flex: 1; display: flex; align-items: center; gap: 8px; }
+        .exercise-summary-value { color: var(--accent-deep); font-size: 15px; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .exercise-summary-label { color: var(--muted); font-size: 10px; line-height: 1.1; margin-left: auto; white-space: nowrap; flex-shrink: 0; }
+        .exercise-action-group { display: flex; flex-direction: column; gap: 10px; }
         .exercise-tab-panel { display: flex; flex-direction: column; gap: 6px; }
         .exercise-subitem { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-height: 24px; min-width: 0; font-size: clamp(13px, 3.4vw, 16px); }
         .exercise-subitem + .exercise-subitem { border-top: 1px dashed var(--line); padding-top: 6px; }
@@ -140,10 +161,24 @@
         .adjust-btn { background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); border: 1px solid rgba(0,113,227,0.12); color: var(--accent); width: clamp(22px, 6vw, 24px); height: clamp(22px, 6vw, 24px); border-radius: 9px; cursor: pointer; font-size: clamp(14px, 3.8vw, 16px); line-height: 1; display: inline-flex; align-items: center; justify-content: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); flex-shrink: 0; }
         .adjust-btn:active { background: linear-gradient(180deg, rgba(240,245,252,0.98) 0%, rgba(221,233,247,0.92) 100%); transform: translateY(1px); }
         .adjust-value { display: inline-block; min-width: 20px; text-align: center; font-size: clamp(13px, 3.4vw, 16px); font-weight: 600; line-height: clamp(22px, 6vw, 24px); }
+        .adjust-value.value-flash-up,
+        .metric-input.value-flash-up { animation: valueFlashUp 0.48s ease-out; }
+        .adjust-value.value-flash-down,
+        .metric-input.value-flash-down { animation: valueFlashDown 0.48s ease-out; }
         .metric-input { width: clamp(46px, 13vw, 56px); height: clamp(22px, 6vw, 24px); padding: 0 4px; border: 1px solid rgba(0,113,227,0.14); border-radius: 7px; background: rgba(255,255,255,0.96); color: var(--text); font-size: clamp(13px, 3.4vw, 16px); text-align: center; min-width: 0; }
         .metric-input:focus { outline: none; border-color: rgba(0,113,227,0.42); box-shadow: 0 0 0 2px rgba(0,113,227,0.12); }
+        @keyframes valueFlashUp {
+            0% { color: #16a34a; transform: scale(1.18); text-shadow: 0 0 10px rgba(22,163,74,0.24); }
+            100% { color: inherit; transform: scale(1); text-shadow: 0 0 0 rgba(22,163,74,0); }
+        }
+        @keyframes valueFlashDown {
+            0% { color: #ff5f57; transform: scale(1.18); text-shadow: 0 0 10px rgba(255,95,87,0.24); }
+            100% { color: inherit; transform: scale(1); text-shadow: 0 0 0 rgba(255,95,87,0); }
+        }
         .delete-btn { background: linear-gradient(180deg, var(--danger-top) 0%, var(--danger-mid) 58%, var(--danger-bottom) 100%); border: 1px solid rgba(255,255,255,0.3); color: white; width: clamp(22px, 6vw, 24px); height: clamp(22px, 6vw, 24px); padding: 0; border-radius: 9px; cursor: pointer; font-size: clamp(14px, 3.8vw, 16px); line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(217,52,43,0.18); }
+        .delete-btn:active { transform: translateY(1px) scale(0.96); box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 4px 10px rgba(217,52,43,0.14); }
         .copy-btn { background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.3); color: white; width: clamp(22px, 6vw, 24px); height: clamp(22px, 6vw, 24px); padding: 0; border-radius: 9px; cursor: pointer; font-size: clamp(14px, 3.8vw, 16px); line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(0,113,227,0.18); }
+        .copy-btn:active { transform: translateY(1px) scale(0.96); box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 4px 10px rgba(0,113,227,0.14); }
         .param-group { display: flex; align-items: center; gap: 3px; flex: 0 1 auto; min-width: 0; }
         .param-label { color: var(--muted); font-size: clamp(13px, 3.4vw, 16px); margin-left: 2px; line-height: clamp(22px, 6vw, 24px); white-space: nowrap; }
         .no-data { text-align: center; color: var(--muted); padding: 20px; }
@@ -163,12 +198,15 @@
         .dropdown-item { width: 100%; padding: 10px 12px; border: none; background: transparent; color: var(--text); text-align: left; font-size: 14px; cursor: pointer; }
         .dropdown-item + .dropdown-item { border-top: 1px solid var(--line); }
         .dropdown-item:hover { background: rgba(255,255,255,0.42); }
-        .dropdown-item:active { background: rgba(0,113,227,0.12); }
+        .dropdown-item:active { background: rgba(0,113,227,0.12); transform: scale(0.99); }
         .add-exercise-btn { width: 100%; padding: 12px; background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.32); border-radius: 14px; color: white; font-size: 16px; cursor: pointer; margin-top: 10px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.38), inset 0 -3px 0 rgba(0,88,176,0.2), 0 12px 22px rgba(0,113,227,0.22); }
+        .add-exercise-btn:active { transform: translateY(2px) scale(0.985); box-shadow: inset 0 1px 0 rgba(255,255,255,0.32), inset 0 -2px 0 rgba(0,88,176,0.18), 0 6px 14px rgba(0,113,227,0.16); }
         .add-btn-small { margin-left: 8px; padding: 4px 12px; font-size: 12px; background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.32); border-radius: 10px; color: white; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.38), inset 0 -3px 0 rgba(0,88,176,0.2), 0 10px 18px rgba(0,113,227,0.18); }
+        .add-btn-small:active { transform: translateY(2px) scale(0.985); box-shadow: inset 0 1px 0 rgba(255,255,255,0.32), inset 0 -2px 0 rgba(0,88,176,0.18), 0 5px 12px rgba(0,113,227,0.14); }
         .tab-container { display: flex; gap: 4px; margin: 0 0 2px; }
         .tab-btn { flex: 1; padding: 7px 8px; border: none; border-radius: 12px; background: var(--neutral-gradient); -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%); color: #3a3a3c; font-size: 12px; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; border: 1px solid rgba(255,255,255,0.78); box-shadow: inset 0 1px 0 rgba(255,255,255,0.88), 0 8px 16px rgba(17,24,39,0.06); }
         .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -3px 0 rgba(0,88,176,0.22), 0 14px 24px rgba(0,113,227,0.22); transform: translateY(-2px); }
+        .tab-btn:active { transform: translateY(1px) scale(0.985); box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 4px 10px rgba(17,24,39,0.08); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .chart-container { padding: 10px; }
@@ -191,6 +229,7 @@
         .chart-mode-pill { display: inline-flex; padding: 2px; border-radius: 999px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(241,244,248,0.9) 100%); border: 1px solid rgba(255,255,255,0.74); box-shadow: inset 0 1px 0 rgba(255,255,255,0.84), 0 8px 14px rgba(17,24,39,0.06); gap: 2px; }
         .chart-mode-toggle { border: none; background: transparent; border-radius: 999px; padding: 6px 10px; color: #3a3a3c; font-size: 11px; font-weight: 700; cursor: pointer; transition: background 0.2s, color 0.2s, box-shadow 0.2s; }
         .chart-mode-toggle.active { background: var(--primary-gradient); color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,0.36), 0 8px 18px rgba(0,113,227,0.18); }
+        .chart-mode-toggle:active { transform: translateY(1px) scale(0.985); }
         .muscle-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
         .legend-item { display: flex; align-items: center; gap: 4px; font-size: 12px; cursor: pointer; opacity: 0.5; transition: opacity 0.2s; }
         .legend-item.active { opacity: 1; }
@@ -224,13 +263,14 @@
         .stats-empty { text-align: center; color: var(--muted); padding: 20px; }
         .stats-summary-actions { display: flex; justify-content: flex-end; margin-bottom: 10px; }
         .stats-copy-btn { background: var(--neutral-gradient); border: 1px solid rgba(255,255,255,0.74); border-radius: 12px; padding: 8px 12px; color: #3a3a3c; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.84), 0 8px 14px rgba(17,24,39,0.06); }
-        .stats-copy-btn:active { transform: scale(0.98); }
+        .stats-copy-btn:active { transform: translateY(1px) scale(0.98); box-shadow: inset 0 1px 0 rgba(255,255,255,0.78), 0 4px 10px rgba(17,24,39,0.06); }
         .stats-markdown { margin: 0; white-space: pre-wrap; word-break: break-word; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 12px; line-height: 1.65; color: var(--text); background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(243,245,249,0.88) 100%); border: 1px solid rgba(255,255,255,0.72); border-radius: 16px; padding: 14px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), inset 0 -8px 16px rgba(220,226,234,0.24); }
         .milestone-section { margin-top: 12px; padding-top: 0; }
         .milestone-title { color: var(--accent); font-size: 14px; font-weight: 600; margin-bottom: 8px; }
         .milestone-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
         .milestone-action-btn { width: 100%; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(241,244,248,0.9) 100%); border: 1px solid rgba(255,255,255,0.74); border-radius: 999px; padding: 6px 8px; color: #3a3a3c; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.82); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .milestone-action-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 8px 18px rgba(0,113,227,0.2); }
+        .milestone-action-btn:active { transform: translateY(1px) scale(0.985); box-shadow: inset 0 1px 0 rgba(255,255,255,0.78), 0 4px 10px rgba(17,24,39,0.08); }
         .milestone-group { padding: 8px 0 4px; }
         .milestone-exercise-name { color: var(--accent); font-size: 15px; font-weight: 700; background: rgba(10,132,255,0.12); border: 1px solid rgba(10,132,255,0.14); border-radius: 10px; padding: 6px 10px; display: inline-block; }
         .milestone-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--line); }
@@ -301,6 +341,7 @@ var exerciseDropdownOpen = false;
 var recordActionClickTimers = {};
 var recordActionLongPressTimers = {};
 var recordActionLongPressTriggered = {};
+var recordValueFlashState = {};
 var statsActionClickTimers = {};
 var statsActionLongPressTimers = {};
 var statsActionLongPressTriggered = {};
@@ -421,6 +462,41 @@ function getExerciseHistoryDefaults(m,name){
     }
     return bestMatch;
 }
+function extractMaxRepsValue(repsText){
+    var matches=String(repsText||'').match(/\d+(?:\.\d+)?/g);
+    if(!matches||!matches.length)return 0;
+    var maxValue=0;
+    for(var i=0;i<matches.length;i++){
+        var current=Number(matches[i]);
+        if(!isNaN(current)&&current>maxValue)maxValue=current;
+    }
+    return maxValue;
+}
+function formatMetricNumber(value){
+    if(value==null||isNaN(value)||value<=0)return '--';
+    return Math.abs(value-Math.round(value))<0.001?String(Math.round(value)):String(value);
+}
+function getExercisePersonalBests(m,name){
+    var maxWeight=0;
+    var maxSets=0;
+    var maxReps=0;
+    var dateKeys=Object.keys(data);
+    for(var di=0;di<dateKeys.length;di++){
+        var exercises=data[dateKeys[di]]||[];
+        for(var ei=0;ei<exercises.length;ei++){
+            var exercise=exercises[ei];
+            var exerciseName=(exercise.name||'').trim();
+            if(exercise.muscle!==m||exerciseName!==name)continue;
+            var weight=exercise.weight==null?0:Number(exercise.weight);
+            if(!isNaN(weight)&&weight>maxWeight)maxWeight=weight;
+            var sets=Number(exercise.sets)||0;
+            if(sets>maxSets)maxSets=sets;
+            var reps=extractMaxRepsValue(exercise.reps);
+            if(reps>maxReps)maxReps=reps;
+        }
+    }
+    return {maxWeight:maxWeight,maxSets:maxSets,maxReps:maxReps};
+}
 function fillExerciseNameOptions(m){
     var options=document.getElementById('exerciseNameOptions');
     options.innerHTML='';
@@ -539,6 +615,18 @@ function calcMaxWeightVolume(ex){
     }
     return vol;
 }
+function calcMaxWeightReps(ex){
+    var maxWeight=calcMaxWeight(ex);
+    if(maxWeight<=0)return 0;
+    var maxReps=0;
+    for(var i=0;i<ex.length;i++){
+        var e=ex[i];
+        if((e.weight||0)!==maxWeight)continue;
+        var reps=extractMaxRepsValue(e.reps);
+        if(reps>maxReps)maxReps=reps;
+    }
+    return maxReps;
+}
 function getExerciseGroups(ex){
     var groups=[];
     var groupMap={};
@@ -586,6 +674,18 @@ function setRecordActionTab(dk,muscle,actionName){
 }
 function getRecordActionClickKey(dk,muscle,actionName){
     return dk+'__'+muscle+'__'+actionName;
+}
+function getRecordValueFlashKey(dk,index,field){
+    return dk+'__'+index+'__'+field;
+}
+function markRecordValueFlash(dk,index,field,direction){
+    recordValueFlashState[getRecordValueFlashKey(dk,index,field)]={direction:direction,at:Date.now()};
+}
+function getRecordValueFlashClass(dk,index,field){
+    var state=recordValueFlashState[getRecordValueFlashKey(dk,index,field)];
+    if(!state)return '';
+    if(Date.now()-state.at>700)return '';
+    return state.direction==='down'?' value-flash-down':' value-flash-up';
 }
 function handleRecordActionTabClick(dk,muscle,actionName){
     var timerKey=getRecordActionClickKey(dk,muscle,actionName);
@@ -663,15 +763,26 @@ function showDetail(dk){
     }
     htm+='</div>';
     var activeAction=group.actionMap[activeActionName];
+    var personalBests=getExercisePersonalBests(e.muscle,activeActionName);
     htm+='<div class="exercise-action-group">'+
+        '<div class="exercise-summary">'+
+            '<span class="exercise-summary-icon '+e.muscle+'">'+getMuscleIconText(e.muscle)+'</span>'+
+            '<div class="exercise-summary-body">'+
+                '<span class="exercise-summary-value">'+formatMetricNumber(personalBests.maxWeight)+'kg+'+formatMetricNumber(personalBests.maxReps)+'次+'+formatMetricNumber(personalBests.maxSets)+'组</span>'+
+                '<span class="exercise-summary-label">历史最佳</span>'+
+            '</div>'+
+        '</div>'+
         '<div class="exercise-tab-panel">';
     for(var ii=0;ii<activeAction.items.length;ii++){
         var item=activeAction.items[ii];
+        var setsFlashClass=getRecordValueFlashClass(dk,item.index,'sets');
+        var repsFlashClass=getRecordValueFlashClass(dk,item.index,'reps');
+        var weightFlashClass=getRecordValueFlashClass(dk,item.index,'weight');
         htm+=
         '<div class="exercise-subitem">'+
-            '<div class="param-group"><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value">'+item.exercise.sets+'</span><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">组</span></div>'+
-            '<div class="param-group"><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value">'+item.exercise.reps+'</span><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">次</span></div>'+
-            '<div class="param-group"><input type="number" class="metric-input" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="0.5" min="0" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><span class="param-label">kg</span></div>'+
+            '<div class="param-group"><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value'+setsFlashClass+'">'+item.exercise.sets+'</span><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">组</span></div>'+
+            '<div class="param-group"><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value'+repsFlashClass+'">'+item.exercise.reps+'</span><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">次</span></div>'+
+            '<div class="param-group"><input type="number" class="metric-input'+weightFlashClass+'" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="0.5" min="0" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><span class="param-label">kg</span></div>'+
             '<button class="delete-btn" onclick="del(\''+dk+'\','+item.index+')" title="删除" aria-label="删除">-</button>'+
             '<button class="copy-btn" onclick="dup(\''+dk+'\','+item.index+')" title="复制" aria-label="复制">+</button>'+
         '</div>';
@@ -827,9 +938,12 @@ function escapeJsSingleQuotedString(str){
     return String(str).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
 }
 function setWeightValue(dk,i,val){
+    var prevValue=data[dk][i].weight==null?null:Number(data[dk][i].weight);
     var nextValue=val===''?null:parseFloat(val);
     if(nextValue!==null&&isNaN(nextValue))return;
     data[dk][i].weight=nextValue===null?null:Math.max(0,nextValue);
+    var finalValue=data[dk][i].weight==null?null:Number(data[dk][i].weight);
+    if(finalValue!==prevValue)markRecordValueFlash(dk,i,'weight',finalValue!==null&&prevValue!==null&&finalValue<prevValue?'down':'up');
     save();
     showDetail(dk);
 }
@@ -845,8 +959,22 @@ function dup(dk,i){
     showDetail(dk);
 }
 function del(dk,i){data[dk].splice(i,1);if(!data[dk].length)delete data[dk];save();render();showDetail(dk);}
-function adjSets(dk,i,d){data[dk][i].sets=Math.max(1,data[dk][i].sets+d);save();showDetail(dk);}
-function adjReps(dk,i,d){var r=parseInt(data[dk][i].reps)||1;r=Math.max(1,r+d);data[dk][i].reps=String(r);save();showDetail(dk);}
+function adjSets(dk,i,d){
+    var prev=data[dk][i].sets;
+    data[dk][i].sets=Math.max(1,data[dk][i].sets+d);
+    if(data[dk][i].sets!==prev)markRecordValueFlash(dk,i,'sets',data[dk][i].sets<prev?'down':'up');
+    save();
+    showDetail(dk);
+}
+function adjReps(dk,i,d){
+    var prev=parseInt(data[dk][i].reps)||1;
+    var r=parseInt(data[dk][i].reps)||1;
+    r=Math.max(1,r+d);
+    data[dk][i].reps=String(r);
+    if(r!==prev)markRecordValueFlash(dk,i,'reps',r<prev?'down':'up');
+    save();
+    showDetail(dk);
+}
 function openM(){var today=new Date();selDate=getTodayKey();curDate=new Date(today.getFullYear(),today.getMonth(),1);editIdx=-1;document.querySelector('.modal-header h2').textContent='添加训练';document.getElementById('addExercise').textContent='添加动作';document.getElementById('modal').classList.add('show');document.getElementById('addForm').classList.remove('show');selMuscle=null;document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});render();showDetail(selDate);setTimeout(function(){scrollToDateCell(selDate);var el=document.getElementById('modal');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);}
 function closeM(){document.getElementById('modal').classList.remove('show');document.getElementById('addForm').classList.remove('show');selMuscle=null;}
 function selM(m){
@@ -911,6 +1039,20 @@ document.getElementById('modal').onclick=function(e){if(e.target===this)closeM()
 document.querySelectorAll('.muscle-btn').forEach(function(b){b.onclick=function(){selM(this.dataset.muscle);};});
 document.getElementById('addExercise').onclick=addEx;
 bindExerciseNameDropdown();
+function triggerButtonTapFeedback(btn){
+    if(!btn||btn.disabled)return;
+    btn.classList.remove('tap-feedback');
+    void btn.offsetWidth;
+    btn.classList.add('tap-feedback');
+    window.setTimeout(function(){
+        btn.classList.remove('tap-feedback');
+    },430);
+}
+document.addEventListener('click',function(e){
+    var btn=e.target&&e.target.closest?e.target.closest('button'):null;
+    if(!btn)return;
+    triggerButtonTapFeedback(btn);
+},true);
 function switchTab(tab){
     document.getElementById('tabRecord').classList.toggle('active',tab==='record');
     document.getElementById('tabVolume').classList.toggle('active',tab==='volume');
@@ -949,9 +1091,11 @@ function showVolumeChart(){
     var muscleDateVols={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleDateMaxWeights={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleDateMaxVolumeByExercise={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
+    var muscleDateMaxReps={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleExerciseDateVols={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleExerciseDateMaxWeights={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleExerciseDateMaxVolumes={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
+    var muscleExerciseDateMaxReps={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     for(var dk in data){
         var ex=data[dk]||[];
         var exercisesByMuscle={};
@@ -967,6 +1111,7 @@ function showVolumeChart(){
             if(!muscleExercises.length)continue;
             muscleDateVols[muscleKey][dk]=calcVolume(muscleExercises);
             muscleDateMaxWeights[muscleKey][dk]=calcMaxWeight(muscleExercises);
+            muscleDateMaxReps[muscleKey][dk]=calcMaxWeightReps(muscleExercises);
             var exercisesByName={};
             for(var mxi=0;mxi<muscleExercises.length;mxi++){
                 var muscleExercise=muscleExercises[mxi];
@@ -978,9 +1123,11 @@ function showVolumeChart(){
                 if(!muscleExerciseDateVols[muscleKey][exerciseName])muscleExerciseDateVols[muscleKey][exerciseName]={};
                 if(!muscleExerciseDateMaxWeights[muscleKey][exerciseName])muscleExerciseDateMaxWeights[muscleKey][exerciseName]={};
                 if(!muscleExerciseDateMaxVolumes[muscleKey][exerciseName])muscleExerciseDateMaxVolumes[muscleKey][exerciseName]={};
+                if(!muscleExerciseDateMaxReps[muscleKey][exerciseName])muscleExerciseDateMaxReps[muscleKey][exerciseName]={};
                 muscleExerciseDateVols[muscleKey][exerciseName][dk]=calcVolume(exercisesByName[exerciseName]);
                 muscleExerciseDateMaxWeights[muscleKey][exerciseName][dk]=calcMaxWeight(exercisesByName[exerciseName]);
                 muscleExerciseDateMaxVolumes[muscleKey][exerciseName][dk]=calcMaxWeightVolume(exercisesByName[exerciseName]);
+                muscleExerciseDateMaxReps[muscleKey][exerciseName][dk]=calcMaxWeightReps(exercisesByName[exerciseName]);
                 muscleDayMaxVolume+=muscleExerciseDateMaxVolumes[muscleKey][exerciseName][dk];
             }
             muscleDateMaxVolumeByExercise[muscleKey][dk]=muscleDayMaxVolume;
@@ -988,6 +1135,8 @@ function showVolumeChart(){
     }
     var activeMetricMap=volumeMetricMode==='maxWeight'
         ? muscleDateMaxWeights
+        : volumeMetricMode==='maxReps'
+        ? muscleDateMaxReps
         : volumeMetricMode==='total'
         ? muscleDateMaxVolumeByExercise
         : muscleDateVols;
@@ -1030,6 +1179,8 @@ function showVolumeChart(){
     if(selectedMuscle!=='all'){
         var activeExerciseMap=volumeMetricMode==='maxWeight'
             ? (muscleExerciseDateMaxWeights[selectedMuscle]||{})
+            : volumeMetricMode==='maxReps'
+            ? (muscleExerciseDateMaxReps[selectedMuscle]||{})
             : volumeMetricMode==='total'
             ? (muscleExerciseDateMaxVolumes[selectedMuscle]||{})
             : (muscleExerciseDateVols[selectedMuscle]||{});
@@ -1058,8 +1209,8 @@ function showVolumeChart(){
     var dates=selectedMuscle==='all'
         ? allDataDates
         : (selectedExercise&&volumeMetricMode!=='muscleTotal')
-        ? Object.keys(((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{}).filter(function(dateKey){
-            return ((((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{})[dateKey]||0)>0;
+        ? Object.keys(((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='maxReps'?muscleExerciseDateMaxReps:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{}).filter(function(dateKey){
+            return ((((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='maxReps'?muscleExerciseDateMaxReps:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{})[dateKey]||0)>0;
         }).sort()
         : Object.keys(activeMetricMap[selectedMuscle]||{}).filter(function(dateKey){
             return (activeMetricMap[selectedMuscle][dateKey]||0)>0;
@@ -1094,7 +1245,7 @@ function showVolumeChart(){
         }
     }else if(selectedExercise&&volumeMetricMode!=='muscleTotal'){
         var exercisePts=[];
-        var selectedExerciseDateMap=((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{};
+        var selectedExerciseDateMap=((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='maxReps'?muscleExerciseDateMaxReps:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{};
         for(var sei=0;sei<dates.length;sei++){
             var exerciseDate=dates[sei];
             var exerciseVol=selectedExerciseDateMap[exerciseDate]||0;
@@ -1124,7 +1275,7 @@ function showVolumeChart(){
         return;
     }
 
-    var axisStep=volumeMetricMode==='maxWeight'?10:100;
+    var axisStep=volumeMetricMode==='maxWeight'?10:volumeMetricMode==='maxReps'?2:100;
     var axisMax=Math.ceil(displayedMaxVol/axisStep)*axisStep||axisStep;
     htm+='<div class="line-chart"><svg class="line-chart-svg" viewBox="0 0 '+width+' '+height+'">';
     for(var gi=0;gi<=4;gi++){
@@ -1181,14 +1332,16 @@ function showVolumeChart(){
             var pointY=padding.top+chartH*(1-pts[pj].vol/axisMax);
             var isMaxPoint=pts[pj].vol===displayedMaxVol;
             var pointR=selectedMuscle==='all'?(isMaxPoint?4:3):(isMaxPoint?5:4);
-            var pointTitle=(selectedMuscle==='all'?getMuscleIconText(key)+' '+muscleNames[key]+' · ':((selectedExercise&&volumeMetricMode!=='muscleTotal')?selectedExercise+' · ':'' )+pts[pj].dk.split('-')[2]+'日: ')+pts[pj].vol+'kg';
-            htm+='<circle class="chart-point'+(isMaxPoint?' chart-point-max':'')+'" cx="'+pointX+'" cy="'+pointY+'" r="'+pointR+'"'+(isMaxPoint?'':' fill="'+muscleColors[key]+'"')+' data-muscle="'+key+'" data-date="'+pts[pj].dk+'" data-vol="'+pts[pj].vol+'"><title>'+pointTitle+'</title></circle>';
+            var metricSuffix=volumeMetricMode==='maxReps'?'次':'kg';
+            var pointTitle=(selectedMuscle==='all'?getMuscleIconText(key)+' '+muscleNames[key]+' · ':((selectedExercise&&volumeMetricMode!=='muscleTotal')?selectedExercise+' · ':'' )+pts[pj].dk.split('-')[2]+'日: ')+pts[pj].vol+metricSuffix;
+            htm+='<circle class="chart-point'+(isMaxPoint?' chart-point-max':'')+'" cx="'+pointX+'" cy="'+pointY+'" r="'+pointR+'"'+(isMaxPoint?'':' fill="'+muscleColors[key]+'"')+' data-muscle="'+key+'" data-date="'+pts[pj].dk+'" data-vol="'+pts[pj].vol+'" data-unit="'+metricSuffix+'"><title>'+pointTitle+'</title></circle>';
         }
     }
     htm+='</svg></div>';
     htm+='<div class="chart-footer">'+
         '<div class="chart-mode-pill">'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='maxWeight'?' active':'')+'" onclick="setVolumeMetricMode(\'maxWeight\')">最大重量</button>'+
+            '<button class="chart-mode-toggle'+(volumeMetricMode==='maxReps'?' active':'')+'" onclick="setVolumeMetricMode(\'maxReps\')">最大次数</button>'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='total'?' active':'')+'" onclick="setVolumeMetricMode(\'total\')">最大容量</button>'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='muscleTotal'?' active':'')+'" onclick="setVolumeMetricMode(\'muscleTotal\')">总容量</button>'+
         '</div>'+
@@ -1214,8 +1367,9 @@ function bindChartPointTooltips(){
             var mu=this.dataset.muscle;
             var date=this.dataset.date||'';
             var vol=this.dataset.vol||'0';
+            var unit=this.dataset.unit||'kg';
             tooltip.className='chart-tooltip';
-            tooltip.textContent=(mu&&muscleNames[mu]?getMuscleIconText(mu)+' '+muscleNames[mu]+' · ':'')+date+' · '+vol+'kg';
+            tooltip.textContent=(mu&&muscleNames[mu]?getMuscleIconText(mu)+' '+muscleNames[mu]+' · ':'')+date+' · '+vol+unit;
             chart.appendChild(tooltip);
             var chartRect=chart.getBoundingClientRect();
             var pointRect=this.getBoundingClientRect();
@@ -1240,7 +1394,7 @@ function setVolumeExercise(mu,exerciseName){
     showVolumeChart();
 }
 function setVolumeMetricMode(mode){
-    if(mode!=='maxWeight'&&mode!=='total'&&mode!=='muscleTotal')return;
+    if(mode!=='maxWeight'&&mode!=='maxReps'&&mode!=='total'&&mode!=='muscleTotal')return;
     volumeMetricMode=mode;
     showVolumeChart();
 }
