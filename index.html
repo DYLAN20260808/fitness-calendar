@@ -67,27 +67,27 @@
         .nav button { background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.42); color: white; padding: 2px 10px; border-radius: 10px; font-size: 12px; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.38), inset 0 -2px 0 rgba(0,88,176,0.24), 0 8px 14px rgba(0,113,227,0.2); transition: transform 0.2s, box-shadow 0.2s; }
         .nav button:active { transform: translateY(2px) scale(0.97); box-shadow: inset 0 1px 0 rgba(255,255,255,0.32), 0 4px 10px rgba(0,113,227,0.16); }
         .nav .month-year { font-size: 13px; font-weight: 600; color: var(--text); }
-        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; padding: 0 5px; position: relative; z-index: 1; }
-        .weekday { text-align: center; padding: 10px 5px; font-weight: 600; color: var(--accent); font-size: 14px; }
-        .day { aspect-ratio: 1.1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background: linear-gradient(180deg, var(--surface-top) 0%, var(--surface-mid) 42%, var(--surface-bot) 100%); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); border: 1px solid rgba(255,255,255,0.82); border-radius: 15px; padding: 2px 2px; cursor: pointer; min-height: 45px; box-shadow: var(--highlight), 0 10px 18px rgba(17,24,39,0.08), 0 2px 0 rgba(255,255,255,0.9); overflow: hidden; transform: translateY(0); transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
+        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; padding: 0 3px; position: relative; z-index: 1; }
+        .weekday { text-align: center; padding: 6px 3px; font-weight: 600; color: var(--accent); font-size: 11px; }
+        .day { aspect-ratio: 1.8; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background: linear-gradient(180deg, var(--surface-top) 0%, var(--surface-mid) 42%, var(--surface-bot) 100%); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); border: 1px solid rgba(255,255,255,0.82); border-radius: 11px; padding: 1px; cursor: pointer; min-height: 16px; box-shadow: var(--highlight), 0 10px 18px rgba(17,24,39,0.08), 0 2px 0 rgba(255,255,255,0.9); overflow: hidden; transform: translateY(0); transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
         .day:hover { background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(248,250,253,0.92) 44%, rgba(232,238,246,0.82) 100%); box-shadow: var(--highlight), 0 16px 26px rgba(17,24,39,0.12), 0 2px 0 rgba(255,255,255,0.9); transform: translateY(-3px); }
         .day.empty { background: transparent; cursor: default; box-shadow: none; }
         .day.today { border-color: rgba(255,255,255,0.82); background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(235,250,240,0.98) 42%, rgba(48,209,88,0.16) 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), inset 0 -10px 18px rgba(48,209,88,0.06), 0 0 0 2px var(--today-ring), 0 14px 24px var(--today-glow); }
         .day.selected { background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(236,245,255,0.98) 42%, rgba(0,113,227,0.2) 100%); border-color: rgba(255,255,255,0.82); box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), inset 0 -10px 18px rgba(0,113,227,0.06), 0 0 0 2px rgba(0,113,227,0.82), 0 18px 28px rgba(0,113,227,0.16); transform: translateY(-2px); }
-        .day-number { font-size: 11px; font-weight: 700; margin-bottom: 1px; line-height: 1; flex-shrink: 0; width: 100%; text-align: center; }
-        .day-icons { display: flex; flex: 1; flex-wrap: wrap; gap: 2px; justify-content: center; align-items: center; align-content: center; width: 100%; max-height: none; overflow: hidden; }
+        .day-number { font-size: 8px; font-weight: 700; margin-bottom: 1px; line-height: 1; flex-shrink: 0; width: 100%; text-align: center; }
+        .day-icons { display: flex; flex: 1; flex-wrap: wrap; gap: 1px; justify-content: center; align-items: center; align-content: center; width: 100%; max-height: none; overflow: hidden; }
         .day-icons.count-3,
         .day-icons.count-4,
         .day-icons.count-5,
         .day-icons.count-6,
         .day-icons.count-7 { gap: 1px; padding-top: 1px; }
         .day-volume { font-size: 8px; color: var(--accent); margin-top: 1px; font-weight: 700; line-height: 1; flex-shrink: 0; }
-        .muscle-icon { width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; margin: 1px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.24), 0 3px 6px rgba(15,23,42,0.12); }
+        .muscle-icon { width: 13px; height: 13px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 9px; margin: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.24), 0 3px 6px rgba(15,23,42,0.12); }
         .day-icons.count-3 .muscle-icon,
         .day-icons.count-4 .muscle-icon,
         .day-icons.count-5 .muscle-icon,
         .day-icons.count-6 .muscle-icon,
-        .day-icons.count-7 .muscle-icon { width: 13px; height: 13px; font-size: 9px; margin: 0; border-radius: 3px; }
+        .day-icons.count-7 .muscle-icon { width: 10px; height: 10px; font-size: 7px; margin: 0; border-radius: 2px; }
         .chest { background: linear-gradient(180deg, #ffb27d 0%, #ff8a4c 100%); }
         .back { background: linear-gradient(180deg, #8da2ff 0%, #5b6cff 100%); }
         .shoulder { background: linear-gradient(180deg, #b287ff 0%, #8a63ff 100%); }
@@ -141,9 +141,13 @@
         .exercise-summary-label { color: var(--muted); font-size: 10px; line-height: 1.1; margin-left: auto; white-space: nowrap; flex-shrink: 0; }
         .exercise-action-group { display: flex; flex-direction: column; gap: 10px; }
         .exercise-tab-panel { display: flex; flex-direction: column; gap: 6px; }
-        .exercise-subitem { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-height: 24px; min-width: 0; font-size: clamp(13px, 3.4vw, 16px); }
-        .exercise-subitem + .exercise-subitem { border-top: 1px dashed var(--line); padding-top: 6px; }
-        .exercise-subitem .delete-btn { margin-left: auto; }
+        .exercise-subitem,
+        .exercise-best-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(88px, 1fr) auto auto; align-items: center; gap: 6px; min-height: 24px; min-width: 0; font-size: clamp(13px, 3.4vw, 16px); }
+        .exercise-subitem { padding: 8px; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(241,244,248,0.72) 100%); border: 1px solid rgba(255,255,255,0.72); box-shadow: inset 0 1px 0 rgba(255,255,255,0.78); }
+        .exercise-subitem.capacity-best { background: linear-gradient(180deg, rgba(212, 255, 223, 0.96) 0%, rgba(161, 240, 184, 0.82) 100%); border-color: rgba(48, 209, 88, 0.42); box-shadow: inset 0 1px 0 rgba(255,255,255,0.84), 0 0 0 1px rgba(48,209,88,0.12); }
+        .exercise-subitem + .exercise-subitem { margin-top: 6px; }
+        .exercise-subitem .delete-btn,
+        .exercise-subitem .copy-btn { justify-self: end; }
         .exercise-icon { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
         .exercise-icon.chest { background: linear-gradient(180deg, #ffb27d 0%, #ff8a4c 100%); }
         .exercise-icon.back { background: linear-gradient(180deg, #8da2ff 0%, #5b6cff 100%); }
@@ -158,9 +162,15 @@
         .exercise-name:hover { background: var(--accent-soft); }
         .exercise-name-input { font-weight: 600; background: rgba(255,255,255,0.96); border: 1px solid var(--accent); color: var(--text); padding: 4px 8px; border-radius: 8px; font-size: 14px; min-width: 80px; max-width: 150px; }
         .exercise-sets { color: var(--muted); font-size: 14px; display: flex; align-items: center; gap: 4px; }
+        .exercise-best-block { margin-top: 2px; padding-top: 6px; border-top: 1px dashed var(--line); }
+        .exercise-best-row { padding: 8px 8px 0; border-radius: 12px; background: linear-gradient(180deg, rgba(0,113,227,0.08) 0%, rgba(0,113,227,0.04) 100%); border: 1px solid rgba(0,113,227,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.72); }
+        .exercise-best-badge { grid-column: 4 / 6; justify-self: stretch; display: inline-flex; align-items: center; justify-content: center; min-width: 0; height: clamp(22px, 6vw, 24px); padding: 0 6px; border: 1px solid rgba(0,113,227,0.12); border-radius: 9px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent); font-size: 10px; font-weight: 700; line-height: 1; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); white-space: nowrap; }
+        .adjust-btn-placeholder { visibility: hidden; pointer-events: none; }
+        .metric-input.metric-input-readonly { pointer-events: none; color: var(--text); font-weight: 600; background: rgba(255,255,255,0.96); text-align: left; padding-left: 8px; }
         .adjust-btn { background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); border: 1px solid rgba(0,113,227,0.12); color: var(--accent); width: clamp(22px, 6vw, 24px); height: clamp(22px, 6vw, 24px); border-radius: 9px; cursor: pointer; font-size: clamp(14px, 3.8vw, 16px); line-height: 1; display: inline-flex; align-items: center; justify-content: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); flex-shrink: 0; }
         .adjust-btn:active { background: linear-gradient(180deg, rgba(240,245,252,0.98) 0%, rgba(221,233,247,0.92) 100%); transform: translateY(1px); }
         .adjust-value { display: inline-block; min-width: 20px; text-align: center; font-size: clamp(13px, 3.4vw, 16px); font-weight: 600; line-height: clamp(22px, 6vw, 24px); }
+        .adjust-value.count-slot { width: clamp(28px, 9vw, 36px); min-width: 0; }
         .adjust-value.value-flash-up,
         .metric-input.value-flash-up { animation: valueFlashUp 0.48s ease-out; }
         .adjust-value.value-flash-down,
@@ -476,11 +486,10 @@ function formatMetricNumber(value){
     if(value==null||isNaN(value)||value<=0)return '--';
     return Math.abs(value-Math.round(value))<0.001?String(Math.round(value)):String(value);
 }
-function getExercisePersonalBests(m,name){
-    var maxWeight=0;
-    var maxSets=0;
-    var maxReps=0;
-    var dateKeys=Object.keys(data);
+function getExerciseBestRecord(m,name){
+    var bestRecord=null;
+    var exerciseMaxWeight=0;
+    var dateKeys=Object.keys(data).sort();
     for(var di=0;di<dateKeys.length;di++){
         var exercises=data[dateKeys[di]]||[];
         for(var ei=0;ei<exercises.length;ei++){
@@ -488,14 +497,23 @@ function getExercisePersonalBests(m,name){
             var exerciseName=(exercise.name||'').trim();
             if(exercise.muscle!==m||exerciseName!==name)continue;
             var weight=exercise.weight==null?0:Number(exercise.weight);
-            if(!isNaN(weight)&&weight>maxWeight)maxWeight=weight;
             var sets=Number(exercise.sets)||0;
-            if(sets>maxSets)maxSets=sets;
-            var reps=extractMaxRepsValue(exercise.reps);
-            if(reps>maxReps)maxReps=reps;
+            var repsText=exercise.reps||'';
+            var volume=calcEntryVolume(exercise);
+            if(isNaN(weight))weight=0;
+            if(weight>exerciseMaxWeight||(weight===exerciseMaxWeight&&bestRecord&&volume>=bestRecord.volume)){
+                exerciseMaxWeight=weight;
+                bestRecord={
+                    weight:weight,
+                    sets:sets,
+                    reps:repsText,
+                    volume:volume,
+                    date:dateKeys[di]
+                };
+            }
         }
     }
-    return {maxWeight:maxWeight,maxSets:maxSets,maxReps:maxReps};
+    return bestRecord||{weight:0,sets:0,reps:'',volume:0,date:''};
 }
 function fillExerciseNameOptions(m){
     var options=document.getElementById('exerciseNameOptions');
@@ -589,11 +607,40 @@ function calcVolume(ex){
     var vol=0;
     for(var i=0;i<ex.length;i++){
         var e=ex[i];
-        var reps=parseInt(e.reps)||0;
-        var weight=e.weight||0;
-        vol+=e.sets*reps*weight;
+        vol+=calcEntryVolume(e);
     }
     return vol;
+}
+function calcEntryVolume(exercise){
+    if(!exercise)return 0;
+    var reps=extractMaxRepsValue(exercise.reps);
+    var weight=exercise.weight==null?0:Number(exercise.weight);
+    var sets=Number(exercise.sets)||0;
+    if(isNaN(weight))weight=0;
+    return sets*reps*weight;
+}
+function getExerciseMaxWeightVolumeTarget(m,name){
+    var maxWeight=0;
+    var bestVolumeAtMaxWeight=0;
+    var dateKeys=Object.keys(data);
+    for(var di=0;di<dateKeys.length;di++){
+        var exercises=data[dateKeys[di]]||[];
+        for(var ei=0;ei<exercises.length;ei++){
+            var exercise=exercises[ei];
+            var exerciseName=(exercise.name||'').trim();
+            if(exercise.muscle!==m||exerciseName!==name)continue;
+            var weight=exercise.weight==null?0:Number(exercise.weight);
+            if(isNaN(weight))weight=0;
+            var volume=calcEntryVolume(exercise);
+            if(weight>maxWeight){
+                maxWeight=weight;
+                bestVolumeAtMaxWeight=volume;
+                continue;
+            }
+            if(weight===maxWeight&&volume>bestVolumeAtMaxWeight)bestVolumeAtMaxWeight=volume;
+        }
+    }
+    return {maxWeight:maxWeight,bestVolume:bestVolumeAtMaxWeight};
 }
 function calcMaxWeight(ex){
     var maxWeight=0;
@@ -626,6 +673,18 @@ function calcMaxWeightReps(ex){
         if(reps>maxReps)maxReps=reps;
     }
     return maxReps;
+}
+function calcMaxWeightSets(ex){
+    var maxWeight=calcMaxWeight(ex);
+    if(maxWeight<=0)return 0;
+    var maxSets=0;
+    for(var i=0;i<ex.length;i++){
+        var e=ex[i];
+        if((e.weight||0)!==maxWeight)continue;
+        var sets=Number(e.sets)||0;
+        if(sets>maxSets)maxSets=sets;
+    }
+    return maxSets;
 }
 function getExerciseGroups(ex){
     var groups=[];
@@ -763,25 +822,29 @@ function showDetail(dk){
     }
     htm+='</div>';
     var activeAction=group.actionMap[activeActionName];
-    var personalBests=getExercisePersonalBests(e.muscle,activeActionName);
+    var bestRecord=getExerciseBestRecord(e.muscle,activeActionName);
     htm+='<div class="exercise-action-group">'+
-        '<div class="exercise-summary">'+
-            '<span class="exercise-summary-icon '+e.muscle+'">'+getMuscleIconText(e.muscle)+'</span>'+
-            '<div class="exercise-summary-body">'+
-                '<span class="exercise-summary-value">'+formatMetricNumber(personalBests.maxWeight)+'kg+'+formatMetricNumber(personalBests.maxReps)+'次+'+formatMetricNumber(personalBests.maxSets)+'组</span>'+
-                '<span class="exercise-summary-label">历史最佳</span>'+
-            '</div>'+
-        '</div>'+
         '<div class="exercise-tab-panel">';
+    // Reuse the editable row column layout so the current values and historical best align vertically.
+    htm+='<div class="exercise-best-block">'+
+        '<div class="exercise-subitem exercise-best-row">'+
+            '<div class="param-group"><button class="adjust-btn adjust-btn-placeholder" tabindex="-1" aria-hidden="true">-</button><span class="adjust-value count-slot">'+formatMetricNumber(bestRecord.sets)+'</span><button class="adjust-btn adjust-btn-placeholder" tabindex="-1" aria-hidden="true">+</button><span class="param-label">组</span></div>'+
+            '<div class="param-group"><button class="adjust-btn adjust-btn-placeholder" tabindex="-1" aria-hidden="true">-</button><span class="adjust-value count-slot">'+(bestRecord.reps||'--')+'</span><button class="adjust-btn adjust-btn-placeholder" tabindex="-1" aria-hidden="true">+</button><span class="param-label">次</span></div>'+
+            '<div class="param-group"><input type="text" class="metric-input metric-input-readonly" tabindex="-1" aria-hidden="true" value="'+formatMetricNumber(bestRecord.weight)+'" readonly /><span class="param-label">kg</span></div>'+
+            '<span class="exercise-best-badge">历史最佳</span>'+
+        '</div>'+
+    '</div>';
     for(var ii=0;ii<activeAction.items.length;ii++){
         var item=activeAction.items[ii];
+        var itemVolume=calcEntryVolume(item.exercise);
+        var rowBestClass=bestRecord.volume>0&&itemVolume>=bestRecord.volume?' capacity-best':'';
         var setsFlashClass=getRecordValueFlashClass(dk,item.index,'sets');
         var repsFlashClass=getRecordValueFlashClass(dk,item.index,'reps');
         var weightFlashClass=getRecordValueFlashClass(dk,item.index,'weight');
         htm+=
-        '<div class="exercise-subitem">'+
-            '<div class="param-group"><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value'+setsFlashClass+'">'+item.exercise.sets+'</span><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">组</span></div>'+
-            '<div class="param-group"><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value'+repsFlashClass+'">'+item.exercise.reps+'</span><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">次</span></div>'+
+        '<div class="exercise-subitem'+rowBestClass+'">'+
+            '<div class="param-group"><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value count-slot'+setsFlashClass+'">'+item.exercise.sets+'</span><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">组</span></div>'+
+            '<div class="param-group"><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value count-slot'+repsFlashClass+'">'+item.exercise.reps+'</span><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">次</span></div>'+
             '<div class="param-group"><input type="number" class="metric-input'+weightFlashClass+'" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="0.5" min="0" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><span class="param-label">kg</span></div>'+
             '<button class="delete-btn" onclick="del(\''+dk+'\','+item.index+')" title="删除" aria-label="删除">-</button>'+
             '<button class="copy-btn" onclick="dup(\''+dk+'\','+item.index+')" title="复制" aria-label="复制">+</button>'+
@@ -789,6 +852,7 @@ function showDetail(dk){
     }
     htm+='</div></div></div>';
     lst.innerHTML=htm;
+    if(document.getElementById('statsContent').classList.contains('active'))showStats();
 }
 function moveExerciseGroup(dk,groupIdx,delta){
     var ex=data[dk]||[];
@@ -1092,10 +1156,12 @@ function showVolumeChart(){
     var muscleDateMaxWeights={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleDateMaxVolumeByExercise={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleDateMaxReps={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
+    var muscleDateMaxSets={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleExerciseDateVols={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleExerciseDateMaxWeights={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleExerciseDateMaxVolumes={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleExerciseDateMaxReps={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
+    var muscleExerciseDateMaxSets={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     for(var dk in data){
         var ex=data[dk]||[];
         var exercisesByMuscle={};
@@ -1112,6 +1178,7 @@ function showVolumeChart(){
             muscleDateVols[muscleKey][dk]=calcVolume(muscleExercises);
             muscleDateMaxWeights[muscleKey][dk]=calcMaxWeight(muscleExercises);
             muscleDateMaxReps[muscleKey][dk]=calcMaxWeightReps(muscleExercises);
+            muscleDateMaxSets[muscleKey][dk]=calcMaxWeightSets(muscleExercises);
             var exercisesByName={};
             for(var mxi=0;mxi<muscleExercises.length;mxi++){
                 var muscleExercise=muscleExercises[mxi];
@@ -1124,10 +1191,12 @@ function showVolumeChart(){
                 if(!muscleExerciseDateMaxWeights[muscleKey][exerciseName])muscleExerciseDateMaxWeights[muscleKey][exerciseName]={};
                 if(!muscleExerciseDateMaxVolumes[muscleKey][exerciseName])muscleExerciseDateMaxVolumes[muscleKey][exerciseName]={};
                 if(!muscleExerciseDateMaxReps[muscleKey][exerciseName])muscleExerciseDateMaxReps[muscleKey][exerciseName]={};
+                if(!muscleExerciseDateMaxSets[muscleKey][exerciseName])muscleExerciseDateMaxSets[muscleKey][exerciseName]={};
                 muscleExerciseDateVols[muscleKey][exerciseName][dk]=calcVolume(exercisesByName[exerciseName]);
                 muscleExerciseDateMaxWeights[muscleKey][exerciseName][dk]=calcMaxWeight(exercisesByName[exerciseName]);
                 muscleExerciseDateMaxVolumes[muscleKey][exerciseName][dk]=calcMaxWeightVolume(exercisesByName[exerciseName]);
                 muscleExerciseDateMaxReps[muscleKey][exerciseName][dk]=calcMaxWeightReps(exercisesByName[exerciseName]);
+                muscleExerciseDateMaxSets[muscleKey][exerciseName][dk]=calcMaxWeightSets(exercisesByName[exerciseName]);
                 muscleDayMaxVolume+=muscleExerciseDateMaxVolumes[muscleKey][exerciseName][dk];
             }
             muscleDateMaxVolumeByExercise[muscleKey][dk]=muscleDayMaxVolume;
@@ -1135,6 +1204,8 @@ function showVolumeChart(){
     }
     var activeMetricMap=volumeMetricMode==='maxWeight'
         ? muscleDateMaxWeights
+        : volumeMetricMode==='maxSets'
+        ? muscleDateMaxSets
         : volumeMetricMode==='maxReps'
         ? muscleDateMaxReps
         : volumeMetricMode==='total'
@@ -1179,6 +1250,8 @@ function showVolumeChart(){
     if(selectedMuscle!=='all'){
         var activeExerciseMap=volumeMetricMode==='maxWeight'
             ? (muscleExerciseDateMaxWeights[selectedMuscle]||{})
+            : volumeMetricMode==='maxSets'
+            ? (muscleExerciseDateMaxSets[selectedMuscle]||{})
             : volumeMetricMode==='maxReps'
             ? (muscleExerciseDateMaxReps[selectedMuscle]||{})
             : volumeMetricMode==='total'
@@ -1209,8 +1282,8 @@ function showVolumeChart(){
     var dates=selectedMuscle==='all'
         ? allDataDates
         : (selectedExercise&&volumeMetricMode!=='muscleTotal')
-        ? Object.keys(((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='maxReps'?muscleExerciseDateMaxReps:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{}).filter(function(dateKey){
-            return ((((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='maxReps'?muscleExerciseDateMaxReps:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{})[dateKey]||0)>0;
+        ? Object.keys(((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='maxSets'?muscleExerciseDateMaxSets:volumeMetricMode==='maxReps'?muscleExerciseDateMaxReps:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{}).filter(function(dateKey){
+            return ((((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='maxSets'?muscleExerciseDateMaxSets:volumeMetricMode==='maxReps'?muscleExerciseDateMaxReps:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{})[dateKey]||0)>0;
         }).sort()
         : Object.keys(activeMetricMap[selectedMuscle]||{}).filter(function(dateKey){
             return (activeMetricMap[selectedMuscle][dateKey]||0)>0;
@@ -1245,7 +1318,7 @@ function showVolumeChart(){
         }
     }else if(selectedExercise&&volumeMetricMode!=='muscleTotal'){
         var exercisePts=[];
-        var selectedExerciseDateMap=((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='maxReps'?muscleExerciseDateMaxReps:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{};
+        var selectedExerciseDateMap=((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='maxSets'?muscleExerciseDateMaxSets:volumeMetricMode==='maxReps'?muscleExerciseDateMaxReps:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{};
         for(var sei=0;sei<dates.length;sei++){
             var exerciseDate=dates[sei];
             var exerciseVol=selectedExerciseDateMap[exerciseDate]||0;
@@ -1275,13 +1348,19 @@ function showVolumeChart(){
         return;
     }
 
-    var axisStep=volumeMetricMode==='maxWeight'?10:volumeMetricMode==='maxReps'?2:100;
+    var axisStep=volumeMetricMode==='maxWeight'?10:volumeMetricMode==='maxSets'?1:volumeMetricMode==='maxReps'?2:100;
+    var axisMin=displayedMinVol===Infinity?0:Math.floor(displayedMinVol/axisStep)*axisStep;
     var axisMax=Math.ceil(displayedMaxVol/axisStep)*axisStep||axisStep;
+    if(axisMin===axisMax){
+        axisMin=Math.max(0,axisMin-axisStep);
+        axisMax=axisMax+axisStep;
+    }
+    var axisRange=Math.max(axisStep,axisMax-axisMin);
     htm+='<div class="line-chart"><svg class="line-chart-svg" viewBox="0 0 '+width+' '+height+'">';
     for(var gi=0;gi<=4;gi++){
         var gridY=padding.top+chartH*gi/4;
         htm+='<line class="chart-grid" x1="'+padding.left+'" y1="'+gridY+'" x2="'+(width-padding.right)+'" y2="'+gridY+'"/>';
-        var axisVal=Math.round(axisMax*(4-gi)/4);
+        var axisVal=Math.round((axisMin+axisRange*(4-gi)/4)*100)/100;
         htm+='<text class="chart-axis" x="'+(padding.left-5)+'" y="'+(gridY+4)+'" text-anchor="end">'+axisVal+'</text>';
     }
     for(var xi=0;xi<dates.length;xi++){
@@ -1290,8 +1369,8 @@ function showVolumeChart(){
         htm+='<text class="chart-axis" x="'+xLabel+'" y="'+(height-10)+'" text-anchor="middle">'+day+'日</text>';
     }
     if(displayedMinVol!==Infinity){
-        var maxGuideY=padding.top+chartH*(1-displayedMaxVol/axisMax);
-        var minGuideY=padding.top+chartH*(1-displayedMinVol/axisMax);
+        var maxGuideY=padding.top+chartH*(1-(displayedMaxVol-axisMin)/axisRange);
+        var minGuideY=padding.top+chartH*(1-(displayedMinVol-axisMin)/axisRange);
         htm+='<line class="chart-guide-line chart-guide-max" x1="'+padding.left+'" y1="'+maxGuideY+'" x2="'+(width-padding.right)+'" y2="'+maxGuideY+'"/>';
         htm+='<text class="chart-guide-label chart-guide-label-max" x="'+(width-padding.right-2)+'" y="'+(maxGuideY-4)+'" text-anchor="end">MAX '+displayedMaxVol+'</text>';
         htm+='<line class="chart-guide-line chart-guide-min" x1="'+padding.left+'" y1="'+minGuideY+'" x2="'+(width-padding.right)+'" y2="'+minGuideY+'"/>';
@@ -1309,7 +1388,7 @@ function showVolumeChart(){
                 for(var pi=0;pi<pts.length;pi++){
                     var idx=dates.indexOf(pts[pi].dk);
                     var px=padding.left+chartW*idx/(dates.length-1||1);
-                    var py=padding.top+chartH*(1-pts[pi].vol/axisMax);
+                    var py=padding.top+chartH*(1-(pts[pi].vol-axisMin)/axisRange);
                     pathD+=(pi===0?'M':' L')+px+' '+py;
                 }
                 htm+='<path class="chart-line" stroke="'+muscleColors[key]+'" d="'+pathD+'" data-muscle="'+key+'" style="opacity:1"/>';
@@ -1318,9 +1397,9 @@ function showVolumeChart(){
                     var prevIdx=dates.indexOf(pts[pi-1].dk);
                     var currIdx=dates.indexOf(pts[pi].dk);
                     var prevX=padding.left+chartW*prevIdx/(dates.length-1||1);
-                    var prevY=padding.top+chartH*(1-pts[pi-1].vol/axisMax);
+                    var prevY=padding.top+chartH*(1-(pts[pi-1].vol-axisMin)/axisRange);
                     var currX=padding.left+chartW*currIdx/(dates.length-1||1);
-                    var currY=padding.top+chartH*(1-pts[pi].vol/axisMax);
+                    var currY=padding.top+chartH*(1-(pts[pi].vol-axisMin)/axisRange);
                     var segmentColor=pts[pi].vol>=pts[pi-1].vol?chartRiseColor:chartFallColor;
                     htm+='<path class="chart-line" stroke="'+segmentColor+'" d="M'+prevX+' '+prevY+' L'+currX+' '+currY+'"/>';
                 }
@@ -1329,10 +1408,10 @@ function showVolumeChart(){
         for(var pj=0;pj<pts.length;pj++){
             var pointIdx=dates.indexOf(pts[pj].dk);
             var pointX=padding.left+chartW*pointIdx/(dates.length-1||1);
-            var pointY=padding.top+chartH*(1-pts[pj].vol/axisMax);
+            var pointY=padding.top+chartH*(1-(pts[pj].vol-axisMin)/axisRange);
             var isMaxPoint=pts[pj].vol===displayedMaxVol;
             var pointR=selectedMuscle==='all'?(isMaxPoint?4:3):(isMaxPoint?5:4);
-            var metricSuffix=volumeMetricMode==='maxReps'?'次':'kg';
+            var metricSuffix=volumeMetricMode==='maxWeight'?'kg':volumeMetricMode==='maxSets'?'组':volumeMetricMode==='maxReps'?'次':'kg';
             var pointTitle=(selectedMuscle==='all'?getMuscleIconText(key)+' '+muscleNames[key]+' · ':((selectedExercise&&volumeMetricMode!=='muscleTotal')?selectedExercise+' · ':'' )+pts[pj].dk.split('-')[2]+'日: ')+pts[pj].vol+metricSuffix;
             htm+='<circle class="chart-point'+(isMaxPoint?' chart-point-max':'')+'" cx="'+pointX+'" cy="'+pointY+'" r="'+pointR+'"'+(isMaxPoint?'':' fill="'+muscleColors[key]+'"')+' data-muscle="'+key+'" data-date="'+pts[pj].dk+'" data-vol="'+pts[pj].vol+'" data-unit="'+metricSuffix+'"><title>'+pointTitle+'</title></circle>';
         }
@@ -1341,6 +1420,7 @@ function showVolumeChart(){
     htm+='<div class="chart-footer">'+
         '<div class="chart-mode-pill">'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='maxWeight'?' active':'')+'" onclick="setVolumeMetricMode(\'maxWeight\')">最大重量</button>'+
+            '<button class="chart-mode-toggle'+(volumeMetricMode==='maxSets'?' active':'')+'" onclick="setVolumeMetricMode(\'maxSets\')">最大组数</button>'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='maxReps'?' active':'')+'" onclick="setVolumeMetricMode(\'maxReps\')">最大次数</button>'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='total'?' active':'')+'" onclick="setVolumeMetricMode(\'total\')">最大容量</button>'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='muscleTotal'?' active':'')+'" onclick="setVolumeMetricMode(\'muscleTotal\')">总容量</button>'+
@@ -1394,7 +1474,7 @@ function setVolumeExercise(mu,exerciseName){
     showVolumeChart();
 }
 function setVolumeMetricMode(mode){
-    if(mode!=='maxWeight'&&mode!=='maxReps'&&mode!=='total'&&mode!=='muscleTotal')return;
+    if(mode!=='maxWeight'&&mode!=='maxSets'&&mode!=='maxReps'&&mode!=='total'&&mode!=='muscleTotal')return;
     volumeMetricMode=mode;
     showVolumeChart();
 }
@@ -1420,17 +1500,20 @@ function calcMuscleStats(mu){
             if(e.muscle!==mu)continue;
             var reps=parseInt(e.reps)||0;
             var w=e.weight||0;
+            var mvol=e.sets*reps*w;
             if(!exerciseMilestones[e.name])exerciseMilestones[e.name]=[];
-            if(w>maxWeight){
+            if(w>maxWeight||(w===maxWeight&&maxRecord&&mvol>=((Number(maxRecord.sets)||0)*(parseInt(maxRecord.reps)||0)*(Number(maxRecord.weight)||0)))){
                 maxWeight=w;
                 maxRecord={name:e.name,sets:e.sets,reps:e.reps,weight:w,date:dk};
                 milestones.push({weight:w,date:dk});
             }
-            if(w>(exerciseMaxWeights[e.name]||0)){
+            var exerciseTop=exerciseMilestones[e.name].length?exerciseMilestones[e.name][exerciseMilestones[e.name].length-1]:null;
+            var exerciseTopVolume=exerciseTop?((Number(exerciseTop.sets)||0)*(parseInt(exerciseTop.reps)||0)*(Number(exerciseTop.weight)||0)):0;
+            if(w>(exerciseMaxWeights[e.name]||0)||(w===(exerciseMaxWeights[e.name]||0)&&mvol>=exerciseTopVolume)){
                 exerciseMaxWeights[e.name]=w;
-                exerciseMilestones[e.name].push({date:dk,weight:w,sets:e.sets,reps:e.reps});
+                if(exerciseTop&&w===(exerciseTop.weight||0))exerciseMilestones[e.name][exerciseMilestones[e.name].length-1]={date:dk,weight:w,sets:e.sets,reps:e.reps};
+                else exerciseMilestones[e.name].push({date:dk,weight:w,sets:e.sets,reps:e.reps});
             }
-            var mvol=e.sets*reps*w;
             dayVol+=mvol;
         }
         if(dayVol>maxDailyVol){
