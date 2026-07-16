@@ -141,6 +141,8 @@
         .exercise-summary-label { color: var(--muted); font-size: 10px; line-height: 1.1; margin-left: auto; white-space: nowrap; flex-shrink: 0; }
         .exercise-action-group { display: flex; flex-direction: column; gap: 10px; }
         .exercise-tab-panel { display: flex; flex-direction: column; gap: 6px; }
+        .exercise-time-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 2px; color: var(--muted); font-size: 11px; line-height: 1.2; }
+        .exercise-time-meta { white-space: nowrap; }
         .exercise-subitem,
         .exercise-best-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(88px, 1fr) auto auto; align-items: center; gap: 6px; min-height: 24px; min-width: 0; font-size: clamp(13px, 3.4vw, 16px); }
         .exercise-subitem { padding: 8px; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(241,244,248,0.72) 100%); border: 1px solid rgba(255,255,255,0.72); box-shadow: inset 0 1px 0 rgba(255,255,255,0.78); }
@@ -435,6 +437,39 @@ function rememberCustomExerciseName(m,name){
 }
 hydrateCustomExerciseNamesFromData();
 function pad(n){return String(n).padStart(2,'0');}
+function getNowTimestamp(){
+    return Date.now();
+}
+function normalizeTimestampValue(value){
+    if(value==null||value==='')return null;
+    var timestamp=Number(value);
+    if(isNaN(timestamp)||timestamp<=0)return null;
+    return timestamp;
+}
+function formatClockTime(timestamp){
+    var normalized=normalizeTimestampValue(timestamp);
+    if(!normalized)return '--:--';
+    var date=new Date(normalized);
+    return pad(date.getHours())+':'+pad(date.getMinutes());
+}
+function getDayTimeMeta(exercises){
+    var firstAddedAt=null;
+    var lastUpdatedAt=null;
+    for(var i=0;i<exercises.length;i++){
+        var exercise=exercises[i];
+        var createdAt=normalizeTimestampValue(exercise.createdAt);
+        var updatedAt=normalizeTimestampValue(exercise.updatedAt);
+        if(createdAt!==null&&(firstAddedAt===null||createdAt<firstAddedAt))firstAddedAt=createdAt;
+        var latestAt=updatedAt!==null?updatedAt:createdAt;
+        if(latestAt!==null&&(lastUpdatedAt===null||latestAt>lastUpdatedAt))lastUpdatedAt=latestAt;
+    }
+    return {firstAddedAt:firstAddedAt,lastUpdatedAt:lastUpdatedAt};
+}
+function calcTrainingDurationMinutes(exercises){
+    var timeMeta=getDayTimeMeta(exercises);
+    if(timeMeta.firstAddedAt===null||timeMeta.lastUpdatedAt===null)return null;
+    return Math.max(0,Math.round((timeMeta.lastUpdatedAt-timeMeta.firstAddedAt)/60000));
+}
 function getExerciseNamesFromData(m){
     var seen={};
     var names=[];
@@ -788,6 +823,7 @@ function showDetail(dk){
     var lst=document.getElementById('exerciseList');
     var ex=data[dk]||[];
     if(!ex.length){lst.innerHTML='<div class="no-data">暂无训练记录，点击上方添加</div>';return;}
+    var dayTimeMeta=getDayTimeMeta(ex);
     var htm='';
     var groups=getExerciseGroups(ex);
     var activeMuscle=recordMuscleTabs[getRecordMuscleTabKey(dk)];
@@ -850,7 +886,12 @@ function showDetail(dk){
             '<button class="copy-btn" onclick="dup(\''+dk+'\','+item.index+')" title="复制" aria-label="复制">+</button>'+
         '</div>';
     }
-    htm+='</div></div></div>';
+    htm+='</div>'+
+        '<div class="exercise-time-row">'+
+            '<span class="exercise-time-meta">首次添加 '+formatClockTime(dayTimeMeta.firstAddedAt)+'</span>'+
+            '<span class="exercise-time-meta">最近更新 '+formatClockTime(dayTimeMeta.lastUpdatedAt)+'</span>'+
+        '</div>'+
+    '</div></div>';
     lst.innerHTML=htm;
     if(document.getElementById('statsContent').classList.contains('active'))showStats();
 }
@@ -1006,6 +1047,7 @@ function setWeightValue(dk,i,val){
     var nextValue=val===''?null:parseFloat(val);
     if(nextValue!==null&&isNaN(nextValue))return;
     data[dk][i].weight=nextValue===null?null:Math.max(0,nextValue);
+    data[dk][i].updatedAt=getNowTimestamp();
     var finalValue=data[dk][i].weight==null?null:Number(data[dk][i].weight);
     if(finalValue!==prevValue)markRecordValueFlash(dk,i,'weight',finalValue!==null&&prevValue!==null&&finalValue<prevValue?'down':'up');
     save();
@@ -1015,7 +1057,8 @@ function adjWeight(dk,i,d){data[dk][i].weight=Math.max(0,(data[dk][i].weight||0)
 function dup(dk,i){
     if(!data[dk]||!data[dk][i])return;
     var source=data[dk][i];
-    data[dk].push({muscle:source.muscle,name:source.name,sets:1,reps:source.reps,weight:source.weight});
+    var now=getNowTimestamp();
+    data[dk].push({muscle:source.muscle,name:source.name,sets:1,reps:source.reps,weight:source.weight,createdAt:now,updatedAt:now});
     recordMuscleTabs[getRecordMuscleTabKey(dk)]=source.muscle;
     recordActionTabs[getRecordActionTabKey(dk,source.muscle)]=source.name;
     save();
@@ -1026,6 +1069,7 @@ function del(dk,i){data[dk].splice(i,1);if(!data[dk].length)delete data[dk];save
 function adjSets(dk,i,d){
     var prev=data[dk][i].sets;
     data[dk][i].sets=Math.max(1,data[dk][i].sets+d);
+    data[dk][i].updatedAt=getNowTimestamp();
     if(data[dk][i].sets!==prev)markRecordValueFlash(dk,i,'sets',data[dk][i].sets<prev?'down':'up');
     save();
     showDetail(dk);
@@ -1035,6 +1079,7 @@ function adjReps(dk,i,d){
     var r=parseInt(data[dk][i].reps)||1;
     r=Math.max(1,r+d);
     data[dk][i].reps=String(r);
+    data[dk][i].updatedAt=getNowTimestamp();
     if(r!==prev)markRecordValueFlash(dk,i,'reps',r<prev?'down':'up');
     save();
     showDetail(dk);
@@ -1079,9 +1124,13 @@ function addEx(){
     if(!n||!s||!r||!selMuscle||!selDate){alert('请填写完整信息');return;}
     if(editIdx<0)selDate=getTodayKey();
     var targetDate=selDate;
-    var ex={muscle:selMuscle,name:n,sets:parseInt(s),reps:r,weight:w?parseFloat(w):null};
+    var now=getNowTimestamp();
+    var ex={muscle:selMuscle,name:n,sets:parseInt(s),reps:r,weight:w?parseFloat(w):null,createdAt:now,updatedAt:now};
     rememberCustomExerciseName(selMuscle,n);
     if(editIdx>=0){
+        var existing=data[targetDate][editIdx]||{};
+        ex.createdAt=normalizeTimestampValue(existing.createdAt)||now;
+        ex.updatedAt=now;
         data[targetDate][editIdx]=ex;
         editIdx=-1;
     }else{
@@ -1157,11 +1206,16 @@ function showVolumeChart(){
     var muscleDateMaxVolumeByExercise={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleDateMaxReps={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleDateMaxSets={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
+    var muscleDateDurations={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleExerciseDateVols={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleExerciseDateMaxWeights={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleExerciseDateMaxVolumes={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleExerciseDateMaxReps={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleExerciseDateMaxSets={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
+    var muscleExerciseDateDurations={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
+    function hasChartMetricValue(value){
+        return volumeMetricMode==='duration'?value!==null&&value!==undefined:(value||0)>0;
+    }
     for(var dk in data){
         var ex=data[dk]||[];
         var exercisesByMuscle={};
@@ -1179,6 +1233,7 @@ function showVolumeChart(){
             muscleDateMaxWeights[muscleKey][dk]=calcMaxWeight(muscleExercises);
             muscleDateMaxReps[muscleKey][dk]=calcMaxWeightReps(muscleExercises);
             muscleDateMaxSets[muscleKey][dk]=calcMaxWeightSets(muscleExercises);
+            muscleDateDurations[muscleKey][dk]=calcTrainingDurationMinutes(muscleExercises);
             var exercisesByName={};
             for(var mxi=0;mxi<muscleExercises.length;mxi++){
                 var muscleExercise=muscleExercises[mxi];
@@ -1192,11 +1247,13 @@ function showVolumeChart(){
                 if(!muscleExerciseDateMaxVolumes[muscleKey][exerciseName])muscleExerciseDateMaxVolumes[muscleKey][exerciseName]={};
                 if(!muscleExerciseDateMaxReps[muscleKey][exerciseName])muscleExerciseDateMaxReps[muscleKey][exerciseName]={};
                 if(!muscleExerciseDateMaxSets[muscleKey][exerciseName])muscleExerciseDateMaxSets[muscleKey][exerciseName]={};
+                if(!muscleExerciseDateDurations[muscleKey][exerciseName])muscleExerciseDateDurations[muscleKey][exerciseName]={};
                 muscleExerciseDateVols[muscleKey][exerciseName][dk]=calcVolume(exercisesByName[exerciseName]);
                 muscleExerciseDateMaxWeights[muscleKey][exerciseName][dk]=calcMaxWeight(exercisesByName[exerciseName]);
                 muscleExerciseDateMaxVolumes[muscleKey][exerciseName][dk]=calcMaxWeightVolume(exercisesByName[exerciseName]);
                 muscleExerciseDateMaxReps[muscleKey][exerciseName][dk]=calcMaxWeightReps(exercisesByName[exerciseName]);
                 muscleExerciseDateMaxSets[muscleKey][exerciseName][dk]=calcMaxWeightSets(exercisesByName[exerciseName]);
+                muscleExerciseDateDurations[muscleKey][exerciseName][dk]=calcTrainingDurationMinutes(exercisesByName[exerciseName]);
                 muscleDayMaxVolume+=muscleExerciseDateMaxVolumes[muscleKey][exerciseName][dk];
             }
             muscleDateMaxVolumeByExercise[muscleKey][dk]=muscleDayMaxVolume;
@@ -1208,6 +1265,8 @@ function showVolumeChart(){
         ? muscleDateMaxSets
         : volumeMetricMode==='maxReps'
         ? muscleDateMaxReps
+        : volumeMetricMode==='duration'
+        ? muscleDateDurations
         : volumeMetricMode==='total'
         ? muscleDateMaxVolumeByExercise
         : muscleDateVols;
@@ -1216,7 +1275,7 @@ function showVolumeChart(){
     for(var mi2=0;mi2<muscles.length;mi2++){
         var muscleKey2=muscles[mi2];
         for(var dk2 in activeMetricMap[muscleKey2]){
-            if(activeMetricMap[muscleKey2][dk2]>0)allDates[dk2]=true;
+            if(hasChartMetricValue(activeMetricMap[muscleKey2][dk2]))allDates[dk2]=true;
         }
     }
     var allDataDates=Object.keys(allDates).sort();
@@ -1230,7 +1289,7 @@ function showVolumeChart(){
         var muBtn=muscles[bi];
         var hasData=false;
         for(var dateKey in activeMetricMap[muBtn]){
-            if(activeMetricMap[muBtn][dateKey]>0){hasData=true;break;}
+            if(hasChartMetricValue(activeMetricMap[muBtn][dateKey])){hasData=true;break;}
         }
         if(hasData){
             var btnActive=(volumeMuscle===muBtn)?' active':'';
@@ -1254,13 +1313,15 @@ function showVolumeChart(){
             ? (muscleExerciseDateMaxSets[selectedMuscle]||{})
             : volumeMetricMode==='maxReps'
             ? (muscleExerciseDateMaxReps[selectedMuscle]||{})
+            : volumeMetricMode==='duration'
+            ? (muscleExerciseDateDurations[selectedMuscle]||{})
             : volumeMetricMode==='total'
             ? (muscleExerciseDateMaxVolumes[selectedMuscle]||{})
             : (muscleExerciseDateVols[selectedMuscle]||{});
         var availableExercises=Object.keys(activeExerciseMap).filter(function(exerciseName){
             var dateMap=activeExerciseMap[exerciseName]||{};
             for(var dateKey in dateMap){
-                if(dateMap[dateKey]>0)return true;
+                if(hasChartMetricValue(dateMap[dateKey]))return true;
             }
             return false;
         });
@@ -1282,11 +1343,11 @@ function showVolumeChart(){
     var dates=selectedMuscle==='all'
         ? allDataDates
         : (selectedExercise&&volumeMetricMode!=='muscleTotal')
-        ? Object.keys(((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='maxSets'?muscleExerciseDateMaxSets:volumeMetricMode==='maxReps'?muscleExerciseDateMaxReps:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{}).filter(function(dateKey){
-            return ((((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='maxSets'?muscleExerciseDateMaxSets:volumeMetricMode==='maxReps'?muscleExerciseDateMaxReps:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{})[dateKey]||0)>0;
+        ? Object.keys(((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='maxSets'?muscleExerciseDateMaxSets:volumeMetricMode==='maxReps'?muscleExerciseDateMaxReps:volumeMetricMode==='duration'?muscleExerciseDateDurations:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{}).filter(function(dateKey){
+            return hasChartMetricValue((((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='maxSets'?muscleExerciseDateMaxSets:volumeMetricMode==='maxReps'?muscleExerciseDateMaxReps:volumeMetricMode==='duration'?muscleExerciseDateDurations:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{})[dateKey]);
         }).sort()
         : Object.keys(activeMetricMap[selectedMuscle]||{}).filter(function(dateKey){
-            return (activeMetricMap[selectedMuscle][dateKey]||0)>0;
+            return hasChartMetricValue(activeMetricMap[selectedMuscle][dateKey]);
         }).sort();
     if(dates.length>10)dates=dates.slice(-10);
     if(!dates.length){
@@ -1307,8 +1368,8 @@ function showVolumeChart(){
             var allPts=[];
             for(var di=0;di<dates.length;di++){
                 var allDate=dates[di];
-                var allVol=activeMetricMap[allMuscle][allDate]||0;
-                if(allVol>0){
+                var allVol=activeMetricMap[allMuscle][allDate];
+                if(hasChartMetricValue(allVol)){
                     allPts.push({dk:allDate,vol:allVol});
                     if(allVol>displayedMaxVol)displayedMaxVol=allVol;
                     if(allVol<displayedMinVol)displayedMinVol=allVol;
@@ -1318,11 +1379,11 @@ function showVolumeChart(){
         }
     }else if(selectedExercise&&volumeMetricMode!=='muscleTotal'){
         var exercisePts=[];
-        var selectedExerciseDateMap=((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='maxSets'?muscleExerciseDateMaxSets:volumeMetricMode==='maxReps'?muscleExerciseDateMaxReps:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{};
+        var selectedExerciseDateMap=((volumeMetricMode==='maxWeight'?muscleExerciseDateMaxWeights:volumeMetricMode==='maxSets'?muscleExerciseDateMaxSets:volumeMetricMode==='maxReps'?muscleExerciseDateMaxReps:volumeMetricMode==='duration'?muscleExerciseDateDurations:volumeMetricMode==='total'?muscleExerciseDateMaxVolumes:muscleExerciseDateVols)[selectedMuscle]||{})[selectedExercise]||{};
         for(var sei=0;sei<dates.length;sei++){
             var exerciseDate=dates[sei];
-            var exerciseVol=selectedExerciseDateMap[exerciseDate]||0;
-            if(exerciseVol>0){
+            var exerciseVol=selectedExerciseDateMap[exerciseDate];
+            if(hasChartMetricValue(exerciseVol)){
                 exercisePts.push({dk:exerciseDate,vol:exerciseVol});
                 if(exerciseVol>displayedMaxVol)displayedMaxVol=exerciseVol;
                 if(exerciseVol<displayedMinVol)displayedMinVol=exerciseVol;
@@ -1333,8 +1394,8 @@ function showVolumeChart(){
         var singlePts=[];
         for(var si=0;si<dates.length;si++){
             var singleDate=dates[si];
-            var singleVol=activeMetricMap[selectedMuscle][singleDate]||0;
-            if(singleVol>0){
+            var singleVol=activeMetricMap[selectedMuscle][singleDate];
+            if(hasChartMetricValue(singleVol)){
                 singlePts.push({dk:singleDate,vol:singleVol});
                 if(singleVol>displayedMaxVol)displayedMaxVol=singleVol;
                 if(singleVol<displayedMinVol)displayedMinVol=singleVol;
@@ -1343,12 +1404,12 @@ function showVolumeChart(){
         if(singlePts.length)seriesMap[selectedMuscle]=singlePts;
     }
 
-    if(displayedMaxVol===0){
+    if(!Object.keys(seriesMap).length){
         container.innerHTML=htm+'<div class="no-data">暂无训练数据</div>';
         return;
     }
 
-    var axisStep=volumeMetricMode==='maxWeight'?10:volumeMetricMode==='maxSets'?1:volumeMetricMode==='maxReps'?2:100;
+    var axisStep=volumeMetricMode==='maxWeight'?10:volumeMetricMode==='maxSets'?1:volumeMetricMode==='maxReps'?2:volumeMetricMode==='duration'?10:100;
     var axisMin=displayedMinVol===Infinity?0:Math.floor(displayedMinVol/axisStep)*axisStep;
     var axisMax=Math.ceil(displayedMaxVol/axisStep)*axisStep||axisStep;
     if(axisMin===axisMax){
@@ -1411,7 +1472,7 @@ function showVolumeChart(){
             var pointY=padding.top+chartH*(1-(pts[pj].vol-axisMin)/axisRange);
             var isMaxPoint=pts[pj].vol===displayedMaxVol;
             var pointR=selectedMuscle==='all'?(isMaxPoint?4:3):(isMaxPoint?5:4);
-            var metricSuffix=volumeMetricMode==='maxWeight'?'kg':volumeMetricMode==='maxSets'?'组':volumeMetricMode==='maxReps'?'次':'kg';
+            var metricSuffix=volumeMetricMode==='maxWeight'?'kg':volumeMetricMode==='maxSets'?'组':volumeMetricMode==='maxReps'?'次':volumeMetricMode==='duration'?'分钟':'kg';
             var pointTitle=(selectedMuscle==='all'?getMuscleIconText(key)+' '+muscleNames[key]+' · ':((selectedExercise&&volumeMetricMode!=='muscleTotal')?selectedExercise+' · ':'' )+pts[pj].dk.split('-')[2]+'日: ')+pts[pj].vol+metricSuffix;
             htm+='<circle class="chart-point'+(isMaxPoint?' chart-point-max':'')+'" cx="'+pointX+'" cy="'+pointY+'" r="'+pointR+'"'+(isMaxPoint?'':' fill="'+muscleColors[key]+'"')+' data-muscle="'+key+'" data-date="'+pts[pj].dk+'" data-vol="'+pts[pj].vol+'" data-unit="'+metricSuffix+'"><title>'+pointTitle+'</title></circle>';
         }
@@ -1424,6 +1485,7 @@ function showVolumeChart(){
             '<button class="chart-mode-toggle'+(volumeMetricMode==='maxReps'?' active':'')+'" onclick="setVolumeMetricMode(\'maxReps\')">最大次数</button>'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='total'?' active':'')+'" onclick="setVolumeMetricMode(\'total\')">最大容量</button>'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='muscleTotal'?' active':'')+'" onclick="setVolumeMetricMode(\'muscleTotal\')">总容量</button>'+
+            '<button class="chart-mode-toggle'+(volumeMetricMode==='duration'?' active':'')+'" onclick="setVolumeMetricMode(\'duration\')">训练时长</button>'+
         '</div>'+
     '</div>';
     container.innerHTML=htm;
@@ -1474,7 +1536,7 @@ function setVolumeExercise(mu,exerciseName){
     showVolumeChart();
 }
 function setVolumeMetricMode(mode){
-    if(mode!=='maxWeight'&&mode!=='maxSets'&&mode!=='maxReps'&&mode!=='total'&&mode!=='muscleTotal')return;
+    if(mode!=='maxWeight'&&mode!=='maxSets'&&mode!=='maxReps'&&mode!=='total'&&mode!=='muscleTotal'&&mode!=='duration')return;
     volumeMetricMode=mode;
     showVolumeChart();
 }
