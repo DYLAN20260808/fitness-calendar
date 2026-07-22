@@ -327,7 +327,7 @@
             <button class="tab-btn active" id="tabRecord" onclick="switchTab('record')">记录</button>
             <button class="tab-btn" id="tabVolume" onclick="switchTab('volume')">容量</button>
             <button class="tab-btn" id="tabStats" onclick="switchTab('stats')">统计</button>
-            <button class="add-btn-small" onclick="openM()">+ 添加</button>
+            <button class="add-btn-small" id="addActionBtn" onclick="openM()" hidden>+ 添加</button>
         </div>
         <div class="tab-content active" id="recordContent">
             <div class="exercise-list" id="exerciseList"><div class="no-data">点击日期添加/查看训练记录</div></div>
@@ -746,6 +746,11 @@ function getTodayKey(){
     var today=new Date();
     return today.getFullYear()+'-'+pad(today.getMonth()+1)+'-'+pad(today.getDate());
 }
+function updateAddActionVisibility(){
+    var addBtn=document.getElementById('addActionBtn');
+    if(!addBtn)return;
+    addBtn.hidden=!selDate;
+}
 function scrollToDateCell(dk){
     var cell=document.querySelector('.day[data-date="'+dk+'"]');
     if(cell)cell.scrollIntoView({behavior:'smooth',block:'center'});
@@ -773,6 +778,7 @@ function render(){
         c.innerHTML+='<div class="'+cls+'" data-date="'+dk+'" onclick="sel(\''+dk+'\')" title="'+(m+1)+'月'+d+'日"><div class="day-number">'+d+'</div><div class="day-icons count-'+iconCount+'">'+ic+'</div></div>';
     }
     document.getElementById('monthYear').textContent=y+'年 '+(m+1)+'月';
+    updateAddActionVisibility();
 }
 function sel(dk){selDate=dk;render();switchTab('record');showDetail(dk);}
 function calcVolume(ex){
@@ -1236,7 +1242,7 @@ function adjReps(dk,i,d){
     save();
     showDetail(dk);
 }
-function openM(){var today=new Date();selDate=getTodayKey();curDate=new Date(today.getFullYear(),today.getMonth(),1);editIdx=-1;document.querySelector('.modal-header h2').textContent='添加训练';document.getElementById('addExercise').textContent='添加动作';document.getElementById('modal').classList.add('show');document.getElementById('addForm').classList.remove('show');selMuscle=null;document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});render();showDetail(selDate);setTimeout(function(){scrollToDateCell(selDate);var el=document.getElementById('modal');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);}
+function openM(){if(!selDate){var today=new Date();selDate=getTodayKey();curDate=new Date(today.getFullYear(),today.getMonth(),1);}editIdx=-1;document.querySelector('.modal-header h2').textContent='添加训练';document.getElementById('addExercise').textContent='添加动作';document.getElementById('modal').classList.add('show');document.getElementById('addForm').classList.remove('show');selMuscle=null;document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});render();showDetail(selDate);setTimeout(function(){scrollToDateCell(selDate);var el=document.getElementById('modal');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);}
 function closeM(){document.getElementById('modal').classList.remove('show');document.getElementById('addForm').classList.remove('show');selMuscle=null;}
 function selM(m){
     selMuscle=m;
@@ -1274,7 +1280,6 @@ function editEx(dk,i){
 function addEx(){
     var n=document.getElementById('exerciseName').value.trim(),s=document.getElementById('exerciseSets').value,r=document.getElementById('exerciseReps').value.trim(),w=document.getElementById('exerciseWeight').value;
     if(!n||!s||!r||!selMuscle||!selDate){alert('请填写完整信息');return;}
-    if(editIdx<0)selDate=getTodayKey();
     var targetDate=selDate;
     var now=getNowTimestamp();
     var ex={muscle:selMuscle,name:n,sets:parseInt(s),reps:r,weight:w?parseFloat(w):null,createdAt:now,updatedAt:now};
