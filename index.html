@@ -141,9 +141,9 @@
         .exercise-summary-label { color: var(--muted); font-size: 10px; line-height: 1.1; margin-left: auto; white-space: nowrap; flex-shrink: 0; }
         .exercise-action-group { display: flex; flex-direction: column; gap: 10px; }
         .exercise-tab-panel { display: flex; flex-direction: column; gap: 6px; }
-        .exercise-time-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 2px; color: var(--muted); font-size: 11px; line-height: 1.2; }
+        .exercise-time-row { display: flex; align-items: center; justify-content: space-between; gap: 0; margin-top: 2px; color: var(--muted); font-size: 11px; line-height: 1.2; }
         .exercise-time-meta { white-space: nowrap; }
-        .exercise-time-field { display: inline-flex; align-items: center; gap: 6px; min-width: 0; flex: 0 1 auto; }
+        .exercise-time-field { display: inline-flex; align-items: center; gap: 6px; min-width: 0; flex: 0 1 auto; position: relative; z-index: 1; }
         .exercise-time-parts { display: inline-flex; align-items: center; gap: 4px; min-width: 0; }
         .exercise-time-part { display: inline-flex; align-items: center; gap: 3px; min-width: 0; }
         .exercise-time-colon { color: var(--muted); font-size: 12px; font-weight: 700; line-height: 1; }
@@ -151,14 +151,23 @@
         .exercise-time-input:focus { outline: none; border-color: rgba(0,113,227,0.42); box-shadow: 0 0 0 2px rgba(0,113,227,0.12); }
         .exercise-time-stepper { display: inline-flex; flex-direction: column; gap: 2px; }
         .exercise-time-stepper .adjust-btn { width: 16px; height: 12px; border-radius: 5px; font-size: 8px; }
-        .exercise-time-arrow { display: inline-flex; align-items: center; justify-content: center; color: var(--accent); font-size: 16px; font-weight: 700; flex: 1 1 auto; min-width: 16px; }
+        .exercise-time-center { position: relative; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; width: 176px; height: 24px; margin: 0 2px; }
+        .exercise-time-duration { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: inline-flex; align-items: center; justify-content: center; min-height: 18px; padding: 0 8px; border-radius: 999px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); border: 1px solid rgba(0,113,227,0.12); color: var(--accent-deep); font-size: 12px; font-weight: 700; line-height: 1; white-space: nowrap; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); z-index: 2; }
+        .exercise-time-duration-unit { font-size: 0.75em; line-height: 1; }
+        .exercise-time-arrow { position: relative; display: block; width: 100%; height: 14px; color: var(--accent); z-index: 1; }
+        .exercise-time-arrow::before { content: ''; position: absolute; top: 50%; left: 0; right: 10px; height: 2px; background: linear-gradient(90deg, rgba(0,113,227,0.22) 0%, rgba(0,113,227,0.9) 100%); transform: translateY(-50%); border-radius: 999px; }
+        .exercise-time-arrow::after { content: ''; position: absolute; top: 50%; right: 0; width: 8px; height: 8px; border-top: 2px solid rgba(0,113,227,0.9); border-right: 2px solid rgba(0,113,227,0.9); transform: translateY(-50%) rotate(45deg); }
         @media (max-width: 480px) {
-            .exercise-time-row { gap: 4px; }
+            .exercise-time-row { gap: 0; }
             .exercise-time-parts { gap: 2px; }
             .exercise-time-part { gap: 2px; }
             .exercise-time-input { width: 30px; height: 26px; padding: 0 2px; font-size: 11px; }
             .exercise-time-stepper .adjust-btn { width: 14px; height: 11px; font-size: 7px; }
-            .exercise-time-arrow { font-size: 14px; min-width: 12px; }
+            .exercise-time-center { width: 128px; height: 22px; margin: 0 1px; }
+            .exercise-time-duration { min-height: 16px; padding: 0 6px; font-size: 11px; }
+            .exercise-time-arrow { height: 12px; }
+            .exercise-time-arrow::before { right: 8px; }
+            .exercise-time-arrow::after { width: 7px; height: 7px; }
         }
         .exercise-subitem,
         .exercise-best-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(88px, 1fr) auto auto; align-items: center; gap: 6px; min-height: 24px; min-width: 0; font-size: clamp(13px, 3.4vw, 16px); }
@@ -536,6 +545,11 @@ function calcTrainingDurationMinutes(dk,exercises){
     var timeMeta=getDayTimeMeta(dk,exercises);
     if(timeMeta.firstAddedAt===null||timeMeta.lastUpdatedAt===null)return null;
     return Math.max(0,Math.round((timeMeta.lastUpdatedAt-timeMeta.firstAddedAt)/60000));
+}
+function formatTrainingDurationLabel(minutes){
+    // Keep the label compact so it fits between the editable start/end time fields.
+    if(minutes===null||minutes===undefined||isNaN(minutes))return '--';
+    return Math.max(0,Math.round(minutes))+' <span class="exercise-time-duration-unit">min</span>';
 }
 function setDayTimeValue(dk,field,value){
     if(field!=='firstAddedAt'&&field!=='lastUpdatedAt')return;
@@ -1031,22 +1045,23 @@ function showDetail(dk){
     }
     var startParts=getClockParts(dayTimeMeta.firstAddedAt);
     var endParts=getClockParts(dayTimeMeta.lastUpdatedAt);
+    var durationMinutes=calcTrainingDurationMinutes(dk,ex);
     htm+='</div>'+
         '<div class="exercise-time-row">'+
             '<span class="exercise-time-field"><span class="exercise-time-parts">'+
-                '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+startParts.hours+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\'firstAddedAt\',\'hours\',this.value)" /><span class="exercise-time-stepper"><button class="adjust-btn" onclick="adjustDayTimePart(\''+dk+'\',\'firstAddedAt\',\'hours\',1)">▲</button><button class="adjust-btn" onclick="adjustDayTimePart(\''+dk+'\',\'firstAddedAt\',\'hours\',-1)">▼</button></span></span>'+
+                '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+startParts.hours+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\'firstAddedAt\',\'hours\',this.value)" /></span>'+
                 '<span class="exercise-time-colon">:</span>'+
-                '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+startParts.minutes+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\'firstAddedAt\',\'minutes\',this.value)" /><span class="exercise-time-stepper"><button class="adjust-btn" onclick="adjustDayTimePart(\''+dk+'\',\'firstAddedAt\',\'minutes\',1)">▲</button><button class="adjust-btn" onclick="adjustDayTimePart(\''+dk+'\',\'firstAddedAt\',\'minutes\',-1)">▼</button></span></span>'+
+                '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+startParts.minutes+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\'firstAddedAt\',\'minutes\',this.value)" /></span>'+
                 '<span class="exercise-time-colon">:</span>'+
-                '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+startParts.seconds+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\'firstAddedAt\',\'seconds\',this.value)" /><span class="exercise-time-stepper"><button class="adjust-btn" onclick="adjustDayTimePart(\''+dk+'\',\'firstAddedAt\',\'seconds\',1)">▲</button><button class="adjust-btn" onclick="adjustDayTimePart(\''+dk+'\',\'firstAddedAt\',\'seconds\',-1)">▼</button></span></span>'+
+                '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+startParts.seconds+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\'firstAddedAt\',\'seconds\',this.value)" /></span>'+
             '</span></span>'+
-            '<span class="exercise-time-arrow" aria-hidden="true">→</span>'+
+            '<span class="exercise-time-center"><span class="exercise-time-duration">'+formatTrainingDurationLabel(durationMinutes)+'</span><span class="exercise-time-arrow" aria-hidden="true"></span></span>'+
             '<span class="exercise-time-field"><span class="exercise-time-parts">'+
-                '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+endParts.hours+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\'lastUpdatedAt\',\'hours\',this.value)" /><span class="exercise-time-stepper"><button class="adjust-btn" onclick="adjustDayTimePart(\''+dk+'\',\'lastUpdatedAt\',\'hours\',1)">▲</button><button class="adjust-btn" onclick="adjustDayTimePart(\''+dk+'\',\'lastUpdatedAt\',\'hours\',-1)">▼</button></span></span>'+
+                '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+endParts.hours+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\'lastUpdatedAt\',\'hours\',this.value)" /></span>'+
                 '<span class="exercise-time-colon">:</span>'+
-                '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+endParts.minutes+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\'lastUpdatedAt\',\'minutes\',this.value)" /><span class="exercise-time-stepper"><button class="adjust-btn" onclick="adjustDayTimePart(\''+dk+'\',\'lastUpdatedAt\',\'minutes\',1)">▲</button><button class="adjust-btn" onclick="adjustDayTimePart(\''+dk+'\',\'lastUpdatedAt\',\'minutes\',-1)">▼</button></span></span>'+
+                '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+endParts.minutes+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\'lastUpdatedAt\',\'minutes\',this.value)" /></span>'+
                 '<span class="exercise-time-colon">:</span>'+
-                '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+endParts.seconds+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\'lastUpdatedAt\',\'seconds\',this.value)" /><span class="exercise-time-stepper"><button class="adjust-btn" onclick="adjustDayTimePart(\''+dk+'\',\'lastUpdatedAt\',\'seconds\',1)">▲</button><button class="adjust-btn" onclick="adjustDayTimePart(\''+dk+'\',\'lastUpdatedAt\',\'seconds\',-1)">▼</button></span></span>'+
+                '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+endParts.seconds+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\'lastUpdatedAt\',\'seconds\',this.value)" /></span>'+
             '</span></span>'+
         '</div>'+
     '</div></div>';
@@ -1657,10 +1672,10 @@ function showVolumeChart(){
     htm+='</svg></div>';
     htm+='<div class="chart-footer">'+
         '<div class="chart-mode-pill">'+
+            '<button class="chart-mode-toggle'+(volumeMetricMode==='total'?' active':'')+'" onclick="setVolumeMetricMode(\'total\')">最大容量</button>'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='maxWeight'?' active':'')+'" onclick="setVolumeMetricMode(\'maxWeight\')">最大重量</button>'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='maxSets'?' active':'')+'" onclick="setVolumeMetricMode(\'maxSets\')">最大组数</button>'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='maxReps'?' active':'')+'" onclick="setVolumeMetricMode(\'maxReps\')">最大次数</button>'+
-            '<button class="chart-mode-toggle'+(volumeMetricMode==='total'?' active':'')+'" onclick="setVolumeMetricMode(\'total\')">最大容量</button>'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='muscleTotal'?' active':'')+'" onclick="setVolumeMetricMode(\'muscleTotal\')">总容量</button>'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='duration'?' active':'')+'" onclick="setVolumeMetricMode(\'duration\')">训练时长</button>'+
         '</div>'+
