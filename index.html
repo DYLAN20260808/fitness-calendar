@@ -157,6 +157,8 @@
         .exercise-time-arrow { position: relative; display: block; width: 100%; height: 14px; color: var(--accent); z-index: 1; }
         .exercise-time-arrow::before { content: ''; position: absolute; top: 50%; left: 0; right: 10px; height: 2px; background: linear-gradient(90deg, rgba(0,113,227,0.22) 0%, rgba(0,113,227,0.9) 100%); transform: translateY(-50%); border-radius: 999px; }
         .exercise-time-arrow::after { content: ''; position: absolute; top: 50%; right: 0; width: 8px; height: 8px; border-top: 2px solid rgba(0,113,227,0.9); border-right: 2px solid rgba(0,113,227,0.9); transform: translateY(-50%) rotate(45deg); }
+        .exercise-capacity-hint { margin-top: 6px; padding: 8px 10px; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(240,245,252,0.88) 100%); border: 1px solid rgba(0,113,227,0.08); color: var(--muted); font-size: 11px; line-height: 1.45; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9); }
+        .exercise-capacity-hint-value { color: #16a34a; font-weight: 700; }
         @media (max-width: 480px) {
             .exercise-time-row { gap: 0; }
             .exercise-time-parts { gap: 2px; }
@@ -168,6 +170,7 @@
             .exercise-time-arrow { height: 12px; }
             .exercise-time-arrow::before { right: 8px; }
             .exercise-time-arrow::after { width: 7px; height: 7px; }
+            .exercise-capacity-hint { font-size: 10px; }
         }
         .exercise-subitem,
         .exercise-best-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(88px, 1fr) auto auto; align-items: center; gap: 6px; min-height: 24px; min-width: 0; font-size: clamp(13px, 3.4vw, 16px); }
@@ -261,6 +264,7 @@
         .chart-line { fill: none; stroke-width: 2; }
         .chart-point { cursor: pointer; }
         .chart-point-max { fill: #ffb340; stroke: #ff5f57; stroke-width: 2; }
+        .chart-point-label { font-size: 10px; font-weight: 700; fill: var(--accent-deep); text-anchor: middle; }
         .chart-point:hover { r: 6; }
         .chart-tooltip { position: absolute; background: rgba(28,28,30,0.88); color: white; padding: 4px 8px; border-radius: 8px; font-size: 11px; pointer-events: none; white-space: nowrap; z-index: 2; box-shadow: 0 8px 18px rgba(0,0,0,0.18); }
         .chart-footer { display: flex; justify-content: flex-end; margin-top: 8px; }
@@ -790,6 +794,40 @@ function formatMetricNumber(value){
     if(value==null||isNaN(value)||value<=0)return '--';
     return Math.abs(value-Math.round(value))<0.001?String(Math.round(value)):String(value);
 }
+function getLatestAddedActionItem(dk,items){
+    var latestItem=null;
+    var latestCreatedAt=null;
+    for(var i=0;i<items.length;i++){
+        var currentItem=items[i];
+        var createdAt=projectTimestampToDateKey(dk,currentItem.exercise&&currentItem.exercise.createdAt);
+        if(createdAt!==null&&(latestCreatedAt===null||createdAt>latestCreatedAt)){
+            latestCreatedAt=createdAt;
+            latestItem=currentItem;
+            continue;
+        }
+        if(createdAt===latestCreatedAt&&latestItem&&currentItem.index>latestItem.index)latestItem=currentItem;
+        if(createdAt===null&&!latestItem)latestItem=currentItem;
+    }
+    return latestItem||items[0]||null;
+}
+function getCapacityHintText(dk,items,bestRecord){
+    var latestItem=getLatestAddedActionItem(dk,items);
+    if(!latestItem||!latestItem.exercise)return '';
+    var latestExercise=latestItem.exercise;
+    var repsValue=extractMaxRepsValue(latestExercise.reps);
+    var weightValue=latestExercise.weight==null?0:Number(latestExercise.weight);
+    var bestVolume=bestRecord&&bestRecord.volume?bestRecord.volume:0;
+    var currentSets=Math.max(1,Number(latestExercise.sets)||1);
+    if(isNaN(weightValue))weightValue=0;
+    if(bestVolume<=0)return '暂无历史最佳可比较。';
+    if(weightValue<=0||repsValue<=0)return '重量或次数无效，无法计算所需组数。';
+    var perSetVolume=weightValue*repsValue;
+    var neededSets=Math.ceil(bestVolume/perSetVolume);
+    if(neededSets<=currentSets){
+        return '<span class="exercise-capacity-hint-value">'+currentSets+' 组</span> 已达到历史最佳容量 <span class="exercise-capacity-hint-value">'+formatMetricNumber(bestVolume)+'</span>。';
+    }
+    return '<span class="exercise-capacity-hint-value">'+neededSets+' 组</span> 才能达到历史最佳容量 <span class="exercise-capacity-hint-value">'+formatMetricNumber(bestVolume)+'</span>。';
+}
 function getExerciseBestRecord(m,name){
     var bestRecord=null;
     var exerciseMaxWeight=0;
@@ -1135,6 +1173,7 @@ function showDetail(dk){
     htm+='</div>';
     var activeAction=group.actionMap[activeActionName];
     var bestRecord=getExerciseBestRecord(e.muscle,activeActionName);
+    var capacityHintText=getCapacityHintText(dk,activeAction.items,bestRecord);
     htm+='<div class="exercise-action-group">'+
         '<div class="exercise-tab-panel">';
     // Reuse the editable row column layout so the current values and historical best align vertically.
@@ -1183,6 +1222,7 @@ function showDetail(dk){
                 '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+endParts.seconds+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\''+group.muscle+'\',\'lastUpdatedAt\',\'seconds\',this.value)" /></span>'+
             '</span></span>'+
         '</div>'+
+        (capacityHintText?'<div class="exercise-capacity-hint">'+capacityHintText+'</div>':'')+
     '</div></div>';
     lst.innerHTML=htm;
     if(document.getElementById('statsContent').classList.contains('active'))showStats();
@@ -1779,6 +1819,7 @@ function showVolumeChart(){
             var pointIdx=dates.indexOf(pts[pj].dk);
             var pointX=padding.left+chartW*pointIdx/(dates.length-1||1);
             var pointY=padding.top+chartH*(1-(pts[pj].vol-axisMin)/axisRange);
+            var isLastPoint=pj===pts.length-1;
             var isMaxPoint=pts[pj].vol===displayedMaxVol;
             var pointR=selectedMuscle==='all'?(isMaxPoint?4:3):(isMaxPoint?5:4);
             var metricSuffix=volumeMetricMode==='maxWeight'?'kg':volumeMetricMode==='maxSets'?'组':volumeMetricMode==='maxReps'?'次':volumeMetricMode==='duration'?'分钟':'kg';
@@ -1786,6 +1827,9 @@ function showVolumeChart(){
                 ? pts[pj].dk.split('-')[2]+'日: '+pts[pj].vol+metricSuffix
                 : (selectedMuscle==='all'?getMuscleIconText(key)+' '+muscleNames[key]+' · ':((selectedExercise&&volumeMetricMode!=='muscleTotal')?selectedExercise+' · ':'' )+pts[pj].dk.split('-')[2]+'日: ')+pts[pj].vol+metricSuffix;
             htm+='<circle class="chart-point'+(isMaxPoint?' chart-point-max':'')+'" cx="'+pointX+'" cy="'+pointY+'" r="'+pointR+'"'+(isMaxPoint||volumeMetricMode==='duration'?'':' fill="'+muscleColors[key]+'"')+' data-muscle="'+key+'" data-date="'+pts[pj].dk+'" data-vol="'+pts[pj].vol+'" data-unit="'+metricSuffix+'"><title>'+pointTitle+'</title></circle>';
+            if(isLastPoint){
+                htm+='<text class="chart-point-label" x="'+pointX+'" y="'+Math.max(padding.top-2,pointY-10)+'">'+formatMetricNumber(pts[pj].vol)+'</text>';
+            }
         }
     }
     htm+='</svg></div>';
