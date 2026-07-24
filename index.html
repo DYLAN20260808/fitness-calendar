@@ -898,6 +898,29 @@ function refreshDayLatestTime(dk,muscle){
     showDetail(dk);
     if(document.getElementById('volumeContent').classList.contains('active'))showVolumeChart();
 }
+function syncRecordGroupLatestTime(dk,muscle,timestamp){
+    if(!dk||!muscle)return;
+    var exercises=(data[dk]||[]).filter(function(exercise){return exercise.muscle===muscle;});
+    if(!exercises.length)return;
+    var nextTimestamp=projectTimestampToDateKey(dk,timestamp);
+    if(nextTimestamp===null)nextTimestamp=getNowTimestampForDateKey(dk);
+    if(nextTimestamp===null)return;
+    var timeMeta=getDayTimeMeta(dk,exercises,muscle);
+    var nextStartTimestamp=timeMeta.firstAddedAt;
+    var startSeconds=getClockSeconds(timeMeta.firstAddedAt);
+    var endSeconds=getClockSeconds(nextTimestamp);
+    if(startSeconds!==null&&endSeconds!==null&&startSeconds>endSeconds){
+        nextStartTimestamp=nextTimestamp;
+    }else{
+        nextStartTimestamp=clampStartTimestampToSameDayRange(timeMeta.firstAddedAt,nextTimestamp);
+    }
+    if(!dayTimeOverrides[dk])dayTimeOverrides[dk]={};
+    var targetOverrides=dayTimeOverrides[dk][muscle]||(dayTimeOverrides[dk][muscle]={});
+    if(nextStartTimestamp!==null)targetOverrides.firstAddedAt=nextStartTimestamp;
+    targetOverrides.lastUpdatedAt=clampEndTimestampToSameDayRange(nextStartTimestamp,nextTimestamp);
+    cleanupDayTimeOverridesForDate(dk);
+    saveDayTimeOverrides();
+}
 function adjustDayTimePart(dk,field,part,delta){
     if(part!=='hours'&&part!=='minutes'&&part!=='seconds')return;
     var exercises=data[dk]||[];
@@ -1550,19 +1573,24 @@ function setWeightValue(dk,i,val){
     var nextValue=val===''?null:parseFloat(val);
     if(nextValue!==null&&isNaN(nextValue))return;
     data[dk][i].weight=nextValue===null?null:Math.max(0,nextValue);
-    data[dk][i].updatedAt=getNowTimestampForDateKey(dk);
+    var updatedAt=getNowTimestampForDateKey(dk);
+    data[dk][i].updatedAt=updatedAt;
     var finalValue=data[dk][i].weight==null?null:Number(data[dk][i].weight);
     if(finalValue!==prevValue)markRecordValueFlash(dk,i,'weight',finalValue!==null&&prevValue!==null&&finalValue<prevValue?'down':'up');
-    if(finalValue!==prevValue)resetRecordGroupTimer(dk,data[dk][i].muscle);
+    if(finalValue!==prevValue){
+        syncRecordGroupLatestTime(dk,data[dk][i].muscle,updatedAt);
+        resetRecordGroupTimer(dk,data[dk][i].muscle);
+    }
     save();
     showDetail(dk);
 }
-function adjWeight(dk,i,d){data[dk][i].weight=Math.max(0,(data[dk][i].weight||0)+d*2.5);data[dk][i].updatedAt=getNowTimestampForDateKey(dk);resetRecordGroupTimer(dk,data[dk][i].muscle);save();showDetail(dk);}
+function adjWeight(dk,i,d){var updatedAt=getNowTimestampForDateKey(dk);data[dk][i].weight=Math.max(0,(data[dk][i].weight||0)+d*2.5);data[dk][i].updatedAt=updatedAt;syncRecordGroupLatestTime(dk,data[dk][i].muscle,updatedAt);resetRecordGroupTimer(dk,data[dk][i].muscle);save();showDetail(dk);}
 function dup(dk,i){
     if(!data[dk]||!data[dk][i])return;
     var source=data[dk][i];
     var now=getNowTimestampForDateKey(dk);
     data[dk].push({muscle:source.muscle,name:source.name,sets:1,reps:source.reps,weight:source.weight,createdAt:now,updatedAt:now});
+    syncRecordGroupLatestTime(dk,source.muscle,now);
     recordMuscleTabs[getRecordMuscleTabKey(dk)]=source.muscle;
     recordActionTabs[getRecordActionTabKey(dk,source.muscle)]=source.name;
     resetRecordGroupTimer(dk,source.muscle);
@@ -1574,9 +1602,13 @@ function del(dk,i){var deletedExercise=data[dk][i];data[dk].splice(i,1);if(!data
 function adjSets(dk,i,d){
     var prev=data[dk][i].sets;
     data[dk][i].sets=Math.max(1,data[dk][i].sets+d);
-    data[dk][i].updatedAt=getNowTimestampForDateKey(dk);
+    var updatedAt=getNowTimestampForDateKey(dk);
+    data[dk][i].updatedAt=updatedAt;
     if(data[dk][i].sets!==prev)markRecordValueFlash(dk,i,'sets',data[dk][i].sets<prev?'down':'up');
-    if(data[dk][i].sets!==prev)resetRecordGroupTimer(dk,data[dk][i].muscle);
+    if(data[dk][i].sets!==prev){
+        syncRecordGroupLatestTime(dk,data[dk][i].muscle,updatedAt);
+        resetRecordGroupTimer(dk,data[dk][i].muscle);
+    }
     save();
     showDetail(dk);
 }
@@ -1585,9 +1617,13 @@ function adjReps(dk,i,d){
     var r=parseInt(data[dk][i].reps)||1;
     r=Math.max(1,r+d);
     data[dk][i].reps=String(r);
-    data[dk][i].updatedAt=getNowTimestampForDateKey(dk);
+    var updatedAt=getNowTimestampForDateKey(dk);
+    data[dk][i].updatedAt=updatedAt;
     if(r!==prev)markRecordValueFlash(dk,i,'reps',r<prev?'down':'up');
-    if(r!==prev)resetRecordGroupTimer(dk,data[dk][i].muscle);
+    if(r!==prev){
+        syncRecordGroupLatestTime(dk,data[dk][i].muscle,updatedAt);
+        resetRecordGroupTimer(dk,data[dk][i].muscle);
+    }
     save();
     showDetail(dk);
 }
@@ -1643,6 +1679,7 @@ function addEx(){
         if(!data[targetDate])data[targetDate]=[];
         data[targetDate].push(ex);
     }
+    syncRecordGroupLatestTime(targetDate,selMuscle,now);
     recordMuscleTabs[getRecordMuscleTabKey(targetDate)]=selMuscle;
     recordActionTabs[getRecordActionTabKey(targetDate,selMuscle)]=n;
     selDate=targetDate;
