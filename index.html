@@ -142,7 +142,6 @@
         .exercise-action-group { display: flex; flex-direction: column; gap: 10px; }
         .exercise-tab-panel { display: flex; flex-direction: column; gap: 6px; }
         .exercise-time-row { display: flex; align-items: center; justify-content: space-between; gap: 0; margin-top: 2px; color: var(--muted); font-size: 11px; line-height: 1.2; }
-        .exercise-time-meta { white-space: nowrap; margin-right: 2ch; }
         .exercise-time-field { display: inline-flex; align-items: center; gap: 6px; min-width: 0; flex: 0 1 auto; position: relative; z-index: 1; }
         .exercise-time-parts { display: inline-flex; align-items: center; gap: 4px; min-width: 0; }
         .exercise-time-part { display: inline-flex; align-items: center; gap: 3px; min-width: 0; }
@@ -158,8 +157,10 @@
         .exercise-time-arrow::before { content: ''; position: absolute; top: 50%; left: 0; right: 10px; height: 2px; background: linear-gradient(90deg, rgba(0,113,227,0.22) 0%, rgba(0,113,227,0.9) 100%); transform: translateY(-50%); border-radius: 999px; }
         .exercise-time-arrow::after { content: ''; position: absolute; top: 50%; right: 0; width: 8px; height: 8px; border-top: 2px solid rgba(0,113,227,0.9); border-right: 2px solid rgba(0,113,227,0.9); transform: translateY(-50%) rotate(45deg); }
         .exercise-timer-wrap { display: inline-flex; align-items: center; margin-left: auto; min-width: 0; flex: 0 0 auto; }
-        .exercise-timer-btn { flex: 0 0 auto; min-width: 62px; height: 28px; padding: 0 8px; border: 1px solid rgba(0,113,227,0.14); border-radius: 10px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); }
+        .exercise-timer-btn { display: inline-flex; align-items: center; gap: 8px; flex: 0 0 auto; min-width: 104px; height: 28px; padding: 0 10px; border: 1px solid rgba(0,113,227,0.14); border-radius: 10px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); }
         .exercise-timer-btn:active { transform: translateY(1px) scale(0.98); }
+        .exercise-timer-meta { white-space: nowrap; color: var(--muted); font-size: 11px; font-weight: 600; }
+        .exercise-timer-value { min-width: 42px; text-align: right; color: var(--accent-deep); }
         .exercise-capacity-hint { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; padding: 8px 10px; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(240,245,252,0.88) 100%); border: 1px solid rgba(0,113,227,0.08); color: var(--muted); font-size: 11px; line-height: 1.45; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9); }
         .exercise-capacity-hint-text { min-width: 0; flex: 1 1 auto; }
         .exercise-capacity-hint-value { color: #16a34a; font-weight: 700; }
@@ -174,8 +175,8 @@
             .exercise-time-arrow { height: 12px; }
             .exercise-time-arrow::before { right: 8px; }
             .exercise-time-arrow::after { width: 7px; height: 7px; }
-            .exercise-time-meta { margin-right: 1ch; }
-            .exercise-timer-btn { min-width: 54px; height: 26px; padding: 0 6px; font-size: 11px; }
+            .exercise-timer-btn { min-width: 94px; height: 26px; padding: 0 8px; gap: 6px; font-size: 11px; }
+            .exercise-timer-meta { font-size: 10px; }
             .exercise-capacity-hint { align-items: flex-start; font-size: 10px; }
         }
         .exercise-subitem,
@@ -434,7 +435,10 @@ function getRecordGroupTimerLabel(dk,muscle){
 }
 function renderRecordGroupTimerButtons(){
     document.querySelectorAll('.exercise-timer-btn').forEach(function(button){
-        button.textContent=getRecordGroupTimerLabel(button.dataset.dateKey,button.dataset.muscle);
+        var valueEl=button.querySelector('.exercise-timer-value');
+        var nextLabel=getRecordGroupTimerLabel(button.dataset.dateKey,button.dataset.muscle);
+        if(valueEl)valueEl.textContent=nextLabel;
+        else button.textContent=nextLabel;
     });
 }
 function ensureRecordGroupTimerInterval(){
@@ -873,11 +877,13 @@ function setDayTimePart(dk,muscle,field,part,value){
     baseParts[part]=numericValue;
     setDayTimeValue(dk,muscle,field,buildClockValueFromParts(baseParts));
 }
-function refreshDayLatestTime(dk,muscle){
+function updateDayLatestTimeForMuscle(dk,muscle,timestamp,shouldRecordRefreshHistory){
     var exercises=(data[dk]||[]).filter(function(exercise){return !muscle||exercise.muscle===muscle;});
-    if(!exercises.length)return;
+    if(!exercises.length)return false;
     var timeMeta=getDayTimeMeta(dk,exercises,muscle);
-    var nextTimestamp=getNowTimestampForDateKey(dk);
+    var nextTimestamp=timestamp==null?getNowTimestampForDateKey(dk):projectTimestampToDateKey(dk,timestamp);
+    if(nextTimestamp===null)nextTimestamp=getNowTimestampForDateKey(dk);
+    if(nextTimestamp===null)return false;
     var nextStartTimestamp=timeMeta.firstAddedAt;
     var startSeconds=getClockSeconds(timeMeta.firstAddedAt);
     var nowSeconds=getClockSeconds(nextTimestamp);
@@ -889,37 +895,24 @@ function refreshDayLatestTime(dk,muscle){
     if(!dayTimeOverrides[dk])dayTimeOverrides[dk]={};
     var targetOverrides=muscle?(dayTimeOverrides[dk][muscle]||(dayTimeOverrides[dk][muscle]={})):dayTimeOverrides[dk];
     if(nextStartTimestamp!==null)targetOverrides.firstAddedAt=nextStartTimestamp;
-    targetOverrides.lastUpdatedAt=nextTimestamp;
-    var refreshHistory=getDayTimeRefreshHistory(dk,muscle);
-    refreshHistory.push(nextTimestamp);
-    targetOverrides.refreshHistory=refreshHistory;
+    targetOverrides.lastUpdatedAt=clampEndTimestampToSameDayRange(nextStartTimestamp,nextTimestamp);
+    if(shouldRecordRefreshHistory){
+        var refreshHistory=getDayTimeRefreshHistory(dk,muscle);
+        refreshHistory.push(nextTimestamp);
+        targetOverrides.refreshHistory=refreshHistory;
+    }
     cleanupDayTimeOverridesForDate(dk);
     saveDayTimeOverrides();
+    return true;
+}
+function refreshDayLatestTime(dk,muscle){
+    if(!updateDayLatestTimeForMuscle(dk,muscle,null,true))return;
     showDetail(dk);
     if(document.getElementById('volumeContent').classList.contains('active'))showVolumeChart();
 }
 function syncRecordGroupLatestTime(dk,muscle,timestamp){
     if(!dk||!muscle)return;
-    var exercises=(data[dk]||[]).filter(function(exercise){return exercise.muscle===muscle;});
-    if(!exercises.length)return;
-    var nextTimestamp=projectTimestampToDateKey(dk,timestamp);
-    if(nextTimestamp===null)nextTimestamp=getNowTimestampForDateKey(dk);
-    if(nextTimestamp===null)return;
-    var timeMeta=getDayTimeMeta(dk,exercises,muscle);
-    var nextStartTimestamp=timeMeta.firstAddedAt;
-    var startSeconds=getClockSeconds(timeMeta.firstAddedAt);
-    var endSeconds=getClockSeconds(nextTimestamp);
-    if(startSeconds!==null&&endSeconds!==null&&startSeconds>endSeconds){
-        nextStartTimestamp=nextTimestamp;
-    }else{
-        nextStartTimestamp=clampStartTimestampToSameDayRange(timeMeta.firstAddedAt,nextTimestamp);
-    }
-    if(!dayTimeOverrides[dk])dayTimeOverrides[dk]={};
-    var targetOverrides=dayTimeOverrides[dk][muscle]||(dayTimeOverrides[dk][muscle]={});
-    if(nextStartTimestamp!==null)targetOverrides.firstAddedAt=nextStartTimestamp;
-    targetOverrides.lastUpdatedAt=clampEndTimestampToSameDayRange(nextStartTimestamp,nextTimestamp);
-    cleanupDayTimeOverridesForDate(dk);
-    saveDayTimeOverrides();
+    updateDayLatestTimeForMuscle(dk,muscle,timestamp,true);
 }
 function adjustDayTimePart(dk,field,part,delta){
     if(part!=='hours'&&part!=='minutes'&&part!=='seconds')return;
@@ -1414,7 +1407,7 @@ function showDetail(dk){
                 '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+endParts.seconds+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\''+group.muscle+'\',\'lastUpdatedAt\',\'seconds\',this.value)" /></span>'+
             '</span></span>'+
         '</div>'+
-        '<div class="exercise-capacity-hint"><span class="exercise-capacity-hint-text">'+(capacityHintText||'')+'</span><span class="exercise-timer-wrap"><span class="exercise-time-meta">⏱ 秒表</span><button class="exercise-timer-btn" data-date-key="'+dk+'" data-muscle="'+group.muscle+'" onclick="startRecordGroupTimer(\''+dk+'\',\''+group.muscle+'\')" title="点击开始分秒计时">'+getRecordGroupTimerLabel(dk,group.muscle)+'</button></span></div>'+
+        '<div class="exercise-capacity-hint"><span class="exercise-capacity-hint-text">'+(capacityHintText||'')+'</span><span class="exercise-timer-wrap"><button class="exercise-timer-btn" data-date-key="'+dk+'" data-muscle="'+group.muscle+'" onclick="resetRecordGroupTimer(\''+dk+'\',\''+group.muscle+'\')" title="点击重新计时"><span class="exercise-timer-meta">⏱ 秒表</span><span class="exercise-timer-value">'+getRecordGroupTimerLabel(dk,group.muscle)+'</span></button></span></div>'+
     '</div></div>';
     lst.innerHTML=htm;
     ensureRecordGroupTimerInterval();
@@ -1598,7 +1591,7 @@ function dup(dk,i){
     render();
     showDetail(dk);
 }
-function del(dk,i){var deletedExercise=data[dk][i];data[dk].splice(i,1);if(!data[dk].length){delete data[dk];delete dayTimeOverrides[dk];saveDayTimeOverrides();}else{cleanupDayTimeOverridesForDate(dk);saveDayTimeOverrides();}if(deletedExercise&&deletedExercise.muscle&&data[dk])resetRecordGroupTimer(dk,deletedExercise.muscle);save();render();showDetail(dk);}
+function del(dk,i){var deletedExercise=data[dk][i];data[dk].splice(i,1);if(!data[dk].length){delete data[dk];delete dayTimeOverrides[dk];saveDayTimeOverrides();}else{cleanupDayTimeOverridesForDate(dk);saveDayTimeOverrides();}if(deletedExercise&&deletedExercise.muscle&&data[dk]){syncRecordGroupLatestTime(dk,deletedExercise.muscle,getNowTimestampForDateKey(dk));resetRecordGroupTimer(dk,deletedExercise.muscle);}save();render();showDetail(dk);}
 function adjSets(dk,i,d){
     var prev=data[dk][i].sets;
     data[dk][i].sets=Math.max(1,data[dk][i].sets+d);
