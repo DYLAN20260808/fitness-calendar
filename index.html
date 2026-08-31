@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0071e3">
-    <title>健身月历</title>
+    <title>健身记</title>
     <style>
         :root {
             --accent: #0071e3;
@@ -47,6 +47,10 @@
             --panel-border: 1px solid rgba(255,255,255,0.78);
             --panel-surface: linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(245,247,251,0.86) 48%, rgba(232,236,242,0.78) 100%);
             --panel-shadow: var(--highlight), 0 18px 36px rgba(17,24,39,0.1), 0 2px 0 rgba(255,255,255,0.9);
+            --page-surface-calendar: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(242,247,253,0.9) 48%, rgba(228,236,246,0.82) 100%);
+            --page-surface-record: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(246,243,252,0.9) 48%, rgba(234,229,244,0.84) 100%);
+            --page-surface-volume: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(240,249,247,0.9) 48%, rgba(224,240,236,0.84) 100%);
+            --page-surface-stats: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(252,246,239,0.9) 48%, rgba(244,234,223,0.84) 100%);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         button { position: relative; transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease, opacity 0.16s ease, background 0.16s ease, color 0.16s ease; }
@@ -62,7 +66,7 @@
             0% { filter: brightness(1.12) saturate(1.08); }
             100% { filter: brightness(1) saturate(1); }
         }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: radial-gradient(circle at top left, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 30%), radial-gradient(circle at top right, rgba(90,181,255,0.14) 0%, rgba(90,181,255,0) 32%), radial-gradient(circle at center top, rgba(255,255,255,0.76) 0%, rgba(255,255,255,0) 44%), linear-gradient(180deg, #fbfbfd 0%, var(--bg) 22%, var(--bg-2) 58%, var(--bg-3) 100%); min-height: 100vh; color: var(--text); padding-bottom: 206px; position: relative; overflow-x: hidden; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: radial-gradient(circle at top left, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 30%), radial-gradient(circle at top right, rgba(90,181,255,0.14) 0%, rgba(90,181,255,0) 32%), radial-gradient(circle at center top, rgba(255,255,255,0.76) 0%, rgba(255,255,255,0) 44%), linear-gradient(180deg, #fbfbfd 0%, var(--bg) 22%, var(--bg-2) 58%, var(--bg-3) 100%); min-height: 100vh; color: var(--text); padding-bottom: 32px; position: relative; overflow-x: hidden; }
         body::before { content: ''; position: fixed; inset: -12% -10% auto; height: 38vh; background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.35) 28%, rgba(255,255,255,0) 72%); pointer-events: none; z-index: 0; }
         body::after { content: ''; position: fixed; right: -70px; bottom: 10vh; width: 220px; height: 220px; background: radial-gradient(circle, rgba(41,151,255,0.14) 0%, rgba(41,151,255,0.03) 44%, rgba(41,151,255,0) 76%); filter: blur(12px); pointer-events: none; z-index: 0; }
         .header { background: linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(250,250,252,0.8) 100%); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%); border-bottom: 1px solid var(--glass-line); padding: 12px 0 11px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: var(--highlight), 0 12px 30px rgba(17,24,39,0.1), 0 2px 0 rgba(255,255,255,0.92); }
@@ -72,15 +76,20 @@
         .header-action.right { right: 15px; }
         .header-action:active { transform: translateY(calc(-50% + 1px)); }
         #importFile { display: none; }
-        .nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; margin: 14px 0 10px; border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(242,244,248,0.74) 100%); -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%); border: 1px solid rgba(255,255,255,0.76); box-shadow: var(--highlight), var(--shadow-lift); position: relative; z-index: 1; }
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; margin: 14px 0 10px; border-radius: 18px; background: var(--active-page-surface, linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(242,244,248,0.74) 100%)); -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%); border: 1px solid rgba(255,255,255,0.76); box-shadow: var(--highlight), var(--shadow-lift); position: relative; z-index: 1; }
         .nav button { background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.42); color: white; padding: 5px 12px; border-radius: 10px; font-size: 12px; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.38), inset 0 -2px 0 rgba(0,88,176,0.24), 0 8px 14px rgba(0,113,227,0.2); transition: transform 0.2s, box-shadow 0.2s; }
         .nav button:active { transform: translateY(2px) scale(0.97); box-shadow: inset 0 1px 0 rgba(255,255,255,0.32), 0 4px 10px rgba(0,113,227,0.16); }
         .nav .month-year { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: 0.01em; }
-        .page-section { position: relative; z-index: 1; width: min(100%, var(--page-max-width)); margin: 0 auto; padding: 0 10px; }
+        .app-content { position: relative; z-index: 1; width: min(100%, var(--page-max-width)); margin: 0 auto; padding: 0 10px; --active-page-surface: var(--page-surface-calendar); }
+        .app-content.page-calendar { --active-page-surface: var(--page-surface-calendar); }
+        .app-content.page-record { --active-page-surface: var(--page-surface-record); }
+        .app-content.page-volume { --active-page-surface: var(--page-surface-volume); }
+        .app-content.page-stats { --active-page-surface: var(--page-surface-stats); }
+        .page-section { position: relative; z-index: 1; width: 100%; margin: 0 auto; padding: 0; }
         .page-section.hidden { display: none; }
         .calendar-add-wrap { padding: 16px 0 0; }
         .calendar-add-btn { width: 100%; }
-        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; padding: 14px 10px 12px; position: relative; z-index: 1; background: var(--panel-surface); border: var(--panel-border); border-radius: var(--panel-radius); box-shadow: var(--panel-shadow); }
+        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; padding: 14px 10px 12px; position: relative; z-index: 1; background: var(--active-page-surface, var(--panel-surface)); border: var(--panel-border); border-radius: var(--panel-radius); box-shadow: var(--panel-shadow); }
         .weekday { text-align: center; padding: 8px 3px; font-weight: 700; color: var(--accent-deep); font-size: 11px; letter-spacing: 0.03em; }
         .day { aspect-ratio: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background: linear-gradient(180deg, var(--surface-top) 0%, var(--surface-mid) 42%, var(--surface-bot) 100%); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); border: 1px solid rgba(255,255,255,0.82); border-radius: 11px; padding: 1px; cursor: pointer; min-height: 16px; box-shadow: var(--highlight), 0 10px 18px rgba(17,24,39,0.08), 0 2px 0 rgba(255,255,255,0.9); overflow: hidden; transform: translateY(0); transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
         .day:hover { background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(248,250,253,0.92) 44%, rgba(232,238,246,0.82) 100%); box-shadow: var(--highlight), 0 16px 26px rgba(17,24,39,0.12), 0 2px 0 rgba(255,255,255,0.9); transform: translateY(-3px); }
@@ -126,7 +135,7 @@
         .muscle-btn.core span,
         .record-muscle-btn.core .record-muscle-icon,
         .stats-btn.muscle-filter-btn.core .stats-btn-icon { color: #c99720; text-shadow: 0 1px 0 rgba(255,255,255,0.28), 0 1px 4px rgba(124,86,14,0.24); font-weight: 800; }
-        .detail-section { background: var(--panel-surface); -webkit-backdrop-filter: blur(24px) saturate(175%); backdrop-filter: blur(24px) saturate(175%); border: var(--panel-border); border-radius: 28px; margin: 14px auto 0; padding: 18px; box-shadow: var(--panel-shadow), 0 28px 60px rgba(17,24,39,0.1); position: relative; z-index: 1; overflow: hidden; }
+        .detail-section { background: var(--active-page-surface, var(--panel-surface)); -webkit-backdrop-filter: blur(24px) saturate(175%); backdrop-filter: blur(24px) saturate(175%); border: var(--panel-border); border-radius: 0 28px 28px 28px; margin: 0 auto 0; padding: 18px; box-shadow: var(--panel-shadow), 0 28px 60px rgba(17,24,39,0.1); position: relative; z-index: 1; overflow: hidden; }
         .detail-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 19px; font-weight: 700; margin-bottom: 16px; color: var(--accent); cursor: pointer; }
         .detail-header-text { min-width: 0; }
         .detail-header-badge { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; min-height: 28px; padding: 0 10px; border-radius: 999px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); border: 1px solid rgba(0,113,227,0.12); color: var(--accent-deep); font-size: 11px; font-weight: 700; line-height: 1; white-space: nowrap; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); }
@@ -362,16 +371,13 @@
         .milestone-meta { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; text-align: center; }
         .milestone-date { color: var(--muted); font-size: 13px; white-space: nowrap; flex-shrink: 0; }
         .milestone-value { color: var(--text); font-size: 14px; font-weight: 600; white-space: nowrap; flex-shrink: 0; min-width: 58px; }
-        .bottom-nav { position: fixed; left: 50%; transform: translateX(-50%); width: min(calc(100% - 24px), 820px); bottom: 12px; display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 24px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(239,243,248,0.94) 100%); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%); border: 1px solid rgba(255,255,255,0.84); box-shadow: var(--highlight), var(--shadow-deep), 0 24px 42px rgba(17,24,39,0.14), 0 2px 0 rgba(255,255,255,0.9); z-index: 150; }
-        .bottom-nav.collapsed { gap: 0; padding-top: 10px; padding-bottom: 10px; }
-        .bottom-nav.collapsed .bottom-nav-items { display: none; }
-        .bottom-nav-toggle { align-self: stretch; display: inline-flex; align-items: center; justify-content: center; width: 100%; min-width: 0; min-height: 28px; padding: 4px 0; border: 1px solid rgba(255,255,255,0.76); border-radius: 999px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(241,244,248,0.9) 100%); color: #3a3a3c; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 6px 12px rgba(17,24,39,0.06); }
-        .bottom-nav-toggle:active { transform: translateY(1px) scale(0.985); }
-        .bottom-nav-items { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; width: 100%; }
-        .bottom-nav-btn { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 67px; border: 1px solid rgba(255,255,255,0.78); border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,0.99) 0%, rgba(241,244,248,0.92) 100%); color: #3a3a3c; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 8px 16px rgba(17,24,39,0.06); }
-        .bottom-nav-btn.active { background: var(--primary-gradient); color: #fff; border-color: rgba(255,255,255,0.34); box-shadow: inset 0 1px 0 rgba(255,255,255,0.36), 0 14px 24px rgba(0,113,227,0.2); }
+        .bottom-nav { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 58px); width: 100%; display: flex; flex-direction: column; gap: 0; margin: 12px auto 0; padding: 0; background: transparent; border: none; box-shadow: none; z-index: 90; }
+        .bottom-nav-items { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: end; gap: clamp(4px, 1vw, 8px); width: 100%; }
+        .bottom-nav-btn { display: flex; align-items: center; justify-content: center; gap: clamp(5px, 1.2vw, 8px); min-height: clamp(44px, 8vw, 58px); padding: clamp(8px, 1.6vw, 12px) clamp(6px, 1.4vw, 10px); border: 1px solid rgba(255,255,255,0.82); border-bottom: none; border-radius: clamp(14px, 2.4vw, 18px) clamp(14px, 2.4vw, 18px) 0 0; background: linear-gradient(180deg, rgba(252,253,255,0.96) 0%, rgba(233,239,247,0.88) 100%); color: #4a4a4f; font-size: clamp(12px, 2.4vw, 14px); font-weight: 700; line-height: 1.15; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 10px 18px rgba(17,24,39,0.06); }
+        .bottom-nav-btn.active { background: var(--active-page-surface, var(--panel-surface)); color: var(--accent-deep); border-color: rgba(0,113,227,0.78); box-shadow: inset 0 1px 0 rgba(255,255,255,0.96), 0 0 0 1px rgba(0,113,227,0.18), 0 12px 22px rgba(17,24,39,0.08); transform: translateY(1px); }
         .bottom-nav-btn:active { transform: translateY(1px) scale(0.985); }
-        .bottom-nav-icon { font-size: 16px; line-height: 1; }
+        .bottom-nav-icon { font-size: clamp(14px, 3vw, 16px); line-height: 1; flex-shrink: 0; }
+        #calendarPage .nav { margin-top: 0; border-top-left-radius: 0; border-top-right-radius: 18px; }
         #recordContent,
         #volumeContent,
         #statsContent { min-height: 280px; }
@@ -380,8 +386,8 @@
             100% { opacity: 1; transform: translateY(0); }
         }
         @media (max-width: 768px) {
-            .page-section { padding: 0 8px; }
-            .detail-section { padding: 16px; border-radius: 24px; }
+            .app-content { padding: 0 8px; }
+            .detail-section { padding: 16px; border-radius: 0 24px 24px 24px; }
             .calendar { padding: 12px 8px 10px; }
             .tab-container { gap: 4px; padding: 6px; }
             .stats-container,
@@ -389,20 +395,40 @@
         }
         @media (max-width: 480px) {
             .nav { margin-top: 10px; padding: 8px 10px; border-radius: 16px; }
-            .page-section { padding: 0 6px; }
+            .app-content { padding: 0 6px; }
             .calendar { gap: 4px; border-radius: 20px; }
             .weekday { padding: 6px 2px; font-size: 10px; }
-            .detail-section { margin-top: 10px; padding: 14px; border-radius: 22px; }
+            .detail-section { margin-top: 10px; padding: 14px; border-radius: 0 22px 22px 22px; }
             .record-muscle-tabs,
             .stats-buttons { gap: 8px; padding: 8px; }
-            .bottom-nav { width: calc(100% - 16px); padding: 12px; border-radius: 22px; }
-            .bottom-nav-items { gap: 8px; }
-            .bottom-nav-btn { min-height: 60px; border-radius: 15px; font-size: 13px; }
+            .bottom-nav { width: 100%; }
+            #calendarPage .nav { border-top-right-radius: 16px; }
         }
     </style>
 </head>
 <body>
-    <div class="header"><h1>💪 健身月历</h1><button class="header-action left" onclick="exportData()">导出</button><button class="header-action right" onclick="document.getElementById('importFile').click()">导入</button><input type="file" id="importFile" accept=".json" onchange="importData(this)"></div>
+    <div class="header"><h1>💪 健身记</h1><button class="header-action left" onclick="exportData()">导出</button><button class="header-action right" onclick="document.getElementById('importFile').click()">导入</button><input type="file" id="importFile" accept=".json" onchange="importData(this)"></div>
+    <div class="app-content">
+    <div class="bottom-nav" id="bottomNav" aria-label="顶部导航">
+        <div class="bottom-nav-items" id="bottomNavItems">
+            <button class="bottom-nav-btn active" id="bottomNavCalendar" onclick="switchPage('calendar')">
+                <span class="bottom-nav-icon">📅</span>
+                <span>日历</span>
+            </button>
+            <button class="bottom-nav-btn" id="bottomNavRecord" onclick="switchPage('record')">
+                <span class="bottom-nav-icon">🏋️</span>
+                <span>记录</span>
+            </button>
+            <button class="bottom-nav-btn" id="bottomNavVolume" onclick="switchPage('volume')">
+                <span class="bottom-nav-icon">📈</span>
+                <span>容量</span>
+            </button>
+            <button class="bottom-nav-btn" id="bottomNavStats" onclick="switchPage('stats')">
+                <span class="bottom-nav-icon">📊</span>
+                <span>统计</span>
+            </button>
+        </div>
+    </div>
     <div class="page-section" id="calendarPage">
         <div class="nav">
             <button id="prevMonth">◀</button>
@@ -433,27 +459,6 @@
             <div class="stats-container" id="statsContainer"></div>
         </div>
     </div>
-        <div class="bottom-nav" id="bottomNav" aria-label="底部导航">
-            <button class="bottom-nav-toggle" id="bottomNavToggle" onclick="toggleBottomNav()" aria-expanded="true" aria-label="收起底部导航">⌃</button>
-            <div class="bottom-nav-items" id="bottomNavItems">
-                <button class="bottom-nav-btn active" id="bottomNavCalendar" onclick="switchPage('calendar')">
-                    <span class="bottom-nav-icon">📅</span>
-                    <span>日历</span>
-                </button>
-                <button class="bottom-nav-btn" id="bottomNavRecord" onclick="switchPage('record')">
-                    <span class="bottom-nav-icon">🏋️</span>
-                    <span>记录</span>
-                </button>
-                <button class="bottom-nav-btn" id="bottomNavVolume" onclick="switchPage('volume')">
-                    <span class="bottom-nav-icon">📈</span>
-                    <span>容量</span>
-                </button>
-                <button class="bottom-nav-btn" id="bottomNavStats" onclick="switchPage('stats')">
-                    <span class="bottom-nav-icon">📊</span>
-                    <span>统计</span>
-                </button>
-            </div>
-        </div>
     <div class="modal" id="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -479,6 +484,7 @@
             </div>
         </div>
     </div>
+        </div>
     <script>
 var data = JSON.parse(localStorage.getItem('fd')||'{}');
 var customExerciseNames = JSON.parse(localStorage.getItem('fd_custom_exercise_names')||'{}');
@@ -488,7 +494,7 @@ var volumeMuscle = null;
 var volumeExerciseSelection = {};
 var volumeMetricMode = 'interval';
 var currentPage = 'calendar';
-var bottomNavCollapsed = localStorage.getItem('fd_bottom_nav_collapsed')==='1';
+var bottomNavCollapsed = false;
 var exerciseDropdownOpen = false;
 var recordActionClickTimers = {};
 var recordActionLongPressTimers = {};
@@ -515,20 +521,16 @@ var exerciseNames = {
 function save(){localStorage.setItem('fd',JSON.stringify(data));}
 function saveCustomExerciseNames(){localStorage.setItem('fd_custom_exercise_names',JSON.stringify(customExerciseNames));}
 function saveDayTimeOverrides(){localStorage.setItem('fd_day_time_overrides',JSON.stringify(dayTimeOverrides));}
-function saveBottomNavCollapsedState(){localStorage.setItem('fd_bottom_nav_collapsed',bottomNavCollapsed?'1':'0');}
+function saveBottomNavCollapsedState(){localStorage.removeItem('fd_bottom_nav_collapsed');}
 function updateBottomNavCollapseState(){
     var nav=document.getElementById('bottomNav');
     var navItems=document.getElementById('bottomNavItems');
-    var toggle=document.getElementById('bottomNavToggle');
-    if(!nav||!navItems||!toggle)return;
-    nav.classList.toggle('collapsed',bottomNavCollapsed);
-    navItems.hidden=bottomNavCollapsed;
-    toggle.setAttribute('aria-expanded',bottomNavCollapsed?'false':'true');
-    toggle.setAttribute('aria-label',bottomNavCollapsed?'展开底部导航':'收起底部导航');
-    toggle.textContent=bottomNavCollapsed?'⌄':'⌃';
+    if(!nav||!navItems)return;
+    bottomNavCollapsed=false;
+    nav.classList.remove('collapsed');
+    navItems.hidden=false;
 }
 function toggleBottomNav(){
-    bottomNavCollapsed=!bottomNavCollapsed;
     saveBottomNavCollapsedState();
     updateBottomNavCollapseState();
 }
@@ -1318,6 +1320,12 @@ function updateBottomNavState(){
     document.getElementById('bottomNavVolume').classList.toggle('active',currentPage==='volume');
     document.getElementById('bottomNavStats').classList.toggle('active',currentPage==='stats');
 }
+function updateAppContentThemeState(){
+    var container=document.querySelector('.app-content');
+    if(!container)return;
+    container.classList.remove('page-calendar','page-record','page-volume','page-stats');
+    container.classList.add('page-'+currentPage);
+}
 function updateDetailTabsState(){
     var tabs=document.getElementById('detailTabs');
     if(!tabs)return;
@@ -1334,6 +1342,7 @@ function switchPage(page){
     currentPage=isCalendarPage?'calendar':(page==='stats'?'stats':(page==='volume'?'volume':'record'));
     document.getElementById('calendarPage').classList.toggle('hidden',!isCalendarPage);
     document.getElementById('detailSection').classList.toggle('hidden',isCalendarPage);
+    updateAppContentThemeState();
     updateBottomNavState();
     updateDetailTabsState();
     updateAddActionVisibility();
