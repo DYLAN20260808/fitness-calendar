@@ -2970,6 +2970,7 @@ function showStats(){
                     activeExercise=milestoneNames[0];
                     statsExerciseSelection[mu]=activeExercise;
                 }
+                var escapedActiveExercise=escapeJsSingleQuotedString(activeExercise);
                 htm+='<div class="milestone-actions">';
                 for(var mni=0;mni<milestoneNames.length;mni++){
                     var exerciseName=milestoneNames[mni];
@@ -2980,13 +2981,14 @@ function showStats(){
                 var milestoneList=s.exerciseMilestones[activeExercise].slice(-3).reverse();
                 for(var mi=0;mi<milestoneList.length;mi++){
                     var milestone=milestoneList[mi];
-                    htm+='<div class="milestone-item clickable" onclick="jumpToStatsDate(\''+milestone.date+'\',\''+mu+'\',\''+escapedExerciseName+'\')" title="跳转到'+milestone.date+'的训练记录">'+
+                    htm+='<div class="milestone-item clickable" onclick="jumpToStatsDate(\''+milestone.date+'\',\''+mu+'\',\''+escapedActiveExercise+'\')" title="跳转到'+milestone.date+'的训练记录">'+
                         '<div class="milestone-value">'+milestone.weight+' kg</div>'+
                         '<div class="milestone-meta">'+milestone.sets+'组 × '+milestone.reps+'次</div>'+
                         '<div class="milestone-date">'+milestone.date+'</div>'+
                     '</div>';
                 }
-                htm+='<div class="stats-danger-action"><button class="stats-danger-btn" onclick="deleteExerciseAcrossData(\''+mu+'\',\''+escapedExerciseName+'\')">删除“'+escapeHtml(activeExercise)+'”全部数据</button></div>';
+                // Use the currently selected action instead of the last loop variable.
+                htm+='<div class="stats-danger-action"><button class="stats-danger-btn" onclick="deleteExerciseAcrossData(\''+mu+'\',\''+escapedActiveExercise+'\')">删除“'+escapeHtml(activeExercise)+'”全部数据</button></div>';
             }
             htm+='</div>';
         }else{
