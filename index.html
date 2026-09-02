@@ -119,16 +119,16 @@
         .triceps { background: linear-gradient(180deg, #90b7ff 0%, #4d7dff 100%); }
         .core { background: linear-gradient(180deg, #ffd86f 0%, #ffb340 100%); }
         .cardio { background: linear-gradient(180deg, #ff8f86 0%, #ff5f57 100%); }
-        .form-group select { width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,0.88); color: var(--text); font-size: 16px; cursor: pointer; }
+        .form-group select { width: 100%; padding: 9px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,0.88); color: var(--text); font-size: 14px; cursor: pointer; }
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.28); z-index: 200; align-items: center; justify-content: center; padding: 5px; }
         .modal.show { display: flex; }
-        .modal-content { background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(247,248,251,0.9) 40%, rgba(232,236,242,0.82) 100%); -webkit-backdrop-filter: blur(28px) saturate(185%); backdrop-filter: blur(28px) saturate(185%); border: 1px solid rgba(255,255,255,0.8); border-radius: 20px; padding: 12px; width: 100%; max-width: 280px; max-height: 90vh; overflow-y: auto; box-shadow: var(--highlight), var(--shadow-deep), 0 2px 0 rgba(255,255,255,0.9); }
+        .modal-content { background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(247,248,251,0.9) 40%, rgba(232,236,242,0.82) 100%); -webkit-backdrop-filter: blur(28px) saturate(185%); backdrop-filter: blur(28px) saturate(185%); border: 1px solid rgba(255,255,255,0.8); border-radius: 20px; padding: 14px; width: 100%; max-width: 280px; height: 66vh; max-height: 66vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--highlight), var(--shadow-deep), 0 2px 0 rgba(255,255,255,0.9); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .modal-header h2 { font-size: 14px; color: var(--text); }
-        .close-btn { background: none; border: none; color: var(--accent); font-size: 16px; cursor: pointer; }
+        .modal-header h2 { font-size: 13px; color: var(--text); }
+        .close-btn { background: none; border: none; color: var(--accent); font-size: 15px; cursor: pointer; }
         .close-btn:active { transform: scale(0.9) rotate(-8deg); }
         .muscle-select { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 10px; }
-        .muscle-btn { padding: 8px 6px; border: 1px solid rgba(255,255,255,0.32); border-radius: 10px; color: white; font-size: 11px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.26), inset 0 -4px 10px rgba(0,0,0,0.08), 0 8px 16px rgba(15,23,42,0.12); transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease; }
+        .muscle-btn { padding: 8px 6px; border: 1px solid rgba(255,255,255,0.32); border-radius: 10px; color: white; font-size: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.26), inset 0 -4px 10px rgba(0,0,0,0.08), 0 8px 16px rgba(15,23,42,0.12); transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease; }
         .muscle-btn:active { transform: translateY(2px) scale(0.97); }
         .muscle-btn.selected { opacity: 0.92; box-shadow: 0 0 0 2px var(--accent), inset 0 1px 0 rgba(255,255,255,0.3), 0 12px 20px rgba(0,113,227,0.18); transform: translateY(-1px); }
         .muscle-btn span { font-size: 16px; }
@@ -149,6 +149,7 @@
         .record-muscle-btn:active { transform: translateY(2px) scale(0.97); box-shadow: inset 0 1px 0 rgba(255,255,255,0.88), 0 3px 8px rgba(0,113,227,0.08); }
         .record-muscle-icon { display: block; font-size: 16px; line-height: 1; }
         .record-muscle-label { display: block; max-width: 100%; font-size: 10px; line-height: 1.1; word-break: break-all; }
+        .exercise-empty-state { padding: 14px 12px; border-radius: 14px; background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(241,246,252,0.92) 100%); border: 1px dashed rgba(0,113,227,0.16); color: var(--muted); font-size: 12px; line-height: 1.6; text-align: center; }
         .exercise-item { background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,249,252,0.92) 45%, rgba(234,238,244,0.84) 100%); -webkit-backdrop-filter: blur(18px) saturate(165%); backdrop-filter: blur(18px) saturate(165%); border: 1px solid rgba(255,255,255,0.76); border-radius: 20px; padding: 13px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--highlight), 0 14px 26px rgba(17,24,39,0.08), 0 2px 0 rgba(255,255,255,0.88); }
         .exercise-row1 { display: flex; align-items: center; gap: 6px; min-height: 28px; margin-bottom: 4px; }
         .group-order-controls { margin-left: auto; display: flex; gap: 4px; }
@@ -186,6 +187,8 @@
         .exercise-timer-wrap { display: inline-flex; align-items: center; min-width: 0; flex: 0 0 auto; }
         .exercise-timer-btn { display: inline-flex; align-items: center; gap: 8px; flex: 0 0 auto; min-width: 132px; min-height: var(--detail-tab-height); height: 100%; padding: 0 12px; border: 1px solid rgba(0,113,227,0.14); border-radius: 10px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); }
         .exercise-timer-btn:active { transform: translateY(1px) scale(0.98); }
+        .exercise-timer-reset-btn { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; min-width: 68px; min-height: var(--detail-tab-height); height: 100%; padding: 0 12px; border: 1px solid rgba(255,107,53,0.18); border-radius: 10px; background: linear-gradient(180deg, rgba(255,249,245,0.98) 0%, rgba(255,239,231,0.92) 100%); color: #c2410c; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(255,107,53,0.08); }
+        .exercise-timer-reset-btn:active { transform: translateY(1px) scale(0.98); }
         .exercise-timer-meta { white-space: nowrap; color: var(--muted); font-size: 11px; font-weight: 600; }
         .exercise-timer-value { min-width: 42px; text-align: right; color: var(--accent-deep); }
         .exercise-capacity-hint { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; padding: 8px 10px; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(240,245,252,0.88) 100%); border: 1px solid rgba(0,113,227,0.08); color: var(--muted); font-size: 11px; line-height: 1.45; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9); }
@@ -206,6 +209,7 @@
             .exercise-time-arrow::before { right: 8px; }
             .exercise-time-arrow::after { width: 7px; height: 7px; }
             .exercise-timer-btn { min-width: 118px; min-height: var(--detail-tab-height); padding: 0 10px; gap: 6px; font-size: 11px; }
+            .exercise-timer-reset-btn { min-width: 60px; min-height: var(--detail-tab-height); padding: 0 10px; font-size: 11px; }
             .exercise-timer-meta { font-size: 10px; }
             .exercise-capacity-hint { align-items: flex-start; font-size: 10px; }
         }
@@ -232,10 +236,10 @@
         .exercise-sets { color: var(--muted); font-size: 14px; display: flex; align-items: center; gap: 4px; }
         .exercise-best-block { margin-top: 2px; padding-top: 6px; border-top: 1px dashed var(--line); }
         .exercise-best-row { padding: 8px 8px 0; border-radius: 12px; background: linear-gradient(180deg, rgba(0,113,227,0.08) 0%, rgba(0,113,227,0.04) 100%); border: 1px solid rgba(0,113,227,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.72); }
-        .exercise-best-badge { grid-column: 4 / 6; justify-self: stretch; display: inline-flex; align-items: center; justify-content: center; min-width: 0; height: clamp(22px, 6vw, 24px); padding: 0 6px; border: 1px solid rgba(0,113,227,0.12); border-radius: 9px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent); font-size: 10px; font-weight: 700; line-height: 1; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); white-space: nowrap; }
+        .exercise-best-badge { grid-column: 4 / 6; justify-self: end; display: inline-flex; align-items: center; justify-content: center; width: calc((clamp(18px, 5vw, 20px) * 2) + 6px); max-width: 100%; box-sizing: border-box; min-width: 0; height: clamp(22px, 6vw, 24px); padding: 0 4px; border: 1px solid rgba(0,113,227,0.12); border-radius: 9px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent); font-size: 10px; font-weight: 700; line-height: 1; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); white-space: nowrap; }
         .adjust-btn-placeholder { visibility: hidden; pointer-events: none; }
         .metric-input.metric-input-readonly { pointer-events: none; color: var(--text); font-weight: 600; background: rgba(255,255,255,0.96); text-align: left; padding-left: 8px; }
-        .adjust-btn { background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); border: 1px solid rgba(0,113,227,0.12); color: var(--accent); width: clamp(15px, 4.2vw, 17px); height: clamp(15px, 4.2vw, 17px); border-radius: 6px; cursor: pointer; font-size: clamp(9px, 2.8vw, 11px); line-height: 1; display: inline-flex; align-items: center; justify-content: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); flex-shrink: 0; }
+        .adjust-btn { background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); border: 1px solid rgba(0,113,227,0.12); color: var(--accent); width: clamp(14px, 3.8vw, 15px); height: clamp(14px, 3.8vw, 15px); border-radius: 999px; cursor: pointer; font-size: clamp(8px, 2.4vw, 10px); line-height: 1; display: inline-flex; align-items: center; justify-content: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); flex-shrink: 0; }
         .adjust-btn:active { background: linear-gradient(180deg, rgba(240,245,252,0.98) 0%, rgba(221,233,247,0.92) 100%); transform: translateY(1px); }
         .adjust-value { display: inline-block; min-width: 20px; text-align: center; font-size: clamp(13px, 3.4vw, 16px); font-weight: 600; line-height: clamp(22px, 6vw, 24px); }
         .adjust-value.count-slot { width: clamp(28px, 9vw, 36px); min-width: 0; }
@@ -253,40 +257,49 @@
             0% { color: #ff5f57; transform: scale(1.18); text-shadow: 0 0 10px rgba(255,95,87,0.24); }
             100% { color: inherit; transform: scale(1); text-shadow: 0 0 0 rgba(255,95,87,0); }
         }
-        .delete-btn { background: linear-gradient(180deg, var(--danger-top) 0%, var(--danger-mid) 58%, var(--danger-bottom) 100%); border: 1px solid rgba(255,255,255,0.3); color: white; width: clamp(22px, 6vw, 24px); height: clamp(22px, 6vw, 24px); padding: 0; border-radius: 9px; cursor: pointer; font-size: clamp(14px, 3.8vw, 16px); line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(217,52,43,0.18); }
+        .delete-btn { background: linear-gradient(180deg, var(--danger-top) 0%, var(--danger-mid) 58%, var(--danger-bottom) 100%); border: 1px solid rgba(255,255,255,0.3); color: white; width: clamp(18px, 5vw, 20px); height: clamp(18px, 5vw, 20px); padding: 0; border-radius: 999px; cursor: pointer; font-size: clamp(10px, 2.8vw, 11px); font-weight: 700; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(217,52,43,0.18); }
         .delete-btn:active { transform: translateY(1px) scale(0.96); box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 4px 10px rgba(217,52,43,0.14); }
-        .copy-btn { background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.3); color: white; width: clamp(22px, 6vw, 24px); height: clamp(22px, 6vw, 24px); padding: 0; border-radius: 9px; cursor: pointer; font-size: clamp(14px, 3.8vw, 16px); line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(0,113,227,0.18); }
+        .copy-btn { background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.3); color: white; width: clamp(18px, 5vw, 20px); height: clamp(18px, 5vw, 20px); padding: 0; border-radius: 999px; cursor: pointer; font-size: clamp(10px, 2.8vw, 11px); font-weight: 700; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(0,113,227,0.18); }
         .copy-btn:active { transform: translateY(1px) scale(0.96); box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 4px 10px rgba(0,113,227,0.14); }
         .param-group { display: flex; align-items: center; gap: 3px; flex: 0 1 auto; min-width: 0; }
         .param-label { color: var(--muted); font-size: clamp(13px, 3.4vw, 16px); margin-left: 2px; line-height: clamp(22px, 6vw, 24px); white-space: nowrap; }
         .no-data { text-align: center; color: var(--muted); padding: 28px 18px; border-radius: 18px; border: 1px dashed rgba(0,113,227,0.18); background: linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(242,246,252,0.56) 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.86); }
-        .add-form { display: none; background: linear-gradient(180deg, rgba(255,255,255,0.93) 0%, rgba(246,247,250,0.82) 100%); -webkit-backdrop-filter: blur(18px) saturate(165%); backdrop-filter: blur(18px) saturate(165%); border: 1px solid rgba(255,255,255,0.72); border-radius: 16px; padding: 15px; margin-top: 15px; box-shadow: var(--highlight), 0 10px 18px rgba(17,24,39,0.06); }
-        .add-form.show { display: block; }
+        .add-form { display: none; background: linear-gradient(180deg, rgba(255,255,255,0.93) 0%, rgba(246,247,250,0.82) 100%); -webkit-backdrop-filter: blur(18px) saturate(165%); backdrop-filter: blur(18px) saturate(165%); border: 1px solid rgba(255,255,255,0.72); border-radius: 16px; padding: 15px; margin-top: 15px; box-shadow: var(--highlight), 0 10px 18px rgba(17,24,39,0.06); min-height: 0; overflow-y: auto; }
+        .add-form.show { display: flex; flex: 1 1 auto; flex-direction: column; }
+        .add-form.rename-action-mode #exerciseSetsGroup,
+        .add-form.rename-action-mode #exerciseRepsGroup,
+        .add-form.rename-action-mode #exerciseWeightGroup { display: none; }
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-size: 14px; color: var(--text); }
-        .form-group input { width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,0.88); color: var(--text); font-size: 16px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 13px; color: var(--text); }
+        .form-group.inline-field { display: flex; align-items: center; gap: 10px; }
+        .form-group.inline-field label { flex: 0 0 58px; margin-bottom: 0; }
+        .form-group.inline-field input { flex: 1 1 auto; min-width: 0; }
+        .form-group input { width: 100%; padding: 9px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,0.88); color: var(--text); font-size: 14px; }
         .form-group input::placeholder { color: #8e8e93; }
         .dropdown-field { position: relative; }
         .dropdown-control { display: flex; align-items: center; gap: 8px; }
         .dropdown-input { flex: 1; min-width: 0; }
-        .dropdown-toggle-btn { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.78); border-radius: 10px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 6px 12px rgba(0,113,227,0.08); flex-shrink: 0; }
+        .dropdown-toggle-btn { width: 38px; height: 38px; border: 1px solid rgba(255,255,255,0.78); border-radius: 10px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 6px 12px rgba(0,113,227,0.08); flex-shrink: 0; }
         .dropdown-toggle-btn:active { transform: translateY(1px); }
         .dropdown-list { position: absolute; top: calc(100% + 6px); left: 0; right: 0; display: none; max-height: 180px; overflow-y: auto; background: linear-gradient(180deg, rgba(233,242,252,0.98) 0%, rgba(221,233,247,0.96) 100%); border: 1px solid rgba(0,113,227,0.18); border-radius: 12px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.86), 0 14px 28px rgba(0,113,227,0.12), 0 8px 18px rgba(17,24,39,0.1); z-index: 20; }
         .dropdown-list.show { display: block; }
-        .dropdown-item { width: 100%; padding: 10px 12px; border: none; background: transparent; color: var(--text); text-align: left; font-size: 14px; cursor: pointer; }
+        .dropdown-item { width: 100%; padding: 9px 12px; border: none; background: transparent; color: var(--text); text-align: left; font-size: 13px; cursor: pointer; }
         .dropdown-item + .dropdown-item { border-top: 1px solid var(--line); }
         .dropdown-item:hover { background: rgba(255,255,255,0.42); }
         .dropdown-item:active { background: rgba(0,113,227,0.12); transform: scale(0.99); }
-        .add-exercise-btn { width: 100%; padding: 12px; background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.32); border-radius: 14px; color: white; font-size: 16px; cursor: pointer; margin-top: 10px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.38), inset 0 -3px 0 rgba(0,88,176,0.2), 0 12px 22px rgba(0,113,227,0.22); }
+        .add-exercise-btn { width: 100%; padding: 11px; background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.32); border-radius: 14px; color: white; font-size: 14px; cursor: pointer; margin-top: auto; position: sticky; bottom: 0; z-index: 2; box-shadow: inset 0 1px 0 rgba(255,255,255,0.38), inset 0 -3px 0 rgba(0,88,176,0.2), 0 12px 22px rgba(0,113,227,0.22); }
         .add-exercise-btn:active { transform: translateY(2px) scale(0.985); box-shadow: inset 0 1px 0 rgba(255,255,255,0.32), inset 0 -2px 0 rgba(0,88,176,0.18), 0 6px 14px rgba(0,113,227,0.16); }
         .add-btn-small { margin-left: 0; padding: 10px 14px; font-size: 13px; font-weight: 700; background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.32); border-radius: 12px; color: white; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.38), inset 0 -3px 0 rgba(0,88,176,0.2), 0 10px 18px rgba(0,113,227,0.18); }
         .add-btn-small:active { transform: translateY(2px) scale(0.985); box-shadow: inset 0 1px 0 rgba(255,255,255,0.32), inset 0 -2px 0 rgba(0,88,176,0.18), 0 5px 12px rgba(0,113,227,0.14); }
         .tab-container { display: flex; align-items: stretch; gap: 6px; margin: 0 0 8px; padding: 8px; border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(240,244,249,0.62) 100%); border: 1px solid rgba(255,255,255,0.62); box-shadow: inset 0 1px 0 rgba(255,255,255,0.86); }
-        .detail-action-bar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(29,29,31,0.08); }
-        .detail-timer-slot { display: inline-flex; align-items: stretch; align-self: stretch; min-width: 0; }
-        .detail-action-bar .tab-btn { min-width: 0; width: 100%; }
-        .detail-action-bar .exercise-timer-btn { width: 100%; justify-content: space-between; }
-        .detail-action-bar .add-btn-small { min-width: 0; width: 100%; }
+        .detail-action-bar { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: stretch; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(29,29,31,0.08); }
+        .detail-timer-slot,
+        .detail-reset-slot { display: inline-flex; align-items: stretch; align-self: stretch; min-width: 0; }
+        .detail-action-bar .tab-btn,
+        .detail-action-bar .exercise-timer-btn,
+        .detail-action-bar .exercise-timer-reset-btn,
+        .detail-action-bar .add-btn-small { min-width: 0; width: 100%; justify-content: center; }
+        .detail-action-bar .exercise-timer-btn { justify-content: space-between; }
         .tab-btn { flex: 1; min-height: var(--detail-tab-height); padding: 7px 8px; border: none; border-radius: 12px; background: var(--neutral-gradient); -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%); color: #3a3a3c; font-size: 12px; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; border: 1px solid rgba(255,255,255,0.78); box-shadow: inset 0 1px 0 rgba(255,255,255,0.88), 0 8px 16px rgba(17,24,39,0.06); }
         .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -3px 0 rgba(0,88,176,0.22), 0 14px 24px rgba(0,113,227,0.22); transform: translateY(-2px); }
         .tab-btn:active { transform: translateY(1px) scale(0.985); box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 4px 10px rgba(17,24,39,0.08); }
@@ -319,7 +332,7 @@
             .chart-footer { justify-content: stretch; }
             .chart-mode-pill { display: flex; width: 100%; gap: 1px; }
             .chart-mode-toggle { flex: 1 1 0; min-width: 0; padding: 5px 2px; font-size: 9px; }
-            .detail-action-bar { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+            .detail-action-bar { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
         }
         .muscle-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
         .legend-item { display: flex; align-items: center; gap: 4px; font-size: 12px; cursor: pointer; opacity: 0.5; transition: opacity 0.2s; }
@@ -463,6 +476,7 @@
         <div class="detail-action-bar" id="detailActionBar" hidden>
             <button class="tab-btn active" id="tabRecord" onclick="switchTab('volume','interval')" hidden>每组间隔</button>
             <span class="detail-timer-slot" id="detailTimerSlot" hidden></span>
+            <span class="detail-reset-slot" id="detailResetSlot" hidden></span>
             <button class="add-btn-small" id="addActionBtn" onclick="openM()" hidden>+ 添加</button>
         </div>
     </div>
@@ -483,10 +497,10 @@
                 <button class="muscle-btn cardio" data-muscle="cardio"><span>🏃</span>有氧</button>
             </div>
             <div class="add-form" id="addForm">
-                <div class="form-group"><label>动作名称</label><div class="dropdown-field"><div class="dropdown-control"><input type="text" id="exerciseName" class="dropdown-input" placeholder="可选择或手动输入" autocomplete="off"><button type="button" class="dropdown-toggle-btn" id="exerciseNameToggle" aria-label="展开动作名称下拉" aria-expanded="false">▾</button></div><div class="dropdown-list" id="exerciseNameOptions"></div></div></div>
-                <div class="form-group"><label>组数</label><input type="number" id="exerciseSets" placeholder="如：4" min="1"></div>
-                <div class="form-group"><label>次数/组</label><input type="text" id="exerciseReps" placeholder="如：12 或 8-12"></div>
-                <div class="form-group"><label>重量(kg)</label><input type="number" id="exerciseWeight" placeholder="如：60" step="0.5"></div>
+                <div class="form-group" id="exerciseNameGroup"><label>动作名称</label><div class="dropdown-field"><div class="dropdown-control"><input type="text" id="exerciseName" class="dropdown-input" placeholder="可选择或手动输入" autocomplete="off"><button type="button" class="dropdown-toggle-btn" id="exerciseNameToggle" aria-label="展开动作名称下拉" aria-expanded="false">▾</button></div><div class="dropdown-list" id="exerciseNameOptions"></div></div></div>
+                <div class="form-group inline-field" id="exerciseSetsGroup"><label>组数</label><input type="number" id="exerciseSets" placeholder="如：4" min="1"></div>
+                <div class="form-group inline-field" id="exerciseRepsGroup"><label>次数/组</label><input type="text" id="exerciseReps" placeholder="如：12 或 8-12"></div>
+                <div class="form-group inline-field" id="exerciseWeightGroup"><label>重量(kg)</label><input type="number" id="exerciseWeight" placeholder="如：60" step="0.5"></div>
                 <button class="add-exercise-btn" id="addExercise">添加动作</button>
             </div>
         </div>
@@ -497,6 +511,8 @@ var data = JSON.parse(localStorage.getItem('fd')||'{}');
 var customExerciseNames = JSON.parse(localStorage.getItem('fd_custom_exercise_names')||'{}');
 var dayTimeOverrides = JSON.parse(localStorage.getItem('fd_day_time_overrides')||'{}');
 var curDate = new Date(), selDate = null, selMuscle = null, editIdx = -1;
+var modalMode = 'add';
+var renameActionState = null;
 var volumeMuscle = null;
 var volumeExerciseSelection = {};
 var volumeMetricMode = 'interval';
@@ -541,7 +557,18 @@ function toggleBottomNav(){
     saveBottomNavCollapsedState();
     updateBottomNavCollapseState();
 }
-function getRecordGroupTimerKey(dk,muscle){
+function getDefaultSegmentId(){
+    return 'segment-1';
+}
+function normalizeSegmentIdValue(segmentId){
+    var normalized=String(segmentId||'').trim();
+    return normalized||getDefaultSegmentId();
+}
+function ensureExerciseSegmentId(exercise){
+    if(!exercise)return getDefaultSegmentId();
+    return getDefaultSegmentId();
+}
+function getRecordGroupTimerKey(dk,muscle,segmentId){
     return String(dk||'')+'::'+String(muscle||'');
 }
 function formatRecordGroupTimer(elapsedMs){
@@ -550,15 +577,15 @@ function formatRecordGroupTimer(elapsedMs){
     var seconds=totalSeconds%60;
     return pad(minutes)+':'+pad(seconds);
 }
-function getRecordGroupTimerLabel(dk,muscle){
-    var startedAt=recordGroupTimerStarts[getRecordGroupTimerKey(dk,muscle)];
+function getRecordGroupTimerLabel(dk,muscle,segmentId){
+    var startedAt=recordGroupTimerStarts[getRecordGroupTimerKey(dk,muscle,segmentId)];
     if(!startedAt)return '00:00';
     return formatRecordGroupTimer(Date.now()-startedAt);
 }
 function renderRecordGroupTimerButtons(){
     document.querySelectorAll('.exercise-timer-btn').forEach(function(button){
         var valueEl=button.querySelector('.exercise-timer-value');
-        var nextLabel=getRecordGroupTimerLabel(button.dataset.dateKey,button.dataset.muscle);
+        var nextLabel=getRecordGroupTimerLabel(button.dataset.dateKey,button.dataset.muscle,button.dataset.segmentId);
         if(valueEl)valueEl.textContent=nextLabel;
         else button.textContent=nextLabel;
     });
@@ -567,14 +594,32 @@ function ensureRecordGroupTimerInterval(){
     if(recordGroupTimerIntervalId!==null)return;
     recordGroupTimerIntervalId=window.setInterval(renderRecordGroupTimerButtons,1000);
 }
-function startRecordGroupTimer(dk,muscle){
+function startRecordGroupTimer(dk,muscle,segmentId){
     if(!dk||!muscle)return;
-    recordGroupTimerStarts[getRecordGroupTimerKey(dk,muscle)]=Date.now();
+    recordGroupTimerStarts[getRecordGroupTimerKey(dk,muscle,segmentId)]=Date.now();
     ensureRecordGroupTimerInterval();
     renderRecordGroupTimerButtons();
 }
-function resetRecordGroupTimer(dk,muscle){
-    startRecordGroupTimer(dk,muscle);
+function resetRecordGroupTimer(dk,muscle,segmentId){
+    startRecordGroupTimer(dk,muscle,segmentId);
+}
+function recalibrateRecordGroupTimer(dk,muscle){
+    if(!dk||!muscle)return;
+    var now=getNowTimestampForDateKey(dk);
+    if(now===null)return;
+    var overrides=getOrCreateDayTimeOverrideBucket(dk,muscle);
+    overrides.firstAddedAt=now;
+    overrides.lastUpdatedAt=now;
+    delete overrides.refreshHistory;
+    cleanupDayTimeOverridesForDate(dk);
+    saveDayTimeOverrides();
+    resetRecordGroupTimer(dk,muscle);
+    showDetail(dk);
+    if(document.getElementById('volumeContent').classList.contains('active'))showVolumeChart();
+}
+function clearRecordGroupTimer(dk,muscle,segmentId){
+    delete recordGroupTimerStarts[getRecordGroupTimerKey(dk,muscle,segmentId)];
+    renderRecordGroupTimerButtons();
 }
 function normalizeArmMuscleByName(name){
     var trimmed=(name||'').trim();
@@ -670,8 +715,116 @@ function migrateLegacyDayTimeOverrides(){
     }
     if(changed)saveDayTimeOverrides();
 }
-migrateLegacyArmData();
-migrateLegacyDayTimeOverrides();
+function normalizeSegmentDayTimeOverrides(){
+    var changed=false;
+    for(var dk in dayTimeOverrides){
+        var dateOverrides=dayTimeOverrides[dk];
+        if(!dateOverrides||typeof dateOverrides!=='object')continue;
+        for(var muscleKey in dateOverrides){
+            if(muscleKey==='firstAddedAt'||muscleKey==='lastUpdatedAt'||muscleKey==='refreshHistory')continue;
+            var muscleOverrides=dateOverrides[muscleKey];
+            if(!muscleOverrides||typeof muscleOverrides!=='object'||!muscleOverrides.segments||typeof muscleOverrides.segments!=='object')continue;
+            for(var segmentId in muscleOverrides.segments){
+                var segmentOverrides=muscleOverrides.segments[segmentId];
+                if(!segmentOverrides||typeof segmentOverrides!=='object'){
+                    delete muscleOverrides.segments[segmentId];
+                    changed=true;
+                    continue;
+                }
+                if(segmentOverrides.firstAddedAt!=null){
+                    var migratedSegmentFirstAddedAt=projectTimestampToDateKey(dk,segmentOverrides.firstAddedAt);
+                    if(migratedSegmentFirstAddedAt!==segmentOverrides.firstAddedAt){
+                        segmentOverrides.firstAddedAt=migratedSegmentFirstAddedAt;
+                        changed=true;
+                    }
+                }
+                if(segmentOverrides.lastUpdatedAt!=null){
+                    var migratedSegmentLastUpdatedAt=projectTimestampToDateKey(dk,segmentOverrides.lastUpdatedAt);
+                    if(migratedSegmentLastUpdatedAt!==segmentOverrides.lastUpdatedAt){
+                        segmentOverrides.lastUpdatedAt=migratedSegmentLastUpdatedAt;
+                        changed=true;
+                    }
+                }
+                var migratedSegmentHistory=normalizeRefreshHistoryArray(dk,segmentOverrides.refreshHistory);
+                if(Array.isArray(segmentOverrides.refreshHistory)||migratedSegmentHistory.length){
+                    if(migratedSegmentHistory.length){
+                        if(!Array.isArray(segmentOverrides.refreshHistory)||migratedSegmentHistory.length!==segmentOverrides.refreshHistory.length||migratedSegmentHistory.some(function(item,idx){return item!==segmentOverrides.refreshHistory[idx];})){
+                            segmentOverrides.refreshHistory=migratedSegmentHistory;
+                            changed=true;
+                        }
+                    }else if(segmentOverrides.refreshHistory!==undefined){
+                        delete segmentOverrides.refreshHistory;
+                        changed=true;
+                    }
+                }
+            }
+        }
+    }
+    if(changed)saveDayTimeOverrides();
+}
+function migrateLegacyRecordSegments(){
+    var dataChanged=false;
+    var overridesChanged=false;
+    for(var dk in data){
+        var exercises=data[dk]||[];
+        for(var i=0;i<exercises.length;i++){
+            var exercise=exercises[i];
+            if(exercise&&exercise.segmentId!==undefined){
+                delete exercise.segmentId;
+                dataChanged=true;
+            }
+        }
+    }
+    for(var overrideDateKey in dayTimeOverrides){
+        var dateOverrides=dayTimeOverrides[overrideDateKey];
+        if(!dateOverrides||typeof dateOverrides!=='object')continue;
+        for(var muscleKey in dateOverrides){
+            if(muscleKey==='firstAddedAt'||muscleKey==='lastUpdatedAt'||muscleKey==='refreshHistory')continue;
+            var muscleOverrides=dateOverrides[muscleKey];
+            if(!muscleOverrides||typeof muscleOverrides!=='object')continue;
+            var mergedFirst=normalizeTimestampValue(muscleOverrides.firstAddedAt);
+            var mergedLast=normalizeTimestampValue(muscleOverrides.lastUpdatedAt);
+            var mergedHistory=normalizeRefreshHistoryArray(overrideDateKey,muscleOverrides.refreshHistory);
+            if(muscleOverrides.segments&&typeof muscleOverrides.segments==='object'){
+                for(var segmentId in muscleOverrides.segments){
+                    var segmentOverrides=muscleOverrides.segments[segmentId];
+                    if(!segmentOverrides||typeof segmentOverrides!=='object')continue;
+                    var segmentFirst=normalizeTimestampValue(segmentOverrides.firstAddedAt);
+                    var segmentLast=normalizeTimestampValue(segmentOverrides.lastUpdatedAt);
+                    if(segmentFirst!==null&&(mergedFirst===null||segmentFirst<mergedFirst))mergedFirst=segmentFirst;
+                    if(segmentLast!==null&&(mergedLast===null||segmentLast>mergedLast))mergedLast=segmentLast;
+                    mergedHistory=mergedHistory.concat(normalizeRefreshHistoryArray(overrideDateKey,segmentOverrides.refreshHistory));
+                }
+                delete muscleOverrides.segments;
+                overridesChanged=true;
+            }
+            mergedHistory=mergedHistory.filter(function(item,index,list){
+                return item!==null&&item!==undefined&&list.indexOf(item)===index;
+            }).sort(function(a,b){return a-b;});
+            if(mergedFirst===null)delete muscleOverrides.firstAddedAt;
+            else if(muscleOverrides.firstAddedAt!==mergedFirst){muscleOverrides.firstAddedAt=mergedFirst;overridesChanged=true;}
+            if(mergedLast===null)delete muscleOverrides.lastUpdatedAt;
+            else if(muscleOverrides.lastUpdatedAt!==mergedLast){muscleOverrides.lastUpdatedAt=mergedLast;overridesChanged=true;}
+            if(mergedHistory.length){
+                muscleOverrides.refreshHistory=mergedHistory;
+                overridesChanged=true;
+            }else if(muscleOverrides.refreshHistory!==undefined){
+                delete muscleOverrides.refreshHistory;
+                overridesChanged=true;
+            }
+        }
+    }
+    for(var cleanupDateKey in dayTimeOverrides)cleanupDayTimeOverridesForDate(cleanupDateKey);
+    if(dataChanged)save();
+    if(overridesChanged)saveDayTimeOverrides();
+}
+function applyDataMigrations(){
+    migrateLegacyArmData();
+    migrateLegacyDayTimeOverrides();
+    normalizeSegmentDayTimeOverrides();
+    migrateLegacyRecordSegments();
+}
+applyDataMigrations();
 function getCustomExerciseNames(m){
     var names=customExerciseNames[m];
     return Array.isArray(names)?names:[];
@@ -803,12 +956,18 @@ function getAutoDayTimeMeta(dk,exercises){
     }
     return {firstAddedAt:firstAddedAt,lastUpdatedAt:lastUpdatedAt};
 }
-function getDayTimeOverrideBucket(dk,muscle){
+function getDayTimeOverrideBucket(dk,muscle,segmentId){
     var overrides=(dayTimeOverrides&&dayTimeOverrides[dk])||{};
     if(!muscle)return overrides;
     var muscleOverrides=overrides[muscle];
     if(muscleOverrides&&typeof muscleOverrides==='object')return muscleOverrides;
     return {};
+}
+function getOrCreateDayTimeOverrideBucket(dk,muscle,segmentId){
+    if(!dayTimeOverrides[dk]||typeof dayTimeOverrides[dk]!=='object')dayTimeOverrides[dk]={};
+    if(!muscle)return dayTimeOverrides[dk];
+    if(!dayTimeOverrides[dk][muscle]||typeof dayTimeOverrides[dk][muscle]!=='object')dayTimeOverrides[dk][muscle]={};
+    return dayTimeOverrides[dk][muscle];
 }
 function normalizeRefreshHistoryArray(dk,history){
     if(!Array.isArray(history))return [];
@@ -820,8 +979,10 @@ function normalizeRefreshHistoryArray(dk,history){
     normalized.sort(function(a,b){return a-b;});
     return normalized;
 }
-function getDayTimeRefreshHistory(dk,muscle){
-    return normalizeRefreshHistoryArray(dk,getDayTimeOverrideBucket(dk,muscle).refreshHistory);
+function getDayTimeRefreshHistory(dk,muscle,segmentId){
+    var history=normalizeRefreshHistoryArray(dk,getDayTimeOverrideBucket(dk,muscle).refreshHistory);
+    history=history.filter(function(item,index){return index===0||item!==history[index-1];});
+    return history;
 }
 function hasDayTimeOverrideValues(bucket){
     return normalizeTimestampValue(bucket&&bucket.firstAddedAt)!==null||normalizeTimestampValue(bucket&&bucket.lastUpdatedAt)!==null||(Array.isArray(bucket&&bucket.refreshHistory)&&bucket.refreshHistory.length>0);
@@ -836,7 +997,12 @@ function cleanupDayTimeOverridesForDate(dk){
         if(overrideKey==='firstAddedAt'||overrideKey==='lastUpdatedAt'||overrideKey==='refreshHistory')continue;
         var muscleOverrides=dateOverrides[overrideKey];
         var hasMuscleExercises=exercises.some(function(exercise){return exercise.muscle===overrideKey;});
-        if(!hasMuscleExercises||!muscleOverrides||typeof muscleOverrides!=='object'||!hasDayTimeOverrideValues(muscleOverrides)){
+        if(!muscleOverrides||typeof muscleOverrides!=='object'){
+            delete dateOverrides[overrideKey];
+            continue;
+        }
+        if(muscleOverrides.segments!==undefined)delete muscleOverrides.segments;
+        if(!hasMuscleExercises&&!hasDayTimeOverrideValues(muscleOverrides)){
             delete dateOverrides[overrideKey];
             continue;
         }
@@ -844,7 +1010,65 @@ function cleanupDayTimeOverridesForDate(dk){
     }
     if(!hasAnyOverride)delete dayTimeOverrides[dk];
 }
-function getDayTimeMeta(dk,exercises,muscle){
+function getSegmentSortValue(segmentId){
+    var match=/^segment-(\d+)$/.exec(normalizeSegmentIdValue(segmentId));
+    return match?parseInt(match[1],10):0;
+}
+function compareSegmentIds(a,b){
+    var diff=getSegmentSortValue(a)-getSegmentSortValue(b);
+    if(diff!==0)return diff;
+    return String(a).localeCompare(String(b));
+}
+function getRecordSegmentTabKey(dk,muscle){
+    return dk+'__'+muscle;
+}
+function getRecordSegmentLabel(segmentId){
+    return '';
+}
+function getAddFormSegmentTargetKey(dk,muscle){
+    return String(dk||'')+'__'+String(muscle||'');
+}
+function getAddFormSegments(dk,muscle){
+    if(!dk||!muscle)return [{id:getDefaultSegmentId(),label:getRecordSegmentLabel(getDefaultSegmentId()),exercises:[]}];
+    var exercises=(data[dk]||[]).filter(function(exercise){return exercise.muscle===muscle;});
+    var segments=getRecordSegments(dk,muscle,exercises);
+    if(!segments.length)segments=[{id:getDefaultSegmentId(),label:getRecordSegmentLabel(getDefaultSegmentId()),exercises:[]}];
+    return segments;
+}
+function getDefaultAddFormSegmentId(dk,muscle){
+    return getDefaultSegmentId();
+}
+function getAddFormTargetSegmentId(dk,muscle){
+    return getDefaultSegmentId();
+}
+function setAddFormTargetSegmentId(dk,muscle,segmentId){
+    return;
+}
+function renderAddFormSegmentPicker(){
+    var picker=document.getElementById('addFormSegmentPicker');
+    if(!picker)return;
+    picker.hidden=true;
+    picker.innerHTML='';
+}
+function getRecordSegments(dk,muscle,exercises){
+    return [{id:getDefaultSegmentId(),label:'',exercises:exercises.slice()}];
+}
+function getActiveRecordSegmentId(dk,muscle,exercises){
+    return getDefaultSegmentId();
+}
+function setRecordSegmentTab(dk,muscle,segmentId){
+    showDetail(dk);
+}
+function getNextRecordSegmentId(dk,muscle){
+    return getDefaultSegmentId();
+}
+function addRecordSegment(dk,muscle){
+    if(!dk||!muscle)return;
+    recordMuscleTabs[getRecordMuscleTabKey(dk)]=muscle;
+    openM();
+    selM(muscle);
+}
+function getDayTimeMeta(dk,exercises,muscle,segmentId){
     if(!muscle){
         var groupedExercises={};
         for(var gi=0;gi<exercises.length;gi++){
@@ -880,7 +1104,7 @@ function getDayTimeMeta(dk,exercises,muscle){
         }
     }
     var autoMeta=getAutoDayTimeMeta(dk,exercises);
-    var overrides=getDayTimeOverrideBucket(dk,muscle);
+    var overrides=getDayTimeOverrideBucket(dk,muscle,segmentId);
     var manualFirstAddedAt=normalizeTimestampValue(overrides.firstAddedAt);
     var manualLastUpdatedAt=normalizeTimestampValue(overrides.lastUpdatedAt);
     var resolvedFirstAddedAt=manualFirstAddedAt!==null?manualFirstAddedAt:autoMeta.firstAddedAt;
@@ -895,8 +1119,8 @@ function getDayTimeMeta(dk,exercises,muscle){
         manualLastUpdatedAt:manualLastUpdatedAt
     };
 }
-function calcTrainingDurationMinutes(dk,exercises,muscle){
-    var timeMeta=getDayTimeMeta(dk,exercises,muscle);
+function calcTrainingDurationMinutes(dk,exercises,muscle,segmentId){
+    var timeMeta=getDayTimeMeta(dk,exercises,muscle,segmentId);
     if(timeMeta.firstAddedAt===null||timeMeta.lastUpdatedAt===null)return null;
     var startSeconds=getClockSeconds(timeMeta.firstAddedAt);
     var endSeconds=getClockSeconds(timeMeta.lastUpdatedAt);
@@ -911,15 +1135,22 @@ function calcRefreshIntervalMinutes(currentTimestamp,previousTimestamp){
     return Math.max(0,Math.round((currentSeconds-previousSeconds)/6)/10);
 }
 function getMuscleRefreshIntervalSeries(dk,muscle,exercises){
+    var intervals=[];
+    var points=[];
     var timeMeta=getDayTimeMeta(dk,exercises,muscle);
+    if(timeMeta.firstAddedAt===null)return {segments:intervals,points:points};
     var refreshEntries=getDayTimeRefreshHistory(dk,muscle).map(function(timestamp){
         return {dk:dk,timestamp:timestamp};
     }).sort(function(a,b){return a.timestamp-b.timestamp;});
-    var segments=[];
-    var points=[];
-    if(timeMeta.firstAddedAt===null)return {segments:segments,points:points};
-    points.push({count:0,elapsedMinutes:0,timestamp:timeMeta.firstAddedAt});
+    points.push({
+        count:0,
+        elapsedMinutes:0,
+        timestamp:timeMeta.firstAddedAt,
+        isSegmentStart:true,
+        xLabel:'开始'
+    });
     var previousTimestamp=timeMeta.firstAddedAt;
+    var refreshCount=0;
     for(var pi=0;pi<refreshEntries.length;pi++){
         var currentEntry=refreshEntries[pi];
         var intervalMinutes=calcRefreshIntervalMinutes(currentEntry.timestamp,previousTimestamp);
@@ -928,9 +1159,10 @@ function getMuscleRefreshIntervalSeries(dk,muscle,exercises){
             previousTimestamp=currentEntry.timestamp;
             continue;
         }
-        segments.push({
-            fromIndex:pi,
-            toIndex:pi+1,
+        refreshCount++;
+        intervals.push({
+            fromIndex:refreshCount-1,
+            toIndex:refreshCount,
             fromDateKey:dk,
             toDateKey:currentEntry.dk,
             fromTimestamp:previousTimestamp,
@@ -939,33 +1171,36 @@ function getMuscleRefreshIntervalSeries(dk,muscle,exercises){
             vol:intervalMinutes
         });
         points.push({
-            count:pi+1,
+            count:refreshCount,
             elapsedMinutes:elapsedMinutes,
             timestamp:currentEntry.timestamp,
-            segment:segments[segments.length-1]
+            isSegmentStart:false,
+            xLabel:String(refreshCount)+'次',
+            segment:intervals[intervals.length-1]
         });
         previousTimestamp=currentEntry.timestamp;
     }
-    return {segments:segments,points:points};
+    return {segments:intervals,points:points};
 }
 function formatTrainingDurationLabel(minutes){
     // Keep the label compact so it fits between the editable start/end time fields.
     if(minutes===null||minutes===undefined||isNaN(minutes))return '--';
     return Math.max(0,Math.round(minutes))+' <span class="exercise-time-duration-unit">min</span>';
 }
-function setDayTimeValue(dk,muscle,field,value){
+function setDayTimeValue(dk,muscle,field,value,segmentId){
     if(field!=='firstAddedAt'&&field!=='lastUpdatedAt')return;
-    var exercises=(data[dk]||[]).filter(function(exercise){return !muscle||exercise.muscle===muscle;});
-    if(!exercises.length)return;
+    var exercises=(data[dk]||[]).filter(function(exercise){
+        return !muscle||exercise.muscle===muscle;
+    });
+    if(!exercises.length&&!muscle)return;
     var nextTimestamp=value?getDayTimestampFromClockInput(dk,value):null;
     if(value&&nextTimestamp===null){
         alert('请输入 24 小时制时间，格式为 HH:MM:SS');
         showDetail(dk);
         return;
     }
-    var meta=getDayTimeMeta(dk,exercises,muscle);
-    if(!dayTimeOverrides[dk])dayTimeOverrides[dk]={};
-    var targetOverrides=muscle?(dayTimeOverrides[dk][muscle]||(dayTimeOverrides[dk][muscle]={})):dayTimeOverrides[dk];
+    var meta=getDayTimeMeta(dk,exercises,muscle,segmentId);
+    var targetOverrides=getOrCreateDayTimeOverrideBucket(dk,muscle,segmentId);
     if(nextTimestamp===null){
         delete targetOverrides[field];
     }else{
@@ -981,7 +1216,7 @@ function setDayTimeValue(dk,muscle,field,value){
     showDetail(dk);
     if(document.getElementById('volumeContent').classList.contains('active'))showVolumeChart();
 }
-function setDayTimePart(dk,muscle,field,part,value){
+function setDayTimePart(dk,muscle,field,part,value,segmentId){
     if(part!=='hours'&&part!=='minutes'&&part!=='seconds')return;
     var maxValue=part==='hours'?23:59;
     var trimmed=String(value==null?'':value).trim();
@@ -997,16 +1232,20 @@ function setDayTimePart(dk,muscle,field,part,value){
         showDetail(dk);
         return;
     }
-    var exercises=(data[dk]||[]).filter(function(exercise){return !muscle||exercise.muscle===muscle;});
-    var timeMeta=getDayTimeMeta(dk,exercises,muscle);
+    var exercises=(data[dk]||[]).filter(function(exercise){
+        return !muscle||exercise.muscle===muscle;
+    });
+    var timeMeta=getDayTimeMeta(dk,exercises,muscle,segmentId);
     var baseParts=getClockParts(timeMeta[field]);
     baseParts[part]=numericValue;
-    setDayTimeValue(dk,muscle,field,buildClockValueFromParts(baseParts));
+    setDayTimeValue(dk,muscle,field,buildClockValueFromParts(baseParts),segmentId);
 }
-function updateDayLatestTimeForMuscle(dk,muscle,timestamp,shouldRecordRefreshHistory){
-    var exercises=(data[dk]||[]).filter(function(exercise){return !muscle||exercise.muscle===muscle;});
-    if(!exercises.length)return false;
-    var timeMeta=getDayTimeMeta(dk,exercises,muscle);
+function updateDayLatestTimeForMuscle(dk,muscle,timestamp,shouldRecordRefreshHistory,segmentId){
+    var exercises=(data[dk]||[]).filter(function(exercise){
+        return !muscle||exercise.muscle===muscle;
+    });
+    if(!exercises.length&&!muscle)return false;
+    var timeMeta=getDayTimeMeta(dk,exercises,muscle,segmentId);
     var nextTimestamp=timestamp==null?getNowTimestampForDateKey(dk):projectTimestampToDateKey(dk,timestamp);
     if(nextTimestamp===null)nextTimestamp=getNowTimestampForDateKey(dk);
     if(nextTimestamp===null)return false;
@@ -1018,12 +1257,11 @@ function updateDayLatestTimeForMuscle(dk,muscle,timestamp,shouldRecordRefreshHis
     }else{
         nextStartTimestamp=clampStartTimestampToSameDayRange(timeMeta.firstAddedAt,nextTimestamp);
     }
-    if(!dayTimeOverrides[dk])dayTimeOverrides[dk]={};
-    var targetOverrides=muscle?(dayTimeOverrides[dk][muscle]||(dayTimeOverrides[dk][muscle]={})):dayTimeOverrides[dk];
+    var targetOverrides=getOrCreateDayTimeOverrideBucket(dk,muscle,segmentId);
     if(nextStartTimestamp!==null)targetOverrides.firstAddedAt=nextStartTimestamp;
     targetOverrides.lastUpdatedAt=clampEndTimestampToSameDayRange(nextStartTimestamp,nextTimestamp);
     if(shouldRecordRefreshHistory){
-        var refreshHistory=getDayTimeRefreshHistory(dk,muscle);
+        var refreshHistory=getDayTimeRefreshHistory(dk,muscle,segmentId);
         refreshHistory.push(nextTimestamp);
         targetOverrides.refreshHistory=refreshHistory;
     }
@@ -1031,15 +1269,15 @@ function updateDayLatestTimeForMuscle(dk,muscle,timestamp,shouldRecordRefreshHis
     saveDayTimeOverrides();
     return true;
 }
-function refreshDayLatestTime(dk,muscle){
-    if(!updateDayLatestTimeForMuscle(dk,muscle,null,true))return;
-    resetRecordGroupTimer(dk,muscle);
+function refreshDayLatestTime(dk,muscle,segmentId){
+    if(!updateDayLatestTimeForMuscle(dk,muscle,null,true,segmentId))return;
+    resetRecordGroupTimer(dk,muscle,segmentId);
     showDetail(dk);
     if(document.getElementById('volumeContent').classList.contains('active'))showVolumeChart();
 }
-function syncRecordGroupLatestTime(dk,muscle,timestamp){
+function syncRecordGroupLatestTime(dk,muscle,timestamp,segmentId){
     if(!dk||!muscle)return;
-    updateDayLatestTimeForMuscle(dk,muscle,timestamp,true);
+    updateDayLatestTimeForMuscle(dk,muscle,timestamp,true,segmentId);
 }
 function adjustDayTimePart(dk,field,part,delta){
     if(part!=='hours'&&part!=='minutes'&&part!=='seconds')return;
@@ -1049,7 +1287,7 @@ function adjustDayTimePart(dk,field,part,delta){
     var maxValue=part==='hours'?24:60;
     var currentValue=parseInt(baseParts[part],10)||0;
     baseParts[part]=(currentValue+delta+maxValue)%maxValue;
-    setDayTimeValue(dk,field,buildClockValueFromParts(baseParts));
+    setDayTimeValue(dk,null,field,buildClockValueFromParts(baseParts));
 }
 function getExerciseNamesFromData(m){
     var latestByName={};
@@ -1191,9 +1429,70 @@ function getExerciseBestRecord(m,name){
     }
     return bestRecord||{weight:0,sets:0,reps:'',volume:0,date:''};
 }
+function getLatestMuscleCopySource(targetDate,muscle){
+    if(!muscle)return null;
+    var rankedDates=Object.keys(data).sort(function(a,b){
+        return Date.parse(b+'T00:00:00')-Date.parse(a+'T00:00:00');
+    });
+    var fallbackSource=null;
+    for(var di=0;di<rankedDates.length;di++){
+        var dateKey=rankedDates[di];
+        var exercises=(data[dateKey]||[]).filter(function(exercise){
+            return exercise&&exercise.muscle===muscle;
+        });
+        if(!exercises.length)continue;
+        var source={dateKey:dateKey,exercises:exercises};
+        if(dateKey!==targetDate)return source;
+        if(!fallbackSource)fallbackSource=source;
+    }
+    return fallbackSource;
+}
+function copyLastMuscleExercises(){
+    if(editIdx>=0||!selDate||!selMuscle)return;
+    var source=getLatestMuscleCopySource(selDate,selMuscle);
+    if(!source||!source.exercises||!source.exercises.length){
+        alert('这个部位还没有可复制的上次训练记录');
+        return;
+    }
+    if(!data[selDate])data[selDate]=[];
+    var now=getNowTimestampForDateKey(selDate);
+    for(var i=0;i<source.exercises.length;i++){
+        var sourceExercise=source.exercises[i];
+        var copiedName=(sourceExercise.name||'').trim();
+        var copiedExercise={
+            muscle:selMuscle,
+            name:copiedName,
+            sets:1,
+            reps:sourceExercise.reps||'',
+            weight:sourceExercise.weight==null||isNaN(Number(sourceExercise.weight))?null:Number(sourceExercise.weight),
+            createdAt:now===null?null:(now+i),
+            updatedAt:now===null?null:(now+i)
+        };
+        data[selDate].push(copiedExercise);
+        if(copiedName)rememberCustomExerciseName(selMuscle,copiedName);
+    }
+    syncRecordGroupLatestTime(selDate,selMuscle,now);
+    recordMuscleTabs[getRecordMuscleTabKey(selDate)]=selMuscle;
+    recordActionTabs[getRecordActionTabKey(selDate,selMuscle)]=(source.exercises[source.exercises.length-1].name||'').trim();
+    resetRecordGroupTimer(selDate,selMuscle);
+    save();
+    closeExerciseNameDropdown();
+    closeM();
+    render();
+    showDetail(selDate);
+    switchPage('record');
+    setTimeout(scrollToPageBottom,50);
+}
 function fillExerciseNameOptions(m){
     var options=document.getElementById('exerciseNameOptions');
     options.innerHTML='';
+    if(editIdx<0&&modalMode!=='renameAction'){
+        var copySource=getLatestMuscleCopySource(selDate,m);
+        if(copySource&&copySource.exercises&&copySource.exercises.length){
+            var copyLabel='复制上次（'+copySource.exercises.length+'个动作）';
+            options.innerHTML+='<button type="button" class="dropdown-item" onclick="copyLastMuscleExercises()">'+copyLabel+'</button>';
+        }
+    }
     var names=getExerciseNamesFromData(m);
     for(var i=0;i<names.length;i++){
         options.innerHTML+='<button type="button" class="dropdown-item" onclick="selectExerciseNameOption(\''+names[i].replace(/'/g,"&#39;")+'\')">'+names[i]+'</button>';
@@ -1223,18 +1522,40 @@ function toggleExerciseNameDropdown(){
 }
 function selectExerciseNameOption(name){
     document.getElementById('exerciseName').value=name;
-    var defaults=getExerciseHistoryDefaults(selMuscle,name);
-    if(defaults){
-        document.getElementById('exerciseReps').value=defaults.reps||'';
-        document.getElementById('exerciseWeight').value=defaults.weight==null?'':defaults.weight;
+    if(modalMode!=='renameAction'){
+        var defaults=getExerciseHistoryDefaults(selMuscle,name);
+        if(defaults){
+            document.getElementById('exerciseReps').value=defaults.reps||'';
+            document.getElementById('exerciseWeight').value=defaults.weight==null?'':defaults.weight;
+        }
     }
     closeExerciseNameDropdown();
+}
+function setAddFormMode(mode){
+    modalMode=mode||'add';
+    var addForm=document.getElementById('addForm');
+    var muscleSelect=document.getElementById('muscleSelect');
+    if(addForm)addForm.classList.toggle('rename-action-mode',modalMode==='renameAction');
+    if(muscleSelect){
+        muscleSelect.hidden=modalMode==='renameAction';
+        muscleSelect.style.display=modalMode==='renameAction'?'none':'';
+    }
+}
+function resetModalState(){
+    renameActionState=null;
+    editIdx=-1;
+    setAddFormMode('add');
+    document.querySelector('.modal-header h2').textContent='添加训练';
+    document.getElementById('addExercise').textContent='添加动作';
 }
 function bindExerciseNameDropdown(){
     var input=document.getElementById('exerciseName');
     var toggleBtn=document.getElementById('exerciseNameToggle');
     input.onclick=function(e){
         e.stopPropagation();
+        closeExerciseNameDropdown();
+    };
+    input.oninput=function(){
         closeExerciseNameDropdown();
     };
     toggleBtn.onclick=function(e){
@@ -1305,16 +1626,21 @@ function updateAddActionVisibility(){
 }
 function updateDetailTimerButton(){
     var slot=document.getElementById('detailTimerSlot');
-    if(!slot)return;
+    var resetSlot=document.getElementById('detailResetSlot');
+    if(!slot||!resetSlot)return;
     var activeMuscle=currentPage==='record'&&selDate?getActiveRecordMuscle(selDate):null;
     if(!activeMuscle){
         slot.hidden=true;
+        resetSlot.hidden=true;
         slot.innerHTML='';
+        resetSlot.innerHTML='';
         updateDetailActionBarVisibility();
         return;
     }
     slot.hidden=false;
-    slot.innerHTML='<button class="exercise-timer-btn" data-date-key="'+selDate+'" data-muscle="'+activeMuscle+'" onclick="resetRecordGroupTimer(\''+selDate+'\',\''+activeMuscle+'\')" title="点击重新计时"><span class="exercise-timer-meta">⏱ 秒表</span><span class="exercise-timer-value">'+getRecordGroupTimerLabel(selDate,activeMuscle)+'</span></button>';
+    resetSlot.hidden=false;
+    slot.innerHTML='<button class="exercise-timer-btn" data-date-key="'+selDate+'" data-muscle="'+activeMuscle+'" data-segment-id="'+getDefaultSegmentId()+'" onclick="resetRecordGroupTimer(\''+selDate+'\',\''+activeMuscle+'\')" title="点击重新计时当前部位"><span class="exercise-timer-meta">⏱ 计时</span><span class="exercise-timer-value">'+getRecordGroupTimerLabel(selDate,activeMuscle)+'</span></button>';
+    resetSlot.innerHTML='<button class="exercise-timer-reset-btn" type="button" onclick="recalibrateRecordGroupTimer(\''+selDate+'\',\''+activeMuscle+'\')" title="将开始时间校准为当前时间并重新计时">重置</button>';
     updateDetailActionBarVisibility();
 }
 function updateDetailActionBarVisibility(){
@@ -1322,8 +1648,9 @@ function updateDetailActionBarVisibility(){
     var recordTab=document.getElementById('tabRecord');
     var addBtn=document.getElementById('addActionBtn');
     var timerSlot=document.getElementById('detailTimerSlot');
-    if(!actionBar||!recordTab||!addBtn||!timerSlot)return;
-    actionBar.hidden=recordTab.hidden&&addBtn.hidden&&timerSlot.hidden;
+    var resetSlot=document.getElementById('detailResetSlot');
+    if(!actionBar||!recordTab||!addBtn||!timerSlot||!resetSlot)return;
+    actionBar.hidden=recordTab.hidden&&addBtn.hidden&&timerSlot.hidden&&resetSlot.hidden;
 }
 function scrollToDateCell(dk){
     var cell=document.querySelector('.day[data-date="'+dk+'"]');
@@ -1523,7 +1850,7 @@ function reorderExercisesByGroups(groups){
     }
     return reordered;
 }
-function getRecordActionTabKey(dk,muscle){
+function getRecordActionTabKey(dk,muscle,segmentId){
     return dk+'__'+muscle;
 }
 function getRecordMuscleTabKey(dk){
@@ -1533,11 +1860,11 @@ function setRecordMuscleTab(dk,muscle){
     recordMuscleTabs[getRecordMuscleTabKey(dk)]=muscle;
     showDetail(dk);
 }
-function setRecordActionTab(dk,muscle,actionName){
-    recordActionTabs[getRecordActionTabKey(dk,muscle)]=actionName;
+function setRecordActionTab(dk,muscle,segmentId,actionName){
+    recordActionTabs[getRecordActionTabKey(dk,muscle,segmentId)]=actionName;
     showDetail(dk);
 }
-function getRecordActionClickKey(dk,muscle,actionName){
+function getRecordActionClickKey(dk,muscle,segmentId,actionName){
     return dk+'__'+muscle+'__'+actionName;
 }
 function getRecordValueFlashKey(dk,index,field){
@@ -1552,30 +1879,76 @@ function getRecordValueFlashClass(dk,index,field){
     if(Date.now()-state.at>700)return '';
     return state.direction==='down'?' value-flash-down':' value-flash-up';
 }
-function handleRecordActionTabClick(dk,muscle,actionName){
-    var timerKey=getRecordActionClickKey(dk,muscle,actionName);
-    if(recordActionLongPressTriggered[timerKey]){
-        delete recordActionLongPressTriggered[timerKey];
+function handleRecordActionTabClick(dk,muscle,segmentId,actionName){
+    var activeActionName=recordActionTabs[getRecordActionTabKey(dk,muscle)];
+    if(activeActionName===actionName){
+        openRecordActionRenameModal(dk,muscle,actionName);
         return;
     }
-    if(recordActionClickTimers[timerKey])clearTimeout(recordActionClickTimers[timerKey]);
-    recordActionClickTimers[timerKey]=setTimeout(function(){
-        delete recordActionClickTimers[timerKey];
-        setRecordActionTab(dk,muscle,actionName);
-    },220);
+    setRecordActionTab(dk,muscle,segmentId,actionName);
 }
-function handleRecordActionTabDoubleClick(dk,muscle,actionName,index,el){
-    var timerKey=getRecordActionClickKey(dk,muscle,actionName);
+function openRecordActionRenameModal(dk,muscle,actionName){
+    if(!dk||!muscle||!actionName)return;
+    selDate=dk;
+    selMuscle=muscle;
+    renameActionState={dateKey:dk,muscle:muscle,oldName:actionName};
+    setAddFormMode('renameAction');
+    document.getElementById('modal').classList.add('show');
+    document.getElementById('addForm').classList.add('show');
+    document.querySelector('.modal-header h2').textContent='修改动作名称';
+    document.getElementById('addExercise').textContent='确认';
+    fillExerciseNameOptions(muscle);
+    document.getElementById('exerciseName').value=actionName;
+    closeExerciseNameDropdown();
+    setTimeout(function(){
+        openExerciseNameDropdown();
+        var input=document.getElementById('exerciseName');
+        if(input){
+            input.focus();
+            input.select();
+        }
+    },0);
+}
+function confirmRecordActionRename(){
+    if(!renameActionState||!renameActionState.dateKey||!renameActionState.muscle){
+        alert('未找到要修改的动作');
+        return;
+    }
+    var dk=renameActionState.dateKey;
+    var muscle=renameActionState.muscle;
+    var oldName=renameActionState.oldName;
+    var newName=document.getElementById('exerciseName').value.trim();
+    if(!newName){
+        alert('请输入动作名称');
+        return;
+    }
+    if(newName!==oldName){
+        for(var idx=0;idx<(data[dk]||[]).length;idx++){
+            if(data[dk][idx].muscle===muscle&&data[dk][idx].name===oldName){
+                data[dk][idx].name=newName;
+            }
+        }
+        rememberCustomExerciseName(muscle,newName);
+        recordActionTabs[getRecordActionTabKey(dk,muscle)]=newName;
+        save();
+    }
+    closeM();
+    render();
+    showDetail(dk);
+    switchPage('record');
+}
+function handleRecordActionTabDoubleClick(dk,muscle,segmentId,actionName,index,el){
+    var timerKey=getRecordActionClickKey(dk,muscle,segmentId,actionName);
     if(recordActionClickTimers[timerKey]){
         clearTimeout(recordActionClickTimers[timerKey]);
         delete recordActionClickTimers[timerKey];
     }
-    cancelRecordActionLongPress(dk,muscle,actionName);
+    cancelRecordActionLongPress(dk,muscle,segmentId,actionName);
     editNameGroup(dk,index,el);
 }
-function startRecordActionLongPress(dk,muscle,actionName,index,el){
-    var timerKey=getRecordActionClickKey(dk,muscle,actionName);
-    cancelRecordActionLongPress(dk,muscle,actionName);
+function startRecordActionLongPress(dk,muscle,segmentId,actionName,index,el){
+    var timerKey=getRecordActionClickKey(dk,muscle,segmentId,actionName);
+    cancelRecordActionLongPress(dk,muscle,segmentId,actionName);
     recordActionLongPressTriggered[timerKey]=false;
     recordActionLongPressTimers[timerKey]=setTimeout(function(){
         delete recordActionLongPressTimers[timerKey];
@@ -1583,8 +1956,8 @@ function startRecordActionLongPress(dk,muscle,actionName,index,el){
         editNameGroup(dk,index,el);
     },450);
 }
-function cancelRecordActionLongPress(dk,muscle,actionName){
-    var timerKey=getRecordActionClickKey(dk,muscle,actionName);
+function cancelRecordActionLongPress(dk,muscle,segmentId,actionName){
+    var timerKey=getRecordActionClickKey(dk,muscle,segmentId,actionName);
     if(recordActionLongPressTimers[timerKey]){
         clearTimeout(recordActionLongPressTimers[timerKey]);
         delete recordActionLongPressTimers[timerKey];
@@ -1614,50 +1987,57 @@ function showDetail(dk){
     var group=groups[groupIndex];
     var groupExercises=ex.filter(function(exercise){return exercise.muscle===group.muscle;});
     var dayTimeMeta=getDayTimeMeta(dk,groupExercises,group.muscle);
-    var firstAction=group.actions[0];
-    var e=firstAction.items[0].exercise;
-    var tabKey=getRecordActionTabKey(dk,e.muscle);
+    // Reuse the original day grouping so item indexes still point at data[dk].
+    var segmentGroup=group;
+    var firstAction=segmentGroup&&segmentGroup.actions[0]?segmentGroup.actions[0]:null;
+    var e=firstAction&&firstAction.items[0]?firstAction.items[0].exercise:{muscle:group.muscle};
+    var tabKey=getRecordActionTabKey(dk,group.muscle);
     var activeActionName=recordActionTabs[tabKey];
-    if(!activeActionName||!group.actionMap[activeActionName]){
+    if(firstAction&&(!activeActionName||!segmentGroup.actionMap[activeActionName])){
         activeActionName=firstAction.name;
         recordActionTabs[tabKey]=activeActionName;
     }
     htm+='<div class="exercise-item">'+
         '<div class="exercise-tabs">';
-    for(var ai=0;ai<group.actions.length;ai++){
-        var action=group.actions[ai];
-        htm+='<button class="exercise-tab-btn'+(action.name===activeActionName?' active':'')+'" onclick="handleRecordActionTabClick(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\')" ondblclick="handleRecordActionTabDoubleClick(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\','+action.items[0].index+',this)" onmousedown="startRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\','+action.items[0].index+',this)" onmouseup="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\')" onmouseleave="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\')" ontouchstart="startRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\','+action.items[0].index+',this)" ontouchend="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\')" ontouchcancel="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\')" ontouchmove="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+action.name+'\')" title="双击或长按修改动作名称">'+action.name+'</button>';
+    if(segmentGroup){
+        for(var ai=0;ai<segmentGroup.actions.length;ai++){
+            var action=segmentGroup.actions[ai];
+            var escapedActionName=escapeJsSingleQuotedString(action.name);
+            htm+='<button class="exercise-tab-btn'+(action.name===activeActionName?' active':'')+'" onclick="handleRecordActionTabClick(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" title="点击未高亮动作切换，点击当前高亮动作修改名称">'+escapeHtml(action.name)+'</button>';
+        }
     }
     htm+='</div>';
-    var activeAction=group.actionMap[activeActionName];
-    var bestRecord=getExerciseBestRecord(e.muscle,activeActionName);
-    var capacityHintText=getCapacityHintText(dk,activeAction.items,bestRecord);
+    var activeAction=segmentGroup&&activeActionName?segmentGroup.actionMap[activeActionName]:null;
+    var bestRecord=activeAction?getExerciseBestRecord(e.muscle,activeActionName):null;
+    var capacityHintText=activeAction?getCapacityHintText(dk,activeAction.items,bestRecord):'';
     htm+='<div class="exercise-action-group">'+
         '<div class="exercise-tab-panel">';
-    // Reuse the editable row column layout so the current values and historical best align vertically.
-    htm+='<div class="exercise-best-block">'+
-        '<div class="exercise-subitem exercise-best-row">'+
-            '<div class="param-group"><button class="adjust-btn adjust-btn-placeholder" tabindex="-1" aria-hidden="true">-</button><span class="adjust-value count-slot">'+formatMetricNumber(bestRecord.sets)+'</span><button class="adjust-btn adjust-btn-placeholder" tabindex="-1" aria-hidden="true">+</button><span class="param-label">组</span></div>'+
-            '<div class="param-group"><button class="adjust-btn adjust-btn-placeholder" tabindex="-1" aria-hidden="true">-</button><span class="adjust-value count-slot">'+(bestRecord.reps||'--')+'</span><button class="adjust-btn adjust-btn-placeholder" tabindex="-1" aria-hidden="true">+</button><span class="param-label">次</span></div>'+
-            '<div class="param-group"><input type="text" class="metric-input metric-input-readonly" tabindex="-1" aria-hidden="true" value="'+formatMetricNumber(bestRecord.weight)+'" readonly /><span class="param-label">kg</span></div>'+
-            '<span class="exercise-best-badge">历史最佳</span>'+
-        '</div>'+
-    '</div>';
-    for(var ii=0;ii<activeAction.items.length;ii++){
-        var item=activeAction.items[ii];
-        var itemVolume=calcEntryVolume(item.exercise);
-        var rowBestClass=bestRecord.volume>0&&itemVolume>=bestRecord.volume?' capacity-best':'';
-        var setsFlashClass=getRecordValueFlashClass(dk,item.index,'sets');
-        var repsFlashClass=getRecordValueFlashClass(dk,item.index,'reps');
-        var weightFlashClass=getRecordValueFlashClass(dk,item.index,'weight');
-        htm+=
-        '<div class="exercise-subitem'+rowBestClass+'">'+
-            '<div class="param-group"><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value count-slot'+setsFlashClass+'">'+item.exercise.sets+'</span><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">组</span></div>'+
-            '<div class="param-group"><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value count-slot'+repsFlashClass+'">'+item.exercise.reps+'</span><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">次</span></div>'+
-            '<div class="param-group"><input type="number" class="metric-input'+weightFlashClass+'" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="0.5" min="0" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><span class="param-label">kg</span></div>'+
-            '<button class="delete-btn" onclick="del(\''+dk+'\','+item.index+')" title="删除" aria-label="删除">-</button>'+
-            '<button class="copy-btn" onclick="dup(\''+dk+'\','+item.index+')" title="复制" aria-label="复制">+</button>'+
+    if(activeAction){
+        htm+='<div class="exercise-best-block">'+
+            '<div class="exercise-subitem exercise-best-row">'+
+                '<div class="param-group"><button class="adjust-btn adjust-btn-placeholder" tabindex="-1" aria-hidden="true">-</button><span class="adjust-value count-slot">'+formatMetricNumber(bestRecord.sets)+'</span><button class="adjust-btn adjust-btn-placeholder" tabindex="-1" aria-hidden="true">+</button><span class="param-label">组</span></div>'+
+                '<div class="param-group"><button class="adjust-btn adjust-btn-placeholder" tabindex="-1" aria-hidden="true">-</button><span class="adjust-value count-slot">'+(bestRecord.reps||'--')+'</span><button class="adjust-btn adjust-btn-placeholder" tabindex="-1" aria-hidden="true">+</button><span class="param-label">次</span></div>'+
+                '<div class="param-group"><input type="text" class="metric-input metric-input-readonly" tabindex="-1" aria-hidden="true" value="'+formatMetricNumber(bestRecord.weight)+'" readonly /><span class="param-label">kg</span></div>'+
+                '<span class="exercise-best-badge">历史最佳</span>'+
+            '</div>'+
         '</div>';
+        for(var ii=0;ii<activeAction.items.length;ii++){
+            var item=activeAction.items[ii];
+            var itemVolume=calcEntryVolume(item.exercise);
+            var rowBestClass=bestRecord.volume>0&&itemVolume>=bestRecord.volume?' capacity-best':'';
+            var setsFlashClass=getRecordValueFlashClass(dk,item.index,'sets');
+            var repsFlashClass=getRecordValueFlashClass(dk,item.index,'reps');
+            var weightFlashClass=getRecordValueFlashClass(dk,item.index,'weight');
+            htm+='<div class="exercise-subitem'+rowBestClass+'">'+
+                '<div class="param-group"><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value count-slot'+setsFlashClass+'">'+item.exercise.sets+'</span><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">组</span></div>'+
+                '<div class="param-group"><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value count-slot'+repsFlashClass+'">'+item.exercise.reps+'</span><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">次</span></div>'+
+                '<div class="param-group"><input type="number" class="metric-input'+weightFlashClass+'" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="0.5" min="0" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><span class="param-label">kg</span></div>'+
+                '<button class="delete-btn" onclick="del(\''+dk+'\','+item.index+')" title="删除" aria-label="删除">-</button>'+
+                '<button class="copy-btn" onclick="dup(\''+dk+'\','+item.index+')" title="复制" aria-label="复制">+</button>'+
+            '</div>';
+        }
+    }else{
+        htm+='<div class="exercise-empty-state">当前部位还没有动作。<br>点击下方“+ 添加”继续记录。</div>';
     }
     var startParts=getClockParts(dayTimeMeta.firstAddedAt);
     var endParts=getClockParts(dayTimeMeta.lastUpdatedAt);
@@ -1671,7 +2051,7 @@ function showDetail(dk){
                 '<span class="exercise-time-colon">:</span>'+
                 '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+startParts.seconds+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\''+group.muscle+'\',\'firstAddedAt\',\'seconds\',this.value)" /></span>'+
             '</span></span>'+
-            '<span class="exercise-time-center"><span class="exercise-time-duration" onclick="refreshDayLatestTime(\''+dk+'\',\''+group.muscle+'\')" title="点击刷新最新时间">'+formatTrainingDurationLabel(durationMinutes)+'</span><span class="exercise-time-arrow" aria-hidden="true"></span></span>'+
+            '<span class="exercise-time-center"><span class="exercise-time-duration" onclick="refreshDayLatestTime(\''+dk+'\',\''+group.muscle+'\')" title="点击刷新当前部位最新时间">'+formatTrainingDurationLabel(durationMinutes)+'</span><span class="exercise-time-arrow" aria-hidden="true"></span></span>'+
             '<span class="exercise-time-field"><span class="exercise-time-parts">'+
                 '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+endParts.hours+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\''+group.muscle+'\',\'lastUpdatedAt\',\'hours\',this.value)" /></span>'+
                 '<span class="exercise-time-colon">:</span>'+
@@ -1732,10 +2112,13 @@ function getTopSelectedRecordInfo(dk){
     }
     var firstAction=topGroup.actions[0];
     if(!firstAction)return null;
+    var topGroupExercises=ex.filter(function(exercise){return exercise.muscle===topGroup.muscle;});
+    var segmentGroup=topGroup;
+    if(!segmentGroup||!segmentGroup.actions.length)return {muscle:topGroup.muscle||null,name:firstAction.name||''};
     var tabKey=getRecordActionTabKey(dk,topGroup.muscle);
     var activeActionName=recordActionTabs[tabKey];
-    if(!activeActionName||!topGroup.actionMap[activeActionName]){
-        activeActionName=firstAction.name;
+    if(!activeActionName||!segmentGroup.actionMap[activeActionName]){
+        activeActionName=segmentGroup.actions[0].name;
     }
     return {muscle:topGroup.muscle||null,name:activeActionName||''};
 }
@@ -1763,33 +2146,8 @@ function editName(dk,i,el){
     input.select();
 }
 function editNameGroup(dk,i,el){
-    var curName=data[dk][i].name;
-    var curMuscle=data[dk][i].muscle;
-    var input=document.createElement('input');
-    input.type='text';
-    input.className='exercise-name-input';
-    input.value=curName;
-    input.onblur=function(){
-        var newName=this.value.trim();
-        if(newName&&newName!==curName){
-            for(var idx=0;idx<data[dk].length;idx++){
-                if(data[dk][idx].name===curName&&data[dk][idx].muscle===curMuscle){
-                    data[dk][idx].name=newName;
-                }
-            }
-            recordActionTabs[getRecordActionTabKey(dk,curMuscle)]=newName;
-            save();
-        }
-        showDetail(dk);
-    };
-    input.onkeydown=function(e){
-        if(e.key==='Enter')this.blur();
-        if(e.key==='Escape'){this.value=curName;this.blur();}
-    };
-    el.innerHTML='';
-    el.appendChild(input);
-    input.focus();
-    input.select();
+    if(!data[dk]||!data[dk][i])return;
+    openRecordActionRenameModal(dk,data[dk][i].muscle,data[dk][i].name);
 }
 function renameExerciseAcrossData(targetMuscle,oldName,newName){
     var changed=false;
@@ -1872,7 +2230,7 @@ function dup(dk,i){
     render();
     showDetail(dk);
 }
-function del(dk,i){var deletedExercise=data[dk][i];data[dk].splice(i,1);if(!data[dk].length){delete data[dk];delete dayTimeOverrides[dk];saveDayTimeOverrides();}else{cleanupDayTimeOverridesForDate(dk);saveDayTimeOverrides();}if(deletedExercise&&deletedExercise.muscle&&data[dk]){syncRecordGroupLatestTime(dk,deletedExercise.muscle,getNowTimestampForDateKey(dk));resetRecordGroupTimer(dk,deletedExercise.muscle);}save();render();showDetail(dk);}
+function del(dk,i){var deletedExercise=data[dk][i];data[dk].splice(i,1);if(!data[dk].length){delete data[dk];delete dayTimeOverrides[dk];saveDayTimeOverrides();}else{cleanupDayTimeOverridesForDate(dk);saveDayTimeOverrides();}if(deletedExercise&&deletedExercise.muscle&&data[dk]){var hasRemainingInMuscle=(data[dk]||[]).some(function(exercise){return exercise.muscle===deletedExercise.muscle;});if(hasRemainingInMuscle){syncRecordGroupLatestTime(dk,deletedExercise.muscle,getNowTimestampForDateKey(dk));resetRecordGroupTimer(dk,deletedExercise.muscle);}else{clearRecordGroupTimer(dk,deletedExercise.muscle);}}save();render();showDetail(dk);}
 function adjSets(dk,i,d){
     var prev=data[dk][i].sets;
     data[dk][i].sets=Math.max(1,data[dk][i].sets+d);
@@ -1901,13 +2259,15 @@ function adjReps(dk,i,d){
     save();
     showDetail(dk);
 }
-function openM(){if(!selDate){var today=new Date();selDate=getTodayKey();curDate=new Date(today.getFullYear(),today.getMonth(),1);}editIdx=-1;document.querySelector('.modal-header h2').textContent='添加训练';document.getElementById('addExercise').textContent='添加动作';document.getElementById('modal').classList.add('show');document.getElementById('addForm').classList.remove('show');selMuscle=null;document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});render();showDetail(selDate);setTimeout(function(){scrollToDateCell(selDate);var el=document.getElementById('modal');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);}
-function closeM(){document.getElementById('modal').classList.remove('show');document.getElementById('addForm').classList.remove('show');selMuscle=null;}
+function openM(){if(!selDate){var today=new Date();selDate=getTodayKey();curDate=new Date(today.getFullYear(),today.getMonth(),1);}resetModalState();document.getElementById('modal').classList.add('show');document.getElementById('addForm').classList.remove('show');selMuscle=null;document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});renderAddFormSegmentPicker();var activeMuscle=currentPage==='record'&&selDate?getActiveRecordMuscle(selDate):null;if(activeMuscle)selM(activeMuscle);render();showDetail(selDate);setTimeout(function(){scrollToDateCell(selDate);var el=document.getElementById('modal');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);}
+function closeM(){document.getElementById('modal').classList.remove('show');document.getElementById('addForm').classList.remove('show');selMuscle=null;closeExerciseNameDropdown();resetModalState();renderAddFormSegmentPicker();}
 function selM(m){
     selMuscle=m;
+    setAddFormMode('add');
     document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});
     document.querySelector('.muscle-btn[data-muscle="'+m+'"]').classList.add('selected');
     document.getElementById('addForm').classList.add('show');
+    renderAddFormSegmentPicker();
     fillExerciseNameOptions(m);
     var exerciseNameInput=document.getElementById('exerciseName');
     exerciseNameInput.value='';
@@ -1921,6 +2281,8 @@ function selM(m){
 }
 function editEx(dk,i){
     editIdx=i;
+    renameActionState=null;
+    setAddFormMode('add');
     selDate=dk;
     var e=data[dk][i];
     selMuscle=e.muscle;
@@ -1935,8 +2297,13 @@ function editEx(dk,i){
     document.getElementById('exerciseSets').value=e.sets;
     document.getElementById('exerciseReps').value=e.reps;
     document.getElementById('exerciseWeight').value=e.weight||'';
+    renderAddFormSegmentPicker();
 }
 function addEx(){
+    if(modalMode==='renameAction'){
+        confirmRecordActionRename();
+        return;
+    }
     var n=document.getElementById('exerciseName').value.trim(),s=document.getElementById('exerciseSets').value,r=document.getElementById('exerciseReps').value.trim(),w=document.getElementById('exerciseWeight').value;
     if(!n||!s||!r||!selMuscle||!selDate){alert('请填写完整信息');return;}
     var targetDate=selDate;
@@ -2217,13 +2584,13 @@ function showVolumeChart(){
     if(volumeMetricMode==='interval'){
         var intervalSeries=muscleRefreshIntervals[selectedMuscle]||{segments:[],points:[]};
         intervalSegments=intervalSeries.segments.slice(-10);
+        intervalPoints=intervalSeries.points.slice(-12);
         if(!intervalSegments.length){
             container.innerHTML=htm+'<div class="no-data">至少点击两次刷新后，才会生成间隔图</div>';
             return;
         }
-        intervalPoints=intervalSeries.points.slice(Math.max(0,intervalSeries.points.length-(intervalSegments.length+1)));
         for(var ip=0;ip<intervalPoints.length;ip++){
-            xLabels.push(intervalPoints[ip].count+'次');
+            xLabels.push(intervalPoints[ip].xLabel||intervalPoints[ip].count+'次');
             if(intervalPoints[ip].elapsedMinutes>displayedMaxVol)displayedMaxVol=intervalPoints[ip].elapsedMinutes;
         }
         displayedMinVol=0;
@@ -2324,6 +2691,7 @@ function showVolumeChart(){
         for(var segi=1;segi<intervalPoints.length;segi++){
             var prevPoint=intervalPoints[segi-1];
             var currPoint=intervalPoints[segi];
+            if(currPoint.isSegmentStart)continue;
             var segment=currPoint.segment;
             var startX=padding.left+chartW*(segi-1)/(intervalPoints.length-1||1);
             var endX=padding.left+chartW*segi/(intervalPoints.length-1||1);
@@ -2336,11 +2704,11 @@ function showVolumeChart(){
             var point=intervalPoints[ipi];
             var pointX=padding.left+chartW*ipi/(intervalPoints.length-1||1);
             var pointY=padding.top+chartH*(1-(point.elapsedMinutes-axisMin)/axisRange);
-            var pointTitle=ipi===0
-                ? '0次刷新 · 0.0分钟'
+            var pointTitle=point.isSegmentStart
+                ? ('起点 · 0.0分钟')
                 : ('第'+point.segment.toIndex+'次刷新 · 累计训练时长 '+formatMinuteDecimal(point.elapsedMinutes)+'分钟');
-            var pointDateLabel=ipi===0
-                ? '0次'
+            var pointDateLabel=point.isSegmentStart
+                ? ('起点 · '+formatClockTime(point.timestamp))
                 : ('第'+point.segment.toIndex+'次刷新 · '+point.segment.toDateKey+' '+formatClockTime(point.segment.toTimestamp));
             htm+='<circle class="chart-point'+(ipi===intervalPoints.length-1?' chart-point-max':'')+'" cx="'+pointX+'" cy="'+pointY+'" r="4" fill="'+muscleColors[selectedMuscle]+'" data-muscle="'+selectedMuscle+'" data-date="'+pointDateLabel+'" data-vol="'+formatMinuteDecimal(point.elapsedMinutes)+'" data-unit="分钟"><title>'+pointTitle+'</title></circle>';
             if(ipi===intervalPoints.length-1){
@@ -2801,7 +3169,7 @@ function editStatsExerciseName(mu, exerciseName, el){
     input.focus();
     input.select();
 }
-function jumpToStatsDate(dk,muscle,exerciseName){
+function jumpToStatsDate(dk,muscle,exerciseName,segmentId){
     if(!dk||!(data[dk]||[]).length)return;
     selDate=dk;
     var parts=String(dk).split('-');
@@ -3061,6 +3429,7 @@ function importData(input){
                     data=imported;
                     dayTimeOverrides={};
                 }
+                applyDataMigrations();
                 save();
                 saveDayTimeOverrides();
                 render();
