@@ -299,7 +299,9 @@
         .detail-action-bar .exercise-timer-btn,
         .detail-action-bar .exercise-timer-reset-btn,
         .detail-action-bar .add-btn-small { min-width: 0; width: 100%; justify-content: center; }
-        .detail-action-bar .exercise-timer-btn { justify-content: space-between; }
+        .detail-action-bar .exercise-timer-btn { flex-direction: row; align-items: center; justify-content: center; gap: 4px; padding: 4px 6px; box-sizing: border-box; overflow: hidden; white-space: nowrap; }
+        .detail-action-bar .exercise-timer-meta { flex: 0 0 auto; font-size: 10px; line-height: 1; }
+        .detail-action-bar .exercise-timer-value { min-width: 0; flex: 0 1 auto; text-align: center; line-height: 1; }
         .tab-btn { flex: 1; min-height: var(--detail-tab-height); padding: 7px 8px; border: none; border-radius: 12px; background: var(--neutral-gradient); -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%); color: #3a3a3c; font-size: 12px; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; border: 1px solid rgba(255,255,255,0.78); box-shadow: inset 0 1px 0 rgba(255,255,255,0.88), 0 8px 16px rgba(17,24,39,0.06); }
         .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -3px 0 rgba(0,88,176,0.22), 0 14px 24px rgba(0,113,227,0.22); transform: translateY(-2px); }
         .tab-btn:active { transform: translateY(1px) scale(0.985); box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 4px 10px rgba(17,24,39,0.08); }
@@ -1639,7 +1641,7 @@ function updateDetailTimerButton(){
     }
     slot.hidden=false;
     resetSlot.hidden=false;
-    slot.innerHTML='<button class="exercise-timer-btn" data-date-key="'+selDate+'" data-muscle="'+activeMuscle+'" data-segment-id="'+getDefaultSegmentId()+'" onclick="resetRecordGroupTimer(\''+selDate+'\',\''+activeMuscle+'\')" title="点击重新计时当前部位"><span class="exercise-timer-meta">⏱ 计时</span><span class="exercise-timer-value">'+getRecordGroupTimerLabel(selDate,activeMuscle)+'</span></button>';
+    slot.innerHTML='<button class="exercise-timer-btn" data-date-key="'+selDate+'" data-muscle="'+activeMuscle+'" data-segment-id="'+getDefaultSegmentId()+'" onclick="resetRecordGroupTimer(\''+selDate+'\',\''+activeMuscle+'\')" title="点击重新计时当前部位"><span class="exercise-timer-meta">⏱</span><span class="exercise-timer-value">'+getRecordGroupTimerLabel(selDate,activeMuscle)+'</span></button>';
     resetSlot.innerHTML='<button class="exercise-timer-reset-btn" type="button" onclick="recalibrateRecordGroupTimer(\''+selDate+'\',\''+activeMuscle+'\')" title="将开始时间校准为当前时间并重新计时">重置</button>';
     updateDetailActionBarVisibility();
 }
