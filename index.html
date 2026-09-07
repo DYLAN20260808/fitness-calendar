@@ -73,8 +73,12 @@
         .header h1 { font-size: 18px; font-weight: 700; letter-spacing: 0.02em; color: var(--text); }
         .header-action { position: absolute; top: 50%; transform: translateY(-50%); background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(243,246,250,0.9) 100%); border: 1px solid rgba(255,255,255,0.82); color: var(--accent); padding: 3px 8px; border-radius: 8px; cursor: pointer; font-size: 9px; font-weight: 700; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 8px 14px rgba(17,24,39,0.06); }
         .header-action.left { left: 15px; }
+        .header-action.left-secondary { left: 58px; }
         .header-action.right { right: 15px; }
         .header-action:active { transform: translateY(calc(-50% + 1px)); }
+        .nav-dropdown-btn { display: inline-flex; align-items: center; justify-content: center; width: 38px; padding-left: 0; padding-right: 0; }
+        .nav-dropdown-icon { font-size: 15px; line-height: 1; transition: transform 0.18s ease; }
+        .nav-dropdown-btn.is-open .nav-dropdown-icon { transform: rotate(180deg); }
         #importFile { display: none; }
         .nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; margin: 14px 0 10px; border-radius: 18px; background: var(--active-page-surface, linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(242,244,248,0.74) 100%)); -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%); border: 1px solid rgba(255,255,255,0.76); box-shadow: var(--highlight), var(--shadow-lift); position: relative; z-index: 1; }
         .nav button { background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.42); color: white; padding: 5px 12px; border-radius: 10px; font-size: 12px; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.38), inset 0 -2px 0 rgba(0,88,176,0.24), 0 8px 14px rgba(0,113,227,0.2); transition: transform 0.2s, box-shadow 0.2s; }
@@ -143,12 +147,12 @@
         .detail-header.is-today .detail-header-text { color: var(--today-deep); }
         .detail-header.is-today .detail-header-badge { background: linear-gradient(180deg, rgba(245,255,249,0.98) 0%, rgba(220,248,228,0.94) 100%); border-color: rgba(52,199,89,0.2); color: var(--today-deep); box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(52,199,89,0.12); }
         .exercise-list { display: flex; flex-direction: column; gap: 10px; }
-        .record-muscle-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; padding: 10px; border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,0.76) 0%, rgba(239,243,249,0.54) 100%); border: 1px solid rgba(255,255,255,0.58); box-shadow: inset 0 1px 0 rgba(255,255,255,0.8); }
-        .record-muscle-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; width: 32px; min-height: 56px; border: 1px solid rgba(0,113,227,0.12); border-radius: 16px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); padding: 8px 0; font-size: 11px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.06); white-space: normal; overflow: hidden; text-overflow: clip; text-align: center; line-height: 1.1; flex: 0 0 auto; }
+        .record-muscle-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 0; padding: 0 8px 8px; border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,0.76) 0%, rgba(239,243,249,0.54) 100%); border: 1px solid rgba(255,255,255,0.58); box-shadow: inset 0 1px 0 rgba(255,255,255,0.8); }
+        .record-muscle-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: 28px; min-height: 50px; border: 1px solid rgba(0,113,227,0.12); border-radius: 14px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); padding: 6px 0; font-size: 10px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.06); white-space: normal; overflow: hidden; text-overflow: clip; text-align: center; line-height: 1.05; flex: 0 0 auto; }
         .record-muscle-btn.active { border-width: 2px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.56), 0 6px 12px rgba(17,24,39,0.08); }
         .record-muscle-btn:active { transform: translateY(2px) scale(0.97); box-shadow: inset 0 1px 0 rgba(255,255,255,0.88), 0 3px 8px rgba(0,113,227,0.08); }
-        .record-muscle-icon { display: block; font-size: 16px; line-height: 1; }
-        .record-muscle-label { display: block; max-width: 100%; font-size: 10px; line-height: 1.1; word-break: break-all; }
+        .record-muscle-icon { display: block; font-size: 15px; line-height: 1; }
+        .record-muscle-label { display: block; max-width: 100%; font-size: 9px; line-height: 1.05; word-break: break-all; }
         .exercise-empty-state { padding: 14px 12px; border-radius: 14px; background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(241,246,252,0.92) 100%); border: 1px dashed rgba(0,113,227,0.16); color: var(--muted); font-size: 12px; line-height: 1.6; text-align: center; }
         .exercise-item { background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,249,252,0.92) 45%, rgba(234,238,244,0.84) 100%); -webkit-backdrop-filter: blur(18px) saturate(165%); backdrop-filter: blur(18px) saturate(165%); border: 1px solid rgba(255,255,255,0.76); border-radius: 20px; padding: 13px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--highlight), 0 14px 26px rgba(17,24,39,0.08), 0 2px 0 rgba(255,255,255,0.88); }
         .exercise-row1 { display: flex; align-items: center; gap: 6px; min-height: 28px; margin-bottom: 4px; }
@@ -160,7 +164,7 @@
         .exercise-tabs { display: flex; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; margin-bottom: 0; overflow-x: auto; }
         .exercise-tabs::-webkit-scrollbar { display: none; }
         .exercise-tab-btn { border: 1px solid rgba(0,113,227,0.12); border-radius: 999px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); padding: 4px 10px; font-size: 10px; font-weight: 600; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.06); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .exercise-tab-btn.active { background: var(--primary-gradient); color: #fff; border-color: rgba(255,255,255,0.34); box-shadow: inset 0 1px 0 rgba(255,255,255,0.36), 0 8px 14px rgba(0,113,227,0.18); }
+        .exercise-tab-btn.active { background: var(--primary-gradient); color: #fff; border-color: rgba(255,255,255,0.34); box-shadow: inset 0 1px 0 rgba(255,255,255,0.36), 0 8px 14px rgba(0,113,227,0.18); transform: scale(1.1); }
         .exercise-tab-btn:active { transform: translateY(1px) scale(0.98); box-shadow: inset 0 1px 0 rgba(255,255,255,0.84), 0 3px 8px rgba(0,113,227,0.12); }
         .exercise-summary { display: flex; align-items: center; gap: 10px; margin: 4px 0 6px; padding: 10px 12px; border-radius: 14px; background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(241,246,252,0.92) 100%); border: 1px solid rgba(0,113,227,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 8px 16px rgba(17,24,39,0.04); }
         .exercise-summary-icon { width: 30px; height: 30px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.32), 0 5px 12px rgba(17,24,39,0.1); }
@@ -191,7 +195,7 @@
         .exercise-timer-reset-btn:active { transform: translateY(1px) scale(0.98); }
         .exercise-timer-meta { white-space: nowrap; color: var(--muted); font-size: 11px; font-weight: 600; }
         .exercise-timer-value { min-width: 42px; text-align: right; color: var(--accent-deep); }
-        .exercise-capacity-hint { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; padding: 8px 10px; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(240,245,252,0.88) 100%); border: 1px solid rgba(0,113,227,0.08); color: var(--muted); font-size: 11px; line-height: 1.45; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9); }
+        .exercise-capacity-hint { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; padding: 8px 10px; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(240,245,252,0.88) 100%); border: 1px solid rgba(0,113,227,0.08); color: var(--muted); font-size: 11px; line-height: 1.45; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9); cursor: pointer; }
         .exercise-capacity-hint-text { min-width: 0; flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px; }
         .exercise-capacity-hint-line { display: flex; flex-wrap: wrap; gap: 4px; width: 100%; }
         .exercise-capacity-hint-line.is-current { color: var(--accent-deep); }
@@ -293,6 +297,7 @@
         .add-btn-small:active { transform: translateY(2px) scale(0.985); box-shadow: inset 0 1px 0 rgba(255,255,255,0.32), inset 0 -2px 0 rgba(0,88,176,0.18), 0 5px 12px rgba(0,113,227,0.14); }
         .tab-container { display: flex; align-items: stretch; gap: 6px; margin: 0 0 8px; padding: 8px; border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(240,244,249,0.62) 100%); border: 1px solid rgba(255,255,255,0.62); box-shadow: inset 0 1px 0 rgba(255,255,255,0.86); }
         .detail-action-bar { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: stretch; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(29,29,31,0.08); }
+        .detail-footer-metrics { display: flex; flex-direction: column; gap: 0; margin-top: 10px; }
         .detail-timer-slot,
         .detail-reset-slot { display: inline-flex; align-items: stretch; align-self: stretch; min-width: 0; }
         .detail-action-bar .tab-btn,
@@ -391,16 +396,30 @@
         .milestone-meta { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; text-align: center; }
         .milestone-date { color: var(--muted); font-size: 13px; white-space: nowrap; flex-shrink: 0; }
         .milestone-value { color: var(--text); font-size: 14px; font-weight: 600; white-space: nowrap; flex-shrink: 0; min-width: 58px; }
-        .bottom-nav { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 58px); width: 100%; display: flex; flex-direction: column; gap: 0; margin: 12px auto 0; padding: 0; background: transparent; border: none; box-shadow: none; z-index: 90; }
-        .bottom-nav-items { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: end; gap: clamp(4px, 1vw, 8px); width: 100%; }
-        .bottom-nav-btn { display: flex; align-items: center; justify-content: center; gap: clamp(5px, 1.2vw, 8px); min-height: clamp(44px, 8vw, 58px); padding: clamp(8px, 1.6vw, 12px) clamp(6px, 1.4vw, 10px); border: 1px solid rgba(255,255,255,0.82); border-bottom: none; border-radius: clamp(14px, 2.4vw, 18px) clamp(14px, 2.4vw, 18px) 0 0; background: linear-gradient(180deg, rgba(252,253,255,0.96) 0%, rgba(233,239,247,0.88) 100%); color: #4a4a4f; font-size: clamp(12px, 2.4vw, 14px); font-weight: 700; line-height: 1.15; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 10px 18px rgba(17,24,39,0.06); }
-        .bottom-nav-btn.active { background: var(--active-page-surface, var(--panel-surface)); color: var(--accent-deep); border-color: rgba(0,113,227,0.78); box-shadow: inset 0 1px 0 rgba(255,255,255,0.96), 0 0 0 1px rgba(0,113,227,0.18), 0 12px 22px rgba(17,24,39,0.08); transform: translateY(1px); }
+        .bottom-nav { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 58px); width: 100%; display: flex; justify-content: stretch; margin: 6px auto 0; padding: 0; background: transparent; border: none; box-shadow: none; z-index: 90; pointer-events: none; }
+        .bottom-nav[hidden],
+        .bottom-nav-items[hidden] { display: none !important; }
+        .bottom-nav.collapsed { margin-bottom: 0; }
+        .bottom-nav-items { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; width: 100%; padding: 10px; border-radius: 16px; background: linear-gradient(180deg, rgba(252,253,255,0.98) 0%, rgba(233,239,247,0.94) 100%); border: 1px solid rgba(255,255,255,0.82); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 14px 24px rgba(17,24,39,0.1); -webkit-backdrop-filter: blur(18px) saturate(170%); backdrop-filter: blur(18px) saturate(170%); pointer-events: auto; transform-origin: top right; transition: opacity 0.16s ease, transform 0.16s ease; }
+        .bottom-nav.collapsed .bottom-nav-items { opacity: 0; transform: translateY(-8px) scale(0.96); pointer-events: none; }
+        .bottom-nav-btn { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 0; padding: 10px 8px; border: 1px solid rgba(255,255,255,0.82); border-radius: 12px; background: linear-gradient(180deg, rgba(252,253,255,0.96) 0%, rgba(233,239,247,0.88) 100%); color: #4a4a4f; font-size: 13px; font-weight: 700; line-height: 1; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 8px 14px rgba(17,24,39,0.06); min-width: 0; }
+        .bottom-nav-btn span { white-space: nowrap; }
+        .bottom-nav-btn.active { background: var(--primary-gradient); color: #fff; border-color: rgba(255,255,255,0.34); box-shadow: inset 0 1px 0 rgba(255,255,255,0.36), inset 0 -3px 0 rgba(0,88,176,0.22), 0 12px 20px rgba(0,113,227,0.22); transform: translateY(1px); }
         .bottom-nav-btn:active { transform: translateY(1px) scale(0.985); }
-        .bottom-nav-icon { font-size: clamp(14px, 3vw, 16px); line-height: 1; flex-shrink: 0; }
-        #calendarPage .nav { margin-top: 0; border-top-left-radius: 0; border-top-right-radius: 18px; }
+        .bottom-nav-icon { font-size: 18px; line-height: 1; flex-shrink: 0; }
+        #calendarPage .nav { margin-top: 10px; border-top-left-radius: 0; border-top-right-radius: 18px; }
         #recordContent,
         #volumeContent,
         #statsContent { min-height: 280px; }
+        .page-date-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 14px 0 0; padding: 10px 12px; border-radius: 18px; background: var(--active-page-surface, var(--panel-surface)); border: var(--panel-border); box-shadow: var(--panel-shadow); }
+        .page-date-footer-meta { min-width: 0; flex: 1 1 auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .page-date-footer-text { min-width: 0; color: var(--accent-deep); font-size: 13px; font-weight: 700; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .page-date-footer-hint { color: var(--muted); font-size: 11px; font-weight: 600; white-space: nowrap; text-align: right; }
+        .page-date-footer-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .page-date-btn { border: 1px solid rgba(0,113,227,0.12); border-radius: 999px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); padding: 6px 10px; font-size: 11px; font-weight: 700; line-height: 1; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); }
+        .page-date-btn.active { background: var(--primary-gradient); color: #fff; border-color: rgba(255,255,255,0.34); box-shadow: inset 0 1px 0 rgba(255,255,255,0.36), 0 8px 14px rgba(0,113,227,0.18); }
+        .page-date-btn:active { transform: translateY(1px) scale(0.98); }
+        .page-date-btn:disabled { opacity: 0.45; cursor: default; box-shadow: none; }
         @keyframes sectionFadeIn {
             0% { opacity: 0; transform: translateY(6px); }
             100% { opacity: 1; transform: translateY(0); }
@@ -421,15 +440,21 @@
             .detail-section { margin-top: 10px; padding: 14px; border-radius: 0 22px 22px 22px; }
             .record-muscle-tabs,
             .stats-buttons { gap: 8px; padding: 8px; }
-            .bottom-nav { width: 100%; }
+            .bottom-nav { width: 100%; margin-top: 0; }
+            .bottom-nav-items { grid-template-columns: repeat(4, minmax(0, 1fr)); width: 100%; gap: 6px; padding: 8px; }
+            .bottom-nav-btn { min-height: 0; padding: 9px 4px; font-size: 12px; gap: 3px; }
+            .page-date-footer { flex-direction: column; align-items: stretch; padding: 10px; }
+            .page-date-footer-meta { gap: 8px; }
+            .page-date-footer-actions { justify-content: stretch; }
+            .page-date-btn { flex: 1 1 0; }
             #calendarPage .nav { border-top-right-radius: 16px; }
         }
     </style>
 </head>
 <body>
-    <div class="header"><h1>💪 健身记</h1><button class="header-action left" onclick="exportData()">导出</button><button class="header-action right" onclick="document.getElementById('importFile').click()">导入</button><input type="file" id="importFile" accept=".json" onchange="importData(this)"></div>
+    <div class="header"><h1>💪 健身记</h1><button class="header-action left" onclick="exportData()">导出</button><button class="header-action left-secondary" onclick="document.getElementById('importFile').click()">导入</button><button class="header-action right nav-dropdown-btn" id="navDropdownBtn" type="button" onclick="toggleBottomNav()" aria-label="切换导航菜单" aria-expanded="false"><span class="nav-dropdown-icon">▾</span></button><input type="file" id="importFile" accept=".json" onchange="importData(this)"></div>
     <div class="app-content">
-    <div class="bottom-nav" id="bottomNav" aria-label="顶部导航">
+    <div class="bottom-nav" id="bottomNav" aria-label="顶部导航" hidden>
         <div class="bottom-nav-items" id="bottomNavItems">
             <button class="bottom-nav-btn active" id="bottomNavCalendar" onclick="switchPage('calendar')">
                 <span class="bottom-nav-icon">📅</span>
@@ -461,11 +486,6 @@
         </div>
     </div>
     <div class="detail-section page-section hidden" id="detailSection">
-        <div class="detail-header" id="trainingDateHeader" onclick="goToCalendarForSelectedDate()" title="点击返回日历"></div>
-        <div class="tab-container" id="detailTabs">
-            <button class="tab-btn" id="tabVolume" onclick="switchTab('volume')">容量</button>
-            <button class="tab-btn" id="tabStats" onclick="switchTab('stats')" hidden>统计</button>
-        </div>
         <div class="tab-content active" id="recordContent">
             <div class="exercise-list" id="exerciseList"><div class="no-data">点击日期添加/查看训练记录</div></div>
         </div>
@@ -480,6 +500,17 @@
             <span class="detail-timer-slot" id="detailTimerSlot" hidden></span>
             <span class="detail-reset-slot" id="detailResetSlot" hidden></span>
             <button class="add-btn-small" id="addActionBtn" onclick="openM()" hidden>+ 添加</button>
+        </div>
+        <div class="detail-footer-metrics" id="detailFooterMetrics" hidden></div>
+    </div>
+    <div class="page-date-footer" id="pageDateFooter">
+        <div class="page-date-footer-meta">
+            <div class="page-date-footer-text" id="pageDateFooterText">今天</div>
+            <div class="page-date-footer-hint" id="pageDateFooterHint">当前页面日期提醒</div>
+        </div>
+        <div class="page-date-footer-actions">
+            <button class="page-date-btn" id="pageDateTodayBtn" type="button" onclick="jumpToRelativeDate(0)">今天</button>
+            <button class="page-date-btn" id="pageDatePreviousBtn" type="button" onclick="jumpToPreviousMuscleDate()">上一次</button>
         </div>
     </div>
     <div class="modal" id="modal">
@@ -509,9 +540,128 @@
     </div>
         </div>
     <script>
-var data = JSON.parse(localStorage.getItem('fd')||'{}');
-var customExerciseNames = JSON.parse(localStorage.getItem('fd_custom_exercise_names')||'{}');
-var dayTimeOverrides = JSON.parse(localStorage.getItem('fd_day_time_overrides')||'{}');
+var STORAGE_KEYS = {
+    data:'fd',
+    customExerciseNames:'fd_custom_exercise_names',
+    dayTimeOverrides:'fd_day_time_overrides',
+    bottomNavCollapsed:'fd_bottom_nav_collapsed',
+    importBackup:'fd_import_backup'
+};
+var EXPORT_SCHEMA_VERSION = 2;
+function isPlainObject(value){
+    return !!value&&typeof value==='object'&&!Array.isArray(value);
+}
+function readStoredJson(key,fallbackValue){
+    var rawValue=localStorage.getItem(key);
+    if(!rawValue)return fallbackValue;
+    try{
+        var parsedValue=JSON.parse(rawValue);
+        return isPlainObject(fallbackValue)&&!isPlainObject(parsedValue)?fallbackValue:parsedValue;
+    }catch(err){
+        console.warn('Failed to parse stored value for key:',key,err);
+        return fallbackValue;
+    }
+}
+function writeStoredJson(key,value){
+    try{
+        localStorage.setItem(key,JSON.stringify(value));
+        return true;
+    }catch(err){
+        console.error('Failed to persist storage key:',key,err);
+        alert('本地存储失败，请先导出备份后再继续操作。');
+        return false;
+    }
+}
+function normalizeDateDataMap(rawData){
+    if(!isPlainObject(rawData))return {};
+    var normalizedData={};
+    for(var dateKey in rawData){
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(dateKey)||!Array.isArray(rawData[dateKey]))continue;
+        var normalizedExercises=[];
+        for(var i=0;i<rawData[dateKey].length;i++){
+            var normalizedExercise=normalizeImportedExercise(rawData[dateKey][i]);
+            if(normalizedExercise)normalizedExercises.push(normalizedExercise);
+        }
+        if(normalizedExercises.length)normalizedData[dateKey]=normalizedExercises;
+    }
+    return normalizedData;
+}
+function normalizeImportedExercise(exercise){
+    if(!isPlainObject(exercise))return null;
+    var muscle=String(exercise.muscle||'').trim();
+    var name=String(exercise.name||'').trim();
+    if(!muscle||!name)return null;
+    var sets=Math.max(1,parseInt(exercise.sets,10)||1);
+    var reps=String(exercise.reps==null?'':exercise.reps).trim()||'1';
+    var weightValue=exercise.weight==null||exercise.weight===''?null:Number(exercise.weight);
+    var weight=weightValue===null||isNaN(weightValue)?null:Math.max(0,weightValue);
+    var createdAt=normalizeTimestampValue(exercise.createdAt);
+    var updatedAt=normalizeTimestampValue(exercise.updatedAt);
+    var normalizedExercise={
+        muscle:muscle,
+        name:name,
+        sets:sets,
+        reps:reps,
+        weight:weight
+    };
+    if(createdAt!==null)normalizedExercise.createdAt=createdAt;
+    if(updatedAt!==null)normalizedExercise.updatedAt=updatedAt;
+    if(exercise.segmentId!=null)normalizedExercise.segmentId=normalizeSegmentIdValue(exercise.segmentId);
+    return normalizedExercise;
+}
+function normalizeImportedCustomExerciseNames(rawNames){
+    if(!isPlainObject(rawNames))return {};
+    var normalizedNames={};
+    for(var muscleKey in rawNames){
+        if(!Array.isArray(rawNames[muscleKey]))continue;
+        var seenNames={};
+        var nextNames=[];
+        for(var i=0;i<rawNames[muscleKey].length;i++){
+            var trimmedName=String(rawNames[muscleKey][i]||'').trim();
+            if(!trimmedName||seenNames[trimmedName])continue;
+            seenNames[trimmedName]=true;
+            nextNames.push(trimmedName);
+        }
+        if(nextNames.length)normalizedNames[muscleKey]=nextNames;
+    }
+    return normalizedNames;
+}
+function normalizeImportedDayTimeOverrides(rawOverrides){
+    if(!isPlainObject(rawOverrides))return {};
+    var normalizedOverrides={};
+    for(var dateKey in rawOverrides){
+        if(/^\d{4}-\d{2}-\d{2}$/.test(dateKey)&&isPlainObject(rawOverrides[dateKey])){
+            normalizedOverrides[dateKey]=rawOverrides[dateKey];
+        }
+    }
+    return normalizedOverrides;
+}
+function buildExportPayload(){
+    return {
+        version:EXPORT_SCHEMA_VERSION,
+        exportedAt:new Date().toISOString(),
+        data:data,
+        customExerciseNames:customExerciseNames,
+        dayTimeOverrides:dayTimeOverrides
+    };
+}
+function replacePersistedState(nextState){
+    data=normalizeDateDataMap(nextState&&nextState.data);
+    customExerciseNames=normalizeImportedCustomExerciseNames(nextState&&nextState.customExerciseNames);
+    dayTimeOverrides=normalizeImportedDayTimeOverrides(nextState&&nextState.dayTimeOverrides);
+}
+function normalizeImportedPayload(imported){
+    if(!isPlainObject(imported))return null;
+    var hasBundleFields=Object.prototype.hasOwnProperty.call(imported,'data')||Object.prototype.hasOwnProperty.call(imported,'dayTimeOverrides')||Object.prototype.hasOwnProperty.call(imported,'customExerciseNames')||Object.prototype.hasOwnProperty.call(imported,'version');
+    return {
+        data:normalizeDateDataMap(hasBundleFields?imported.data:imported),
+        customExerciseNames:normalizeImportedCustomExerciseNames(imported.customExerciseNames),
+        dayTimeOverrides:normalizeImportedDayTimeOverrides(imported.dayTimeOverrides)
+    };
+}
+var data = normalizeDateDataMap(readStoredJson(STORAGE_KEYS.data,{}));
+var customExerciseNames = normalizeImportedCustomExerciseNames(readStoredJson(STORAGE_KEYS.customExerciseNames,{}));
+var dayTimeOverrides = normalizeImportedDayTimeOverrides(readStoredJson(STORAGE_KEYS.dayTimeOverrides,{}));
 var curDate = new Date(), selDate = null, selMuscle = null, editIdx = -1;
 var modalMode = 'add';
 var renameActionState = null;
@@ -519,7 +669,8 @@ var volumeMuscle = null;
 var volumeExerciseSelection = {};
 var volumeMetricMode = 'interval';
 var currentPage = 'calendar';
-var bottomNavCollapsed = false;
+var pageDateFooterAction = '';
+var bottomNavCollapsed = readStoredJson(STORAGE_KEYS.bottomNavCollapsed,true);
 var exerciseDropdownOpen = false;
 var recordActionClickTimers = {};
 var recordActionLongPressTimers = {};
@@ -543,19 +694,30 @@ var exerciseNames = {
     core:['卷腹','仰卧起坐','平板支撑','俄罗斯转体','悬垂举腿','健腹轮'],
     cardio:['跑步','椭圆机','动感单车','跳绳','游泳','爬楼梯','划船机']
 };
-function save(){localStorage.setItem('fd',JSON.stringify(data));}
-function saveCustomExerciseNames(){localStorage.setItem('fd_custom_exercise_names',JSON.stringify(customExerciseNames));}
-function saveDayTimeOverrides(){localStorage.setItem('fd_day_time_overrides',JSON.stringify(dayTimeOverrides));}
-function saveBottomNavCollapsedState(){localStorage.removeItem('fd_bottom_nav_collapsed');}
+function save(){return writeStoredJson(STORAGE_KEYS.data,data);}
+function saveCustomExerciseNames(){return writeStoredJson(STORAGE_KEYS.customExerciseNames,customExerciseNames);}
+function saveDayTimeOverrides(){return writeStoredJson(STORAGE_KEYS.dayTimeOverrides,dayTimeOverrides);}
+function saveBottomNavCollapsedState(){return writeStoredJson(STORAGE_KEYS.bottomNavCollapsed,bottomNavCollapsed);}
+function saveImportBackup(){return writeStoredJson(STORAGE_KEYS.importBackup,buildExportPayload());}
+function persistAllData(){
+    var dataSaved=save();
+    var namesSaved=saveCustomExerciseNames();
+    var overridesSaved=saveDayTimeOverrides();
+    return !!(dataSaved&&namesSaved&&overridesSaved);
+}
 function updateBottomNavCollapseState(){
     var nav=document.getElementById('bottomNav');
     var navItems=document.getElementById('bottomNavItems');
-    if(!nav||!navItems)return;
-    bottomNavCollapsed=false;
-    nav.classList.remove('collapsed');
-    navItems.hidden=false;
+    var navToggle=document.getElementById('navDropdownBtn');
+    if(!nav||!navItems||!navToggle)return;
+    nav.hidden=!!bottomNavCollapsed;
+    nav.classList.toggle('collapsed',!!bottomNavCollapsed);
+    navItems.hidden=!!bottomNavCollapsed;
+    navToggle.classList.toggle('is-open',!bottomNavCollapsed);
+    navToggle.setAttribute('aria-expanded',bottomNavCollapsed?'false':'true');
 }
 function toggleBottomNav(){
+    bottomNavCollapsed=!bottomNavCollapsed;
     saveBottomNavCollapsedState();
     updateBottomNavCollapseState();
 }
@@ -1449,17 +1611,48 @@ function getLatestMuscleCopySource(targetDate,muscle){
     }
     return fallbackSource;
 }
+function getBestMuscleCopyExercises(targetDate,muscle){
+    if(!muscle)return [];
+    var source=getLatestMuscleCopySource(targetDate,muscle);
+    if(!source||!source.exercises||!source.exercises.length)return [];
+    var bestByName={};
+    var orderedNames=[];
+    for(var ei=0;ei<source.exercises.length;ei++){
+        var exercise=source.exercises[ei];
+        var exerciseName=(exercise&&exercise.name||'').trim();
+        if(!exercise||exercise.muscle!==muscle||!exerciseName)continue;
+        if(orderedNames.indexOf(exerciseName)<0)orderedNames.push(exerciseName);
+        var weight=exercise.weight==null?0:Number(exercise.weight);
+        if(isNaN(weight))weight=0;
+        var volume=calcEntryVolume(exercise);
+        var existing=bestByName[exerciseName];
+        if(!existing||weight>existing.weight||(weight===existing.weight&&volume>existing.volume)){
+            bestByName[exerciseName]={
+                name:exerciseName,
+                reps:exercise.reps||'',
+                weight:weight,
+                volume:volume,
+                dateKey:source.dateKey
+            };
+        }
+    }
+    return orderedNames.filter(function(name){
+        return !!bestByName[name];
+    }).map(function(name){
+        return bestByName[name];
+    });
+}
 function copyLastMuscleExercises(){
     if(editIdx>=0||!selDate||!selMuscle)return;
-    var source=getLatestMuscleCopySource(selDate,selMuscle);
-    if(!source||!source.exercises||!source.exercises.length){
+    var sourceExercises=getBestMuscleCopyExercises(selDate,selMuscle);
+    if(!sourceExercises.length){
         alert('这个部位还没有可复制的上次训练记录');
         return;
     }
     if(!data[selDate])data[selDate]=[];
     var now=getNowTimestampForDateKey(selDate);
-    for(var i=0;i<source.exercises.length;i++){
-        var sourceExercise=source.exercises[i];
+    for(var i=0;i<sourceExercises.length;i++){
+        var sourceExercise=sourceExercises[i];
         var copiedName=(sourceExercise.name||'').trim();
         var copiedExercise={
             muscle:selMuscle,
@@ -1475,7 +1668,7 @@ function copyLastMuscleExercises(){
     }
     syncRecordGroupLatestTime(selDate,selMuscle,now);
     recordMuscleTabs[getRecordMuscleTabKey(selDate)]=selMuscle;
-    recordActionTabs[getRecordActionTabKey(selDate,selMuscle)]=(source.exercises[source.exercises.length-1].name||'').trim();
+    recordActionTabs[getRecordActionTabKey(selDate,selMuscle)]=(sourceExercises[sourceExercises.length-1].name||'').trim();
     resetRecordGroupTimer(selDate,selMuscle);
     save();
     closeExerciseNameDropdown();
@@ -1489,9 +1682,9 @@ function fillExerciseNameOptions(m){
     var options=document.getElementById('exerciseNameOptions');
     options.innerHTML='';
     if(editIdx<0&&modalMode!=='renameAction'){
-        var copySource=getLatestMuscleCopySource(selDate,m);
-        if(copySource&&copySource.exercises&&copySource.exercises.length){
-            var copyLabel='复制上次（'+copySource.exercises.length+'个动作）';
+        var copySource=getBestMuscleCopyExercises(selDate,m);
+        if(copySource&&copySource.length){
+            var copyLabel='复制上次';
             options.innerHTML+='<button type="button" class="dropdown-item" onclick="copyLastMuscleExercises()">'+copyLabel+'</button>';
         }
     }
@@ -1620,6 +1813,101 @@ function goToCalendarForSelectedDate(){
     switchPage('calendar');
     focusCalendarDate(selDate);
 }
+function getOffsetDateKey(offsetDays){
+    var baseDate=new Date();
+    baseDate.setHours(0,0,0,0);
+    baseDate.setDate(baseDate.getDate()+offsetDays);
+    return baseDate.getFullYear()+'-'+pad(baseDate.getMonth()+1)+'-'+pad(baseDate.getDate());
+}
+function getCurrentContextMuscle(){
+    if(currentPage==='record'&&selDate)return getActiveRecordMuscle(selDate);
+    if(currentPage==='volume'&&volumeMuscle&&muscleNames[volumeMuscle])return volumeMuscle;
+    if(currentPage==='stats'&&statsSection&&muscleNames[statsSection])return statsSection;
+    if(selDate){
+        var selectedInfo=getTopSelectedRecordInfo(selDate)||getTopExerciseInfo(selDate);
+        if(selectedInfo&&selectedInfo.muscle)return selectedInfo.muscle;
+        return getActiveRecordMuscle(selDate);
+    }
+    return null;
+}
+function getPreviousRecordDateForMuscle(dateKey,muscle){
+    if(!muscle)return null;
+    var anchor=dateKey||getTodayKey();
+    var dateKeys=Object.keys(data).sort();
+    var previousDateKey=null;
+    for(var i=0;i<dateKeys.length;i++){
+        var dk=dateKeys[i];
+        if(dk>=anchor)break;
+        var exercises=data[dk]||[];
+        for(var j=0;j<exercises.length;j++){
+            if(exercises[j].muscle===muscle){
+                previousDateKey=dk;
+                break;
+            }
+        }
+    }
+    return previousDateKey;
+}
+function syncSelectedDateView(){
+    if(selDate){
+        var parts=String(selDate).split('-');
+        if(parts.length===3){
+            curDate=new Date(Number(parts[0]),Number(parts[1])-1,1);
+        }
+    }
+    render();
+    showDetail(selDate);
+    updateDetailTimerButton();
+    updatePageDateFooter();
+    if(currentPage==='calendar'){
+        focusCalendarDate(selDate);
+        return;
+    }
+    if(currentPage==='volume'){
+        switchTab('volume',volumeMetricMode);
+        return;
+    }
+    if(currentPage==='stats'){
+        switchTab('stats');
+        return;
+    }
+    switchTab('record');
+}
+function updatePageDateFooter(){
+    var textEl=document.getElementById('pageDateFooterText');
+    var hintEl=document.getElementById('pageDateFooterHint');
+    var todayBtn=document.getElementById('pageDateTodayBtn');
+    var previousBtn=document.getElementById('pageDatePreviousBtn');
+    if(!textEl||!hintEl||!todayBtn||!previousBtn)return;
+    var activeDateKey=selDate||getTodayKey();
+    var relativeLabel=getRelativeSelectedDateLabel(activeDateKey)||'今天';
+    var activeMuscle=getCurrentContextMuscle();
+    var previousDateKey=getPreviousRecordDateForMuscle(activeDateKey,activeMuscle);
+    textEl.textContent=formatSelectedDateLabel(activeDateKey);
+    hintEl.textContent='当前提醒：'+relativeLabel+(activeMuscle&&muscleNames[activeMuscle]?' · '+muscleNames[activeMuscle]:'');
+    previousBtn.disabled=!previousDateKey;
+    todayBtn.classList.toggle('active',pageDateFooterAction==='today'||(pageDateFooterAction!=='previous'&&activeDateKey===getOffsetDateKey(0)));
+    previousBtn.classList.toggle('active',pageDateFooterAction==='previous'&&!previousBtn.disabled);
+    previousBtn.textContent=previousDateKey?'上一次':'无上次';
+}
+function jumpToRelativeDate(offsetDays){
+    var targetDateKey=getOffsetDateKey(offsetDays);
+    pageDateFooterAction=offsetDays===0?'today':'';
+    selDate=targetDateKey;
+    syncSelectedDateView();
+}
+function jumpToPreviousMuscleDate(){
+    var activeDateKey=selDate||getTodayKey();
+    var activeMuscle=getCurrentContextMuscle();
+    var previousDateKey=getPreviousRecordDateForMuscle(activeDateKey,activeMuscle);
+    if(!previousDateKey)return;
+    pageDateFooterAction='previous';
+    selDate=previousDateKey;
+    if(activeMuscle){
+        recordMuscleTabs[getRecordMuscleTabKey(previousDateKey)]=activeMuscle;
+    }
+    syncSelectedDateView();
+}
 function updateAddActionVisibility(){
     var addBtn=document.getElementById('addActionBtn');
     if(!addBtn)return;
@@ -1653,6 +1941,16 @@ function updateDetailActionBarVisibility(){
     var resetSlot=document.getElementById('detailResetSlot');
     if(!actionBar||!recordTab||!addBtn||!timerSlot||!resetSlot)return;
     actionBar.hidden=recordTab.hidden&&addBtn.hidden&&timerSlot.hidden&&resetSlot.hidden;
+    updateDetailFooterMetricsVisibility();
+}
+function updateDetailFooterMetricsVisibility(){
+    var footer=document.getElementById('detailFooterMetrics');
+    if(!footer)return;
+    footer.hidden=(currentPage!=='record'&&currentPage!=='volume')||!footer.innerHTML;
+}
+function jumpToRecordFromCapacityHint(){
+    if(currentPage==='record')return;
+    switchPage('record');
 }
 function scrollToDateCell(dk){
     var cell=document.querySelector('.day[data-date="'+dk+'"]');
@@ -1675,14 +1973,13 @@ function updateAppContentThemeState(){
 }
 function updateDetailTabsState(){
     var tabs=document.getElementById('detailTabs');
-    if(!tabs)return;
     var recordTab=document.getElementById('tabRecord');
     var volumeTab=document.getElementById('tabVolume');
     var statsTab=document.getElementById('tabStats');
     if(recordTab)recordTab.hidden=currentPage!=='record';
     if(volumeTab)volumeTab.hidden=currentPage!=='volume';
     if(statsTab)statsTab.hidden=currentPage!=='stats';
-    tabs.hidden=(!volumeTab||volumeTab.hidden)&&(!statsTab||statsTab.hidden);
+    if(tabs)tabs.hidden=(!volumeTab||volumeTab.hidden)&&(!statsTab||statsTab.hidden);
     updateDetailActionBarVisibility();
 }
 function switchPage(page){
@@ -1692,9 +1989,11 @@ function switchPage(page){
     document.getElementById('detailSection').classList.toggle('hidden',isCalendarPage);
     updateAppContentThemeState();
     updateBottomNavState();
+    updateBottomNavCollapseState();
     updateDetailTabsState();
     updateAddActionVisibility();
     updateDetailTimerButton();
+    updatePageDateFooter();
     if(currentPage==='record')switchTab('record');
     if(currentPage==='volume')switchTab('volume');
     if(currentPage==='stats')switchTab('stats');
@@ -1729,6 +2028,7 @@ function render(){
     document.getElementById('monthYear').textContent=y+'年 '+(m+1)+'月';
     updateTrainingDateHeader();
     updateAddActionVisibility();
+    updatePageDateFooter();
 }
 function sel(dk){
     selDate=dk;
@@ -1967,8 +2267,15 @@ function cancelRecordActionLongPress(dk,muscle,segmentId,actionName){
 }
 function showDetail(dk){
     var lst=document.getElementById('exerciseList');
+    var footer=document.getElementById('detailFooterMetrics');
     var ex=data[dk]||[];
-    if(!ex.length){lst.innerHTML='<div class="no-data">暂无训练记录，点击上方添加</div>';updateDetailTimerButton();return;}
+    if(!ex.length){
+        lst.innerHTML='<div class="no-data">暂无训练记录，点击上方添加</div>';
+        if(footer)footer.innerHTML='';
+        updateDetailFooterMetricsVisibility();
+        updateDetailTimerButton();
+        return;
+    }
     var htm='';
     var groups=getExerciseGroups(ex);
     var activeMuscle=recordMuscleTabs[getRecordMuscleTabKey(dk)];
@@ -2012,6 +2319,16 @@ function showDetail(dk){
     var activeAction=segmentGroup&&activeActionName?segmentGroup.actionMap[activeActionName]:null;
     var bestRecord=activeAction?getExerciseBestRecord(e.muscle,activeActionName):null;
     var capacityHintText=activeAction?getCapacityHintText(dk,activeAction.items,bestRecord):'';
+    var displayItems=activeAction&&activeAction.items.length>1
+        ? activeAction.items.slice().sort(function(a,b){
+            var weightA=a&&a.exercise&&a.exercise.weight!=null?Number(a.exercise.weight):0;
+            var weightB=b&&b.exercise&&b.exercise.weight!=null?Number(b.exercise.weight):0;
+            if(isNaN(weightA))weightA=0;
+            if(isNaN(weightB))weightB=0;
+            if(weightB!==weightA)return weightB-weightA;
+            return a.index-b.index;
+        })
+        : (activeAction?activeAction.items:[]);
     htm+='<div class="exercise-action-group">'+
         '<div class="exercise-tab-panel">';
     if(activeAction){
@@ -2023,8 +2340,8 @@ function showDetail(dk){
                 '<span class="exercise-best-badge">历史最佳</span>'+
             '</div>'+
         '</div>';
-        for(var ii=0;ii<activeAction.items.length;ii++){
-            var item=activeAction.items[ii];
+        for(var ii=0;ii<displayItems.length;ii++){
+            var item=displayItems[ii];
             var itemVolume=calcEntryVolume(item.exercise);
             var rowBestClass=bestRecord.volume>0&&itemVolume>=bestRecord.volume?' capacity-best':'';
             var setsFlashClass=getRecordValueFlashClass(dk,item.index,'sets');
@@ -2044,8 +2361,7 @@ function showDetail(dk){
     var startParts=getClockParts(dayTimeMeta.firstAddedAt);
     var endParts=getClockParts(dayTimeMeta.lastUpdatedAt);
     var durationMinutes=calcTrainingDurationMinutes(dk,groupExercises,group.muscle);
-    htm+='</div>'+
-        '<div class="exercise-time-row">'+
+    var footerHtm='<div class="exercise-time-row">'+
             '<span class="exercise-time-field"><span class="exercise-time-parts">'+
                 '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+startParts.hours+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\''+group.muscle+'\',\'firstAddedAt\',\'hours\',this.value)" /></span>'+
                 '<span class="exercise-time-colon">:</span>'+
@@ -2062,9 +2378,11 @@ function showDetail(dk){
                 '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+endParts.seconds+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\''+group.muscle+'\',\'lastUpdatedAt\',\'seconds\',this.value)" /></span>'+
             '</span></span>'+
         '</div>'+
-        '<div class="exercise-capacity-hint"><div class="exercise-capacity-hint-text">'+(capacityHintText||'')+'</div></div>'+
-    '</div></div>';
+        '<div class="exercise-capacity-hint" onclick="jumpToRecordFromCapacityHint()" title="点击返回记录页面"><div class="exercise-capacity-hint-text">'+(capacityHintText||'')+'</div></div>';
+    htm+='</div></div>';
     lst.innerHTML=htm;
+    if(footer)footer.innerHTML=footerHtm;
+    updateDetailFooterMetricsVisibility();
     updateDetailTimerButton();
     ensureRecordGroupTimerInterval();
     renderRecordGroupTimerButtons();
@@ -2358,9 +2676,12 @@ function switchTab(tab,metricMode){
     updateBottomNavState();
     updateDetailTabsState();
     updateAddActionVisibility();
-    document.getElementById('tabRecord').classList.toggle('active',tab==='record');
-    document.getElementById('tabVolume').classList.toggle('active',tab==='volume');
-    document.getElementById('tabStats').classList.toggle('active',tab==='stats');
+    var recordTab=document.getElementById('tabRecord');
+    var volumeTab=document.getElementById('tabVolume');
+    var statsTab=document.getElementById('tabStats');
+    if(recordTab)recordTab.classList.toggle('active',tab==='record');
+    if(volumeTab)volumeTab.classList.toggle('active',tab==='volume');
+    if(statsTab)statsTab.classList.toggle('active',tab==='stats');
     document.getElementById('recordContent').classList.toggle('active',tab==='record');
     document.getElementById('volumeContent').classList.toggle('active',tab==='volume');
     document.getElementById('statsContent').classList.toggle('active',tab==='stats');
@@ -3406,7 +3727,7 @@ function setStats(btn){
     },50);
 }
 function exportData(){
-    var exportPayload=Object.keys(dayTimeOverrides||{}).length?{data:data,dayTimeOverrides:dayTimeOverrides}:data;
+    var exportPayload=buildExportPayload();
     var jsonStr=JSON.stringify(exportPayload,null,2);
     var blob=new Blob([jsonStr],{type:'application/json'});
     var url=URL.createObjectURL(blob);
@@ -3423,17 +3744,15 @@ function importData(input){
     reader.onload=function(e){
         try{
             var imported=JSON.parse(e.target.result);
+            var normalizedPayload=normalizeImportedPayload(imported);
+            if(!normalizedPayload)throw new Error('INVALID_IMPORT_PAYLOAD');
             if(confirm('确定要导入数据吗？这将覆盖当前所有数据。')){
-                if(imported&&typeof imported==='object'&&!Array.isArray(imported)&&imported.data&&typeof imported.data==='object'){
-                    data=imported.data;
-                    dayTimeOverrides=imported.dayTimeOverrides&&typeof imported.dayTimeOverrides==='object'?imported.dayTimeOverrides:{};
-                }else{
-                    data=imported;
-                    dayTimeOverrides={};
-                }
+                saveImportBackup();
+                replacePersistedState(normalizedPayload);
                 applyDataMigrations();
-                save();
-                saveDayTimeOverrides();
+                hydrateCustomExerciseNamesFromData();
+                persistAllData();
+                if(selDate&&!data[selDate])selDate=getTodayKey();
                 render();
                 if(selDate)showDetail(selDate);
                 alert('导入成功！');
@@ -3446,6 +3765,7 @@ function importData(input){
     input.value='';
 }
 function init(){
+    hydrateCustomExerciseNamesFromData();
     render();
     var dk = getTodayKey();
     var hasTodayRecords = !!((data[dk] || []).length);
