@@ -1,0 +1,2563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ENG Learning Toolkit</title>
+  <style>
+    :root {
+      --bg: linear-gradient(135deg, #f4efe7 0%, #efe4d2 45%, #d8e4ec 100%);
+      --panel: rgba(255, 252, 247, 0.88);
+      --panel-border: rgba(91, 73, 57, 0.14);
+      --text: #1f2a30;
+      --muted: #59666d;
+      --accent: #b55d32;
+      --accent-strong: #8b3c19;
+      --male: #275d8c;
+      --female: #a23f63;
+      --shadow: 0 20px 40px rgba(73, 52, 39, 0.14);
+      --radius: 22px;
+      --floating-button-width: 140px;
+      --floating-ball-size: 62px;
+      --floating-actions-gap: 6px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 28px 18px 42px;
+    }
+
+    .nav {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      padding: 10px;
+      background: rgba(255, 252, 247, 0.72);
+      border: 1px solid rgba(91, 73, 57, 0.14);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .nav-btn {
+      background: rgba(31, 42, 48, 0.08);
+      color: var(--text);
+      padding: 12px 18px;
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+      color: #fff;
+      box-shadow: 0 14px 24px rgba(139, 60, 25, 0.2);
+    }
+
+    .hero,
+    .panel {
+      background: var(--panel);
+      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 26px;
+      margin-bottom: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -70px -90px auto;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(181, 93, 50, 0.18), rgba(181, 93, 50, 0));
+      pointer-events: none;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.05;
+      letter-spacing: 0.02em;
+    }
+
+    .hero p,
+    .note,
+    .status {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(300px, 420px) 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 20px;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+      animation: fadeIn 0.24s ease;
+    }
+
+    .single-column {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .result-box {
+      min-height: 220px;
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(91, 73, 57, 0.14);
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    .result-box.empty-result {
+      color: var(--muted);
+    }
+
+    .translator-meta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .mini-status {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(39, 93, 140, 0.08);
+      color: var(--muted);
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    textarea,
+    select,
+    input {
+      width: 100%;
+      border: 1px solid rgba(95, 85, 73, 0.18);
+      border-radius: 16px;
+      padding: 14px 16px;
+      font: inherit;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.8);
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    }
+
+    textarea {
+      min-height: 360px;
+      resize: vertical;
+      line-height: 1.65;
+    }
+
+    .compact-textarea {
+      min-height: 120px;
+    }
+
+    textarea:focus,
+    select:focus,
+    input:focus {
+      border-color: rgba(181, 93, 50, 0.55);
+      box-shadow: 0 0 0 4px rgba(181, 93, 50, 0.12);
+    }
+
+    .controls {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 13px 18px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+      color: #fff;
+      box-shadow: 0 14px 24px rgba(139, 60, 25, 0.25);
+    }
+
+    button.secondary {
+      background: rgba(39, 93, 140, 0.1);
+      color: var(--male);
+    }
+
+    button.ghost {
+      background: rgba(31, 42, 48, 0.08);
+      color: var(--text);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .status {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(39, 93, 140, 0.08);
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+    }
+
+    .stats {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .stat {
+      padding: 10px 14px;
+      border-radius: 16px;
+      background: rgba(31, 42, 48, 0.06);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .cards {
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      border: 1px solid rgba(91, 73, 57, 0.14);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.78);
+      padding: 16px;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(181, 93, 50, 0.35);
+      box-shadow: 0 10px 22px rgba(73, 52, 39, 0.12);
+    }
+
+    .card.active {
+      background: rgba(220, 244, 224, 0.95);
+      border-color: rgba(112, 168, 118, 0.72);
+      box-shadow: 0 0 0 4px rgba(124, 186, 132, 0.18);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .badge.m {
+      background: linear-gradient(135deg, #2f6ea4, #23496b);
+    }
+
+    .badge.w {
+      background: linear-gradient(135deg, #b54e73, #8d3454);
+    }
+
+    .card-index {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .sentence-actions {
+      display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+
+    .history-panel {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px dashed rgba(91, 73, 57, 0.18);
+    }
+
+    .history-save-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      margin-top: 12px;
+      align-items: end;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .vocab-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .vocab-card {
+      border: 1px solid rgba(91, 73, 57, 0.14);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.82);
+      padding: 14px;
+      box-shadow: 0 10px 20px rgba(73, 52, 39, 0.08);
+    }
+
+    .vocab-card-main {
+      width: 100%;
+      border: 0;
+      border-radius: 16px;
+      background: rgba(39, 93, 140, 0.06);
+      padding: 14px;
+      text-align: left;
+      color: var(--text);
+    }
+
+    .vocab-card-main:hover {
+      box-shadow: 0 8px 18px rgba(39, 93, 140, 0.14);
+    }
+
+    .vocab-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .vocab-word {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.1;
+    }
+
+    .vocab-phonetic {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .vocab-section {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(91, 73, 57, 0.18);
+    }
+
+    .vocab-section-title {
+      margin: 0 0 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent-strong);
+    }
+
+    .vocab-section-body {
+      margin: 0;
+      line-height: 1.75;
+      white-space: pre-wrap;
+    }
+
+    .vocab-preview {
+      margin: 12px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .danger-btn {
+      background: rgba(162, 63, 99, 0.1);
+      color: var(--female);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .dialog-backdrop {
+      border: 0;
+      border-radius: 24px;
+      padding: 0;
+      max-width: min(720px, calc(100vw - 32px));
+      width: 100%;
+      background: transparent;
+    }
+
+    .dialog-backdrop::backdrop {
+      background: rgba(31, 42, 48, 0.36);
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+    }
+
+    .dialog-panel {
+      background: rgba(255, 252, 247, 0.98);
+      border: 1px solid var(--panel-border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .dialog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .dialog-title {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.1;
+    }
+
+    .dialog-close {
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(31, 42, 48, 0.08);
+      color: var(--text);
+    }
+
+    .floating-actions {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      z-index: 20;
+    }
+
+    .floating-menu {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: flex-end;
+      align-items: flex-end;
+      gap: var(--floating-actions-gap);
+      max-width: calc(100vw - 36px - var(--floating-ball-size) - var(--floating-actions-gap));
+      overflow-x: auto;
+      overflow-y: hidden;
+      visibility: hidden;
+      opacity: 0;
+      transform: translateX(10px) scale(0.96);
+      pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    .floating-group {
+      width: auto;
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 10px;
+      padding: 0;
+      justify-content: flex-end;
+    }
+
+    .floating-group.single-column {
+      flex-direction: row;
+    }
+
+    .floating-actions.open .floating-menu {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .floating-btn {
+      width: auto;
+      flex: 0 0 auto;
+      white-space: nowrap;
+      padding: 12px 10px;
+      border-radius: 16px;
+      background: rgba(255, 252, 247, 0.92);
+      color: var(--text);
+      border: 1px solid rgba(91, 73, 57, 0.14);
+      box-shadow: 0 12px 24px rgba(73, 52, 39, 0.16);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+    }
+
+    .floating-btn:hover {
+      box-shadow: 0 14px 28px rgba(73, 52, 39, 0.22);
+    }
+
+    .floating-btn.flash-active {
+      animation: floatingButtonFlash 0.4s ease-in-out 5;
+    }
+
+    @keyframes floatingButtonFlash {
+      0%, 100% {
+        background: rgba(255, 252, 247, 0.92);
+        color: var(--text);
+        box-shadow: 0 12px 24px rgba(73, 52, 39, 0.16);
+      }
+
+      50% {
+        background: linear-gradient(135deg, #dff5c7 0%, #a7d66f 100%);
+        color: #1d3311;
+        box-shadow: 0 16px 28px rgba(111, 156, 58, 0.34);
+      }
+    }
+
+    .floating-ball {
+      width: 62px;
+      height: 62px;
+      min-width: 62px;
+      padding: 0;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 18px 30px rgba(139, 60, 25, 0.28);
+    }
+
+    .floating-ball-label {
+      line-height: 1;
+      transform: translateY(-1px);
+    }
+
+    .history-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid rgba(91, 73, 57, 0.14);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.66);
+    }
+
+    .history-load {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: center;
+      width: 100%;
+      text-align: left;
+      border-radius: 14px;
+      padding: 10px 12px;
+      background: rgba(39, 93, 140, 0.08);
+      color: var(--text);
+    }
+
+    .history-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .history-text {
+      min-width: 0;
+    }
+
+    .history-title {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .history-preview {
+      display: block;
+      margin-top: 3px;
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .delete-btn {
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(162, 63, 99, 0.1);
+      color: var(--female);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .rename-btn {
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(181, 93, 50, 0.1);
+      color: var(--accent-strong);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .speak-btn {
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(181, 93, 50, 0.1);
+      color: var(--accent-strong);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .speak-btn:hover {
+      box-shadow: 0 8px 18px rgba(139, 60, 25, 0.16);
+    }
+
+    .speak-btn.looping {
+      background: linear-gradient(135deg, var(--male), #173a56);
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(39, 93, 140, 0.2);
+    }
+
+    .english {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .translation {
+      margin: 10px 0 0;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(91, 73, 57, 0.18);
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .translation.loading {
+      color: var(--accent-strong);
+    }
+
+    .empty {
+      padding: 34px 18px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed rgba(91, 73, 57, 0.2);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    .note {
+      margin-top: 14px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      textarea {
+        min-height: 250px;
+      }
+
+      .floating-menu {
+        max-width: calc(100vw - 24px - var(--floating-ball-size) - var(--floating-actions-gap));
+      }
+
+      .floating-btn {
+        width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <nav class="nav" aria-label="页面导航">
+      <button class="nav-btn active" type="button" data-view-target="dialogueView">长短对话页面</button>
+      <button class="nav-btn" type="button" data-view-target="cnToEnView">中文翻译成英文</button>
+      <button class="nav-btn" type="button" data-view-target="enToCnView">英文翻译成中文</button>
+      <button class="nav-btn" type="button" data-view-target="vocabView">单词本</button>
+    </nav>
+
+    <section class="hero">
+      <h1>英语学习工具页</h1>
+      <p>一个页面里放三种功能：长对话逐句朗读、中文翻译成英文、英文翻译成中文。顶部导航可直接切换。</p>
+    </section>
+
+    <section id="dialogueView" class="view active">
+      <div class="layout">
+        <section class="panel">
+          <label for="sourceText">原始对话</label>
+          <textarea id="sourceText" spellcheck="false">M: Hello, welcome back. How was your trip?
+W: It was great. I met a lot of interesting people.
+M: That sounds exciting! Did you take many photos?
+W: Yes, I did. I can show them to you later.
+M: Perfect. Let's grab a coffee first.
+W: Sure. That sounds nice.</textarea>
+
+          <div class="controls">
+            <div>
+              <label for="targetLanguage">翻译语言</label>
+              <select id="targetLanguage">
+                <option value="zh-CN" selected>中文（简体）</option>
+                <option value="zh-TW">中文（繁体）</option>
+                <option value="ja">日语</option>
+                <option value="ko">韩语</option>
+              </select>
+            </div>
+
+            <div class="grid-two">
+              <div>
+                <label for="speechRate">语速</label>
+                <input id="speechRate" type="number" min="0.6" max="1.4" step="0.1" value="0.95">
+              </div>
+              <div>
+                <label for="pauseMs">每句间隔毫秒</label>
+                <input id="pauseMs" type="number" min="0" max="3000" step="100" value="350">
+              </div>
+            </div>
+
+            <div class="grid-two">
+              <button id="buildBtn" class="primary">生成句子和翻译</button>
+              <button id="translateBtn" class="ghost">重新翻译</button>
+            </div>
+
+            <div class="history-save-row">
+              <div>
+                <label for="dialogueName">记录名称</label>
+                <input id="dialogueName" type="text" maxlength="60" placeholder="例如：机场问路对话、Lesson 3">
+              </div>
+              <button id="saveDialogueBtn" class="secondary" type="button">保存当前对话</button>
+            </div>
+          </div>
+
+          <p class="note">格式示例：每行以 M: 或 W: 开头。也支持一行里有多句，系统会自动按标点继续拆分。</p>
+
+          <div class="history-panel">
+            <label>已保存对话记录</label>
+            <div id="dialogueHistory" class="history-list"></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="stats">
+            <div class="stat">句子数：<span id="sentenceCount">0</span></div>
+            <div class="stat">男声句数：<span id="maleCount">0</span></div>
+            <div class="stat">女声句数：<span id="femaleCount">0</span></div>
+          </div>
+
+          <div id="status" class="status">等待生成。</div>
+          <div id="cards" class="cards" aria-live="polite"></div>
+        </section>
+      </div>
+    </section>
+
+    <section id="cnToEnView" class="view">
+      <div class="single-column">
+        <section class="panel">
+          <label for="cnSourceText">中文内容</label>
+          <textarea id="cnSourceText" spellcheck="false">今天天气很好，我们下午一起去图书馆学习吧。</textarea>
+          <div class="controls">
+            <div class="translator-meta">
+              <div class="stat">方向：中文 -> 英文</div>
+            </div>
+            <div class="grid-two">
+              <button id="cnToEnBtn" class="primary" type="button">翻译成英文</button>
+              <button id="cnToEnSpeakBtn" class="secondary" type="button">朗读英文结果</button>
+            </div>
+          </div>
+          <p class="note">适合输入一句话、一段话，点击后会生成英文结果，并可用英文语音朗读。</p>
+        </section>
+
+        <section class="panel">
+          <div id="cnToEnStatus" class="mini-status">等待翻译。</div>
+          <div id="cnToEnResult" class="result-box empty-result">这里会显示英文翻译结果。</div>
+        </section>
+      </div>
+    </section>
+
+    <section id="enToCnView" class="view">
+      <div class="single-column">
+        <section class="panel">
+          <label for="enSourceText">英文内容</label>
+          <textarea id="enSourceText" spellcheck="false">This website can translate English into Chinese and read the sentence aloud.</textarea>
+          <div class="controls">
+            <div class="translator-meta">
+              <div class="stat">方向：英文 -> 中文</div>
+            </div>
+            <div class="grid-two">
+              <button id="enToCnBtn" class="primary" type="button">翻译成中文</button>
+              <button id="enToCnSpeakBtn" class="secondary" type="button">朗读英文原文</button>
+            </div>
+          </div>
+          <p class="note">适合输入英文句子或段落，点击后会显示中文翻译，也可直接朗读英文原文。</p>
+        </section>
+
+        <section class="panel">
+          <div id="enToCnStatus" class="mini-status">等待翻译。</div>
+          <div id="enToCnResult" class="result-box empty-result">这里会显示中文翻译结果。</div>
+        </section>
+      </div>
+    </section>
+
+    <section id="vocabView" class="view">
+      <div class="layout">
+        <section class="panel">
+          <label for="vocabSourceText">单词或短语</label>
+          <textarea id="vocabSourceText" spellcheck="false" placeholder="一行一个单词，或粘贴一个短语"></textarea>
+
+          <label for="vocabMeaningText">中文意思（直接保存时填写）</label>
+          <textarea id="vocabMeaningText" class="compact-textarea" spellcheck="false" placeholder="可直接粘贴多行中文意思，换行会保留"></textarea>
+
+          <label for="vocabUsageText">中文用法（直接保存时填写）</label>
+          <textarea id="vocabUsageText" class="compact-textarea" spellcheck="false" placeholder="可直接粘贴多行中文用法或例句"></textarea>
+
+          <div class="controls">
+            <div class="grid-two">
+              <button id="vocabLookupBtn" class="primary" type="button">查询并保存到单词本</button>
+              <button id="vocabDirectSaveBtn" class="secondary" type="button">直接保存到单词本</button>
+            </div>
+            <div class="grid-two">
+              <button id="clearVocabNotebookBtn" class="ghost" type="button">清空单词本</button>
+              <button id="vocabClearInputsBtn" class="ghost" type="button">清空录入内容</button>
+            </div>
+          </div>
+
+          <p class="note">联网查询时支持一行一个单词，也支持用逗号、分号分隔。直接保存模式建议一次保存一个单词或短语，并手动填写中文意思和中文用法。</p>
+        </section>
+
+        <section class="panel">
+          <div class="stats">
+            <div class="stat">已保存单词：<span id="vocabCount">0</span></div>
+          </div>
+
+          <div id="vocabStatus" class="status">等待查询。</div>
+          <div id="vocabList" class="vocab-list" aria-live="polite"></div>
+        </section>
+      </div>
+    </section>
+  </div>
+
+  <div id="floatingActions" class="floating-actions" aria-label="页面快捷滚动">
+    <div class="floating-menu">
+      <div class="floating-group">
+        <button id="playBtn" class="floating-btn" type="button">播放</button>
+        <button id="pauseBtn" class="floating-btn" type="button">暂停</button>
+        <button id="previousBtn" class="floating-btn" type="button">上句</button>
+        <button id="nextLoopBtn" class="floating-btn" type="button">下句</button>
+      </div>
+      <div class="floating-group single-column">
+        <button id="scrollTopBtn" class="floating-btn" type="button">置顶</button>
+        <button id="scrollBottomBtn" class="floating-btn" type="button">最后</button>
+      </div>
+    </div>
+    <button id="floatingBallBtn" class="floating-ball" type="button" aria-label="打开页面快捷滚动">
+      <span class="floating-ball-label">+</span>
+    </button>
+  </div>
+
+  <dialog id="vocabDetailDialog" class="dialog-backdrop">
+    <div class="dialog-panel">
+      <div class="dialog-header">
+        <div>
+          <h2 id="vocabDetailTitle" class="dialog-title">单词详情</h2>
+          <div id="vocabDetailPhonetic" class="vocab-phonetic">未提供音标</div>
+        </div>
+        <button id="closeVocabDetailBtn" class="dialog-close" type="button">关闭</button>
+      </div>
+
+      <section class="vocab-section">
+        <h4 class="vocab-section-title">中文意思</h4>
+        <p id="vocabDetailMeaning" class="vocab-section-body">暂无释义</p>
+      </section>
+
+      <section class="vocab-section">
+        <h4 class="vocab-section-title">中文用法</h4>
+        <p id="vocabDetailUsage" class="vocab-section-body">暂无用法</p>
+      </section>
+
+      <section class="vocab-section">
+        <h4 class="vocab-section-title">英文原始内容</h4>
+        <p id="vocabDetailEnglish" class="vocab-section-body">暂无英文说明</p>
+      </section>
+    </div>
+  </dialog>
+
+  <script>
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const views = document.querySelectorAll('.view');
+    const sourceText = document.getElementById('sourceText');
+    const targetLanguage = document.getElementById('targetLanguage');
+    const speechRate = document.getElementById('speechRate');
+    const pauseMs = document.getElementById('pauseMs');
+    const buildBtn = document.getElementById('buildBtn');
+    const translateBtn = document.getElementById('translateBtn');
+    const saveDialogueBtn = document.getElementById('saveDialogueBtn');
+    const dialogueName = document.getElementById('dialogueName');
+    const playBtn = document.getElementById('playBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const previousBtn = document.getElementById('previousBtn');
+    const nextLoopBtn = document.getElementById('nextLoopBtn');
+    const playAllBtn = document.getElementById('playAllBtn');
+    const floatingActions = document.getElementById('floatingActions');
+    const floatingBallBtn = document.getElementById('floatingBallBtn');
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
+    const scrollBottomBtn = document.getElementById('scrollBottomBtn');
+    const floatingMenu = floatingActions.querySelector('.floating-menu');
+    const sentenceCount = document.getElementById('sentenceCount');
+    const maleCount = document.getElementById('maleCount');
+    const femaleCount = document.getElementById('femaleCount');
+    const status = document.getElementById('status');
+    const cards = document.getElementById('cards');
+    const dialogueHistory = document.getElementById('dialogueHistory');
+    const cnSourceText = document.getElementById('cnSourceText');
+    const cnToEnBtn = document.getElementById('cnToEnBtn');
+    const cnToEnSpeakBtn = document.getElementById('cnToEnSpeakBtn');
+    const cnToEnStatus = document.getElementById('cnToEnStatus');
+    const cnToEnResult = document.getElementById('cnToEnResult');
+    const enSourceText = document.getElementById('enSourceText');
+    const enToCnBtn = document.getElementById('enToCnBtn');
+    const enToCnSpeakBtn = document.getElementById('enToCnSpeakBtn');
+    const enToCnStatus = document.getElementById('enToCnStatus');
+    const enToCnResult = document.getElementById('enToCnResult');
+    const vocabSourceText = document.getElementById('vocabSourceText');
+    const vocabMeaningText = document.getElementById('vocabMeaningText');
+    const vocabUsageText = document.getElementById('vocabUsageText');
+    const vocabLookupBtn = document.getElementById('vocabLookupBtn');
+    const vocabDirectSaveBtn = document.getElementById('vocabDirectSaveBtn');
+    const clearVocabNotebookBtn = document.getElementById('clearVocabNotebookBtn');
+    const vocabClearInputsBtn = document.getElementById('vocabClearInputsBtn');
+    const vocabCount = document.getElementById('vocabCount');
+    const vocabStatus = document.getElementById('vocabStatus');
+    const vocabList = document.getElementById('vocabList');
+    const vocabDetailDialog = document.getElementById('vocabDetailDialog');
+    const vocabDetailTitle = document.getElementById('vocabDetailTitle');
+    const vocabDetailPhonetic = document.getElementById('vocabDetailPhonetic');
+    const vocabDetailMeaning = document.getElementById('vocabDetailMeaning');
+    const vocabDetailUsage = document.getElementById('vocabDetailUsage');
+    const vocabDetailEnglish = document.getElementById('vocabDetailEnglish');
+    const closeVocabDetailBtn = document.getElementById('closeVocabDetailBtn');
+
+    const synth = window.speechSynthesis;
+    const DIALOGUE_STORAGE_KEY = 'eng-dialogue-history';
+    const LAST_DIALOGUE_SENTENCE_KEY = 'eng-last-dialogue-sentence';
+    const TRANSLATION_CACHE_KEY = 'eng-translation-cache';
+    const VOCAB_NOTEBOOK_KEY = 'eng-vocab-notebook';
+    const VOCAB_LOOKUP_CACHE_KEY = 'eng-vocab-lookup-cache';
+    const MAX_TRANSLATE_CHARS = 450;
+    const REQUEST_TIMEOUT_MS = 12000;
+    let voices = [];
+    let segments = [];
+    let playAllCancelled = false;
+    let currentPlaybackIndex = -1;
+    let playbackSessionId = 0;
+    let speechSessionId = 0;
+    let sequencePlaybackActive = false;
+    let loopingSegmentId = null;
+    let activeCardId = null;
+    let savedDialogues = [];
+    let lastDialogueSentence = null;
+    let translationCache = {};
+    let savedWords = [];
+    let vocabLookupCache = {};
+
+    // 尽量通过常见语音名称关键词去匹配男声和女声。
+    // 浏览器对“性别”没有统一标准，所以这里使用可读性较好的启发式匹配。
+    const maleHints = ['david', 'mark', 'guy', 'male', 'man', 'daniel', 'george', 'alex'];
+    const femaleHints = ['zira', 'aria', 'samantha', 'female', 'woman', 'jenny', 'ava', 'emma'];
+
+    function updateStatus(message) {
+      status.textContent = message;
+    }
+
+    function updateMiniStatus(element, message) {
+      element.textContent = message;
+    }
+
+    function updateVocabStatus(message) {
+      vocabStatus.textContent = message;
+    }
+
+    function normalizeText(value) {
+      return value.replace(/\r/g, '').trim();
+    }
+
+    function getDialoguePreview(text) {
+      return text.replace(/\s+/g, ' ').trim().slice(0, 80) || '未命名对话';
+    }
+
+    function getDialogueDisplayName(item, index) {
+      const customName = typeof item.name === 'string' ? item.name.trim() : '';
+      return customName || `记录 ${index + 1}`;
+    }
+
+    function normalizeWordKey(value) {
+      return value.trim().toLowerCase();
+    }
+
+    function getFirstLine(value, fallback = '暂无内容') {
+      const line = String(value || '').split('\n').map((item) => item.trim()).find(Boolean);
+      return line || fallback;
+    }
+
+    function parseWordList(rawText) {
+      const parts = rawText
+        .replace(/\r/g, '\n')
+        .split(/[\n,，;；、\t]+/)
+        .map((item) => item.trim())
+        .filter(Boolean);
+
+      return [...new Set(parts)];
+    }
+
+    // 对话记录保存在浏览器本地，刷新页面后仍可继续加载和删除。
+    function loadSavedDialogues() {
+      try {
+        const raw = window.localStorage.getItem(DIALOGUE_STORAGE_KEY);
+        savedDialogues = raw ? JSON.parse(raw) : [];
+      } catch (error) {
+        savedDialogues = [];
+      }
+    }
+
+    function persistSavedDialogues() {
+      window.localStorage.setItem(DIALOGUE_STORAGE_KEY, JSON.stringify(savedDialogues));
+    }
+
+    function loadLastDialogueSentence() {
+      try {
+        const raw = window.localStorage.getItem(LAST_DIALOGUE_SENTENCE_KEY);
+        lastDialogueSentence = raw ? JSON.parse(raw) : null;
+      } catch (error) {
+        lastDialogueSentence = null;
+      }
+    }
+
+    function persistLastDialogueSentence() {
+      if (!lastDialogueSentence) {
+        window.localStorage.removeItem(LAST_DIALOGUE_SENTENCE_KEY);
+        return;
+      }
+
+      window.localStorage.setItem(LAST_DIALOGUE_SENTENCE_KEY, JSON.stringify(lastDialogueSentence));
+    }
+
+    function loadVocabNotebook() {
+      try {
+        const raw = window.localStorage.getItem(VOCAB_NOTEBOOK_KEY);
+        savedWords = raw ? JSON.parse(raw) : [];
+      } catch (error) {
+        savedWords = [];
+      }
+    }
+
+    function persistVocabNotebook() {
+      window.localStorage.setItem(VOCAB_NOTEBOOK_KEY, JSON.stringify(savedWords));
+    }
+
+    function loadTranslationCache() {
+      try {
+        const raw = window.localStorage.getItem(TRANSLATION_CACHE_KEY);
+        translationCache = raw ? JSON.parse(raw) : {};
+      } catch (error) {
+        translationCache = {};
+      }
+    }
+
+    function persistTranslationCache() {
+      window.localStorage.setItem(TRANSLATION_CACHE_KEY, JSON.stringify(translationCache));
+    }
+
+    function loadVocabLookupCache() {
+      try {
+        const raw = window.localStorage.getItem(VOCAB_LOOKUP_CACHE_KEY);
+        vocabLookupCache = raw ? JSON.parse(raw) : {};
+      } catch (error) {
+        vocabLookupCache = {};
+      }
+    }
+
+    function persistVocabLookupCache() {
+      window.localStorage.setItem(VOCAB_LOOKUP_CACHE_KEY, JSON.stringify(vocabLookupCache));
+    }
+
+    function buildTranslationCacheKey(text, sourceLang, targetLang) {
+      return `${sourceLang}=>${targetLang}::${text}`;
+    }
+
+    function serializeSegmentsForSave(items) {
+      return items.map((item) => ({
+        speaker: item.speaker,
+        english: item.english,
+        translation: item.translation || '',
+        error: item.error || ''
+      }));
+    }
+
+    function restoreSavedSegments(items) {
+      return (Array.isArray(items) ? items : []).map((item) => ({
+        id: crypto.randomUUID(),
+        speaker: item.speaker,
+        english: item.english,
+        translation: item.translation || '',
+        translating: false,
+        error: item.error || ''
+      }));
+    }
+
+    function renderVocabNotebook() {
+      vocabCount.textContent = String(savedWords.length);
+
+      if (!savedWords.length) {
+        vocabList.innerHTML = '<div class="empty">单词本还是空的。粘贴英文单词后点击“查询并保存到单词本”。</div>';
+        return;
+      }
+
+      vocabList.innerHTML = savedWords.map((item) => `
+        <article class="vocab-card" data-word-key="${escapeHtml(item.key)}">
+          <div class="vocab-card-header">
+            <button class="vocab-card-main" type="button" data-action="open-word" data-word-key="${escapeHtml(item.key)}" aria-label="查看 ${escapeHtml(item.word)} 的完整内容">
+              <h3 class="vocab-word">${escapeHtml(item.word)}</h3>
+              <div class="vocab-phonetic">${escapeHtml(item.phonetic || '未提供音标')}</div>
+              <p class="vocab-preview">${escapeHtml(getFirstLine(item.meaningZh || item.meaningEn || '', '暂无释义'))}</p>
+            </button>
+            <button class="danger-btn" type="button" data-action="delete-word" data-word-key="${escapeHtml(item.key)}">删除</button>
+          </div>
+        </article>
+      `).join('');
+
+      document.querySelectorAll('[data-action="open-word"]').forEach((button) => {
+        button.addEventListener('click', () => {
+          openWordDetail(button.dataset.wordKey);
+        });
+      });
+
+      document.querySelectorAll('[data-action="delete-word"]').forEach((button) => {
+        button.addEventListener('click', () => {
+          deleteSavedWord(button.dataset.wordKey);
+        });
+      });
+    }
+
+    function openWordDetail(wordKey) {
+      const record = savedWords.find((item) => item.key === wordKey);
+
+      if (!record) {
+        updateVocabStatus('没有找到这个单词的详情。');
+        return;
+      }
+
+      const meaningText = record.meaningZh || record.meaningEn || '暂无释义';
+      const usageText = record.usageZh || record.usageEn || '暂无用法';
+      const englishText = [record.meaningEn, record.usageEn].filter(Boolean).join('\n\n') || '暂无英文说明';
+
+      if (vocabDetailDialog && typeof vocabDetailDialog.showModal === 'function') {
+        vocabDetailTitle.textContent = record.word;
+        vocabDetailPhonetic.textContent = record.phonetic || '未提供音标';
+        vocabDetailMeaning.textContent = meaningText;
+        vocabDetailUsage.textContent = usageText;
+        vocabDetailEnglish.textContent = englishText;
+        vocabDetailDialog.showModal();
+        return;
+      }
+
+      window.alert(`${record.word}\n\n中文意思：\n${meaningText}\n\n中文用法：\n${usageText}\n\n英文原始内容：\n${englishText}`);
+    }
+
+    function upsertSavedWord(record) {
+      const index = savedWords.findIndex((item) => item.key === record.key);
+      const nextRecord = {
+        ...record,
+        id: index >= 0 ? savedWords[index].id : crypto.randomUUID(),
+        savedAt: Date.now()
+      };
+
+      if (index >= 0) {
+        savedWords.splice(index, 1);
+      }
+
+      savedWords.unshift(nextRecord);
+      persistVocabNotebook();
+    }
+
+    function deleteSavedWord(wordKey) {
+      const nextWords = savedWords.filter((item) => item.key !== wordKey);
+
+      if (nextWords.length === savedWords.length) {
+        return;
+      }
+
+      savedWords = nextWords;
+      persistVocabNotebook();
+      renderVocabNotebook();
+      updateVocabStatus(`已删除单词，剩余 ${savedWords.length} 个。`);
+    }
+
+    function clearVocabNotebook() {
+      if (!savedWords.length) {
+        updateVocabStatus('单词本已经是空的。');
+        return;
+      }
+
+      savedWords = [];
+      persistVocabNotebook();
+      renderVocabNotebook();
+      updateVocabStatus('单词本已清空，本地查询缓存保留，下次查相同单词仍可直接复用。');
+    }
+
+    function clearVocabInputs() {
+      vocabSourceText.value = '';
+      vocabMeaningText.value = '';
+      vocabUsageText.value = '';
+      updateVocabStatus('单词、中文意思和中文用法输入已清空。');
+    }
+
+    function directSaveWord() {
+      const words = parseWordList(vocabSourceText.value);
+      const meaningZh = normalizeText(vocabMeaningText.value);
+      const usageZh = normalizeText(vocabUsageText.value);
+
+      if (words.length !== 1) {
+        updateVocabStatus('直接保存模式一次只保存一个单词或短语，请只保留一条。');
+        return;
+      }
+
+      if (!meaningZh && !usageZh) {
+        updateVocabStatus('直接保存时请至少填写中文意思或中文用法。');
+        return;
+      }
+
+      const word = words[0];
+      upsertSavedWord({
+        key: normalizeWordKey(word),
+        word,
+        phonetic: '',
+        meaningEn: '',
+        usageEn: '',
+        meaningZh,
+        usageZh,
+        updatedAt: Date.now()
+      });
+      renderVocabNotebook();
+      updateVocabStatus(`已直接保存：${word}`);
+    }
+
+    function extractWordSummary(entries, originalWord) {
+      const entryList = Array.isArray(entries) ? entries : [];
+      const phonetic = entryList.find((item) => item?.phonetic)?.phonetic
+        || entryList
+          .flatMap((item) => Array.isArray(item?.phonetics) ? item.phonetics : [])
+          .find((item) => item?.text)?.text
+        || '';
+      const meaningLines = [];
+      const usageLines = [];
+      const parts = new Set();
+
+      for (const entry of entryList) {
+        for (const meaning of Array.isArray(entry?.meanings) ? entry.meanings : []) {
+          const partOfSpeech = meaning.partOfSpeech || 'general';
+          parts.add(partOfSpeech);
+
+          const definitions = Array.isArray(meaning.definitions) ? meaning.definitions.slice(0, 2) : [];
+
+          definitions.forEach((definition, index) => {
+            if (definition?.definition) {
+              meaningLines.push(`${partOfSpeech} ${index + 1}: ${definition.definition}`);
+            }
+
+            if (definition?.example) {
+              usageLines.push(`${partOfSpeech} example: ${definition.example}`);
+            }
+          });
+        }
+      }
+
+      if (!meaningLines.length) {
+        meaningLines.push(`${originalWord}: no clear definition returned by the dictionary API.`);
+      }
+
+      if (!usageLines.length) {
+        const partList = [...parts];
+        usageLines.push(partList.length
+          ? `${originalWord} is commonly used as: ${partList.join(', ')}.`
+          : `${originalWord} does not include a ready-made example sentence in the dictionary result.`);
+      }
+
+      return {
+        phonetic,
+        meaningEn: meaningLines.join('\n'),
+        usageEn: usageLines.join('\n')
+      };
+    }
+
+    function getWordLookupErrorMessage(error) {
+      const rawMessage = error instanceof Error ? error.message : String(error || '');
+
+      if (/authentication_failed|access denied|credentials are missing/i.test(rawMessage)) {
+        return '当前网络拦截了词典查询，需要先通过网络认证或更换可访问外网的网络。';
+      }
+
+      if (/REQUEST_TIMEOUT/i.test(rawMessage)) {
+        return '词典查询超时，当前网络可能限制了外部接口访问。';
+      }
+
+      if (/404/.test(rawMessage)) {
+        return '词典里没有找到这个单词或短语，请检查拼写。';
+      }
+
+      if (/failed to fetch|networkerror|load failed/i.test(rawMessage)) {
+        return '词典接口暂时无法连接，可能是网络限制或接口不可用。';
+      }
+
+      return `查询失败：${rawMessage || '未知错误'}`;
+    }
+
+    function isWordLookupNetworkBlock(error) {
+      const rawMessage = error instanceof Error ? error.message : String(error || '');
+      return /authentication_failed|access denied|credentials are missing|REQUEST_TIMEOUT|failed to fetch|networkerror|load failed|ERR_ACCESS_DENIED|ERR_ABORTED/i.test(rawMessage);
+    }
+
+    async function fetchWithTimeout(url, timeoutMs = REQUEST_TIMEOUT_MS) {
+      const controller = new AbortController();
+      const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+
+      try {
+        return await fetch(url, { signal: controller.signal });
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          throw new Error('REQUEST_TIMEOUT');
+        }
+
+        throw error;
+      } finally {
+        window.clearTimeout(timeoutId);
+      }
+    }
+
+    async function requestWordLookup(word) {
+      const response = await fetchWithTimeout(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
+      const responseText = await response.text();
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} ${responseText}`.trim());
+      }
+
+      if (/authentication_failed|access denied|ERR_ACCESS_DENIED/i.test(responseText)) {
+        throw new Error(responseText);
+      }
+
+      let data;
+
+      try {
+        data = responseText ? JSON.parse(responseText) : null;
+      } catch (error) {
+        throw new Error('词典接口返回了无法解析的结果');
+      }
+
+      return data;
+    }
+
+    async function resolveWordRecord(word) {
+      const key = normalizeWordKey(word);
+      const existingRecord = savedWords.find((item) => item.key === key);
+
+      if (existingRecord) {
+        return {
+          record: existingRecord,
+          source: 'saved'
+        };
+      }
+
+      if (vocabLookupCache[key]) {
+        return {
+          record: {
+            ...vocabLookupCache[key],
+            word
+          },
+          source: 'cache'
+        };
+      }
+
+      const entryData = await requestWordLookup(word);
+      const summary = extractWordSummary(entryData, word);
+
+      // 词典接口提供英文释义和例句，这里再翻成中文，方便直接放进单词本复习。
+      const meaningZh = await translateText(summary.meaningEn, 'en', 'zh-CN');
+      const usageZh = await translateText(summary.usageEn, 'en', 'zh-CN');
+      const cachedRecord = {
+        key,
+        word,
+        phonetic: summary.phonetic,
+        meaningEn: summary.meaningEn,
+        usageEn: summary.usageEn,
+        meaningZh,
+        usageZh,
+        updatedAt: Date.now()
+      };
+
+      vocabLookupCache[key] = cachedRecord;
+      persistVocabLookupCache();
+
+      return {
+        record: cachedRecord,
+        source: 'online'
+      };
+    }
+
+    async function lookupAndSaveWords() {
+      const words = parseWordList(vocabSourceText.value);
+
+      if (!words.length) {
+        updateVocabStatus('请先输入要保存的英文单词或短语。');
+        return;
+      }
+
+      vocabLookupBtn.disabled = true;
+      clearVocabNotebookBtn.disabled = true;
+      updateVocabStatus(`正在处理 ${words.length} 个单词，请稍候...`);
+
+      let savedCount = 0;
+      let cacheHitCount = 0;
+      let existingCount = 0;
+      const failures = [];
+      let skippedCount = 0;
+
+      try {
+        for (let index = 0; index < words.length; index += 1) {
+          const word = words[index];
+
+          try {
+            const { record, source } = await resolveWordRecord(word);
+            upsertSavedWord(record);
+            renderVocabNotebook();
+
+            if (source === 'saved') {
+              existingCount += 1;
+            } else if (source === 'cache') {
+              cacheHitCount += 1;
+            } else {
+              savedCount += 1;
+            }
+          } catch (error) {
+            failures.push(`${word}：${getWordLookupErrorMessage(error)}`);
+
+            if (isWordLookupNetworkBlock(error)) {
+              skippedCount = words.length - index - 1;
+              break;
+            }
+          }
+        }
+
+        if (failures.length) {
+          updateVocabStatus(`已完成：新增联网 ${savedCount} 个，缓存命中 ${cacheHitCount} 个，已存在 ${existingCount} 个，失败 ${failures.length} 个，跳过 ${skippedCount} 个。${failures.join('；')}`);
+        } else {
+          updateVocabStatus(`已完成：新增联网 ${savedCount} 个，缓存命中 ${cacheHitCount} 个，已存在 ${existingCount} 个。`);
+        }
+      } finally {
+        vocabLookupBtn.disabled = false;
+        clearVocabNotebookBtn.disabled = false;
+      }
+    }
+
+    function hasSavedTranslations(record) {
+      return Array.isArray(record.savedSegments)
+        && record.savedSegments.length > 0
+        && record.savedSegments.some((item) => Boolean((item.translation || '').trim() || (item.error || '').trim()));
+    }
+
+    async function loadSavedDialogueRecord(historyId) {
+      const record = savedDialogues.find((item) => item.id === historyId);
+
+      if (!record) {
+        return;
+      }
+
+        stopPlayback();
+
+      sourceText.value = record.text;
+      dialogueName.value = typeof record.name === 'string' ? record.name : '';
+      if (record.targetLanguage) {
+        targetLanguage.value = record.targetLanguage;
+      }
+
+      if (hasSavedTranslations(record)) {
+        segments = restoreSavedSegments(record.savedSegments);
+        clearActiveCard();
+        restoreLastDialogueSentence();
+        renderCards();
+        updateStatus('已加载记录，并恢复已保存的句子和翻译。');
+        return;
+      }
+
+      updateStatus('已加载记录，正在自动生成句子和翻译...');
+      await buildSegmentsAndTranslate();
+    }
+
+    function renderDialogueHistory() {
+      if (!savedDialogues.length) {
+        dialogueHistory.innerHTML = '<div class="empty">还没有保存的长对话。点击“保存当前对话”后会出现在这里。</div>';
+        return;
+      }
+
+      dialogueHistory.innerHTML = savedDialogues.map((item, index) => `
+        <div class="history-row" data-history-id="${item.id}">
+          <button class="history-load" type="button" data-action="load-dialogue" data-history-id="${item.id}" aria-label="加载第 ${index + 1} 条对话">
+            <span class="history-number">${index + 1}</span>
+            <span class="history-text">
+              <span class="history-title">${escapeHtml(getDialogueDisplayName(item, index))}</span>
+              <span class="history-preview">${escapeHtml(getDialoguePreview(item.text))}</span>
+            </span>
+          </button>
+          <button class="rename-btn" type="button" data-action="rename-dialogue" data-history-id="${item.id}">重命名</button>
+          <button class="delete-btn" type="button" data-action="delete-dialogue" data-history-id="${item.id}">删除</button>
+        </div>
+      `).join('');
+
+      document.querySelectorAll('[data-action="load-dialogue"]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          await loadSavedDialogueRecord(button.dataset.historyId);
+        });
+      });
+
+      document.querySelectorAll('[data-action="delete-dialogue"]').forEach((button) => {
+        button.addEventListener('click', () => {
+          deleteSavedDialogue(button.dataset.historyId);
+        });
+      });
+
+      document.querySelectorAll('[data-action="rename-dialogue"]').forEach((button) => {
+        button.addEventListener('click', () => {
+          renameSavedDialogue(button.dataset.historyId);
+        });
+      });
+    }
+
+    function saveCurrentDialogue() {
+      const rawText = sourceText.value.replace(/\r/g, '').trim();
+      const customName = dialogueName.value.trim();
+
+      if (!rawText) {
+        updateStatus('没有可保存的对话原文。');
+        return;
+      }
+
+      savedDialogues.unshift({
+        id: crypto.randomUUID(),
+        name: customName,
+        text: rawText,
+        targetLanguage: targetLanguage.value,
+        savedSegments: serializeSegmentsForSave(segments),
+        createdAt: Date.now()
+      });
+
+      persistSavedDialogues();
+      renderDialogueHistory();
+      dialogueName.value = '';
+      updateStatus(`当前对话和当前翻译已保存，共 ${savedDialogues.length} 条记录。`);
+    }
+
+    function renameSavedDialogue(historyId) {
+      const record = savedDialogues.find((item) => item.id === historyId);
+
+      if (!record) {
+        return;
+      }
+
+      const currentName = typeof record.name === 'string' ? record.name.trim() : '';
+      const nextName = window.prompt('请输入新的记录名称：', currentName || getDialoguePreview(record.text));
+
+      if (nextName === null) {
+        return;
+      }
+
+      record.name = nextName.trim();
+      persistSavedDialogues();
+      renderDialogueHistory();
+      updateStatus('记录名称已更新。');
+    }
+
+    function deleteSavedDialogue(historyId) {
+      const nextDialogues = savedDialogues.filter((item) => item.id !== historyId);
+
+      if (nextDialogues.length === savedDialogues.length) {
+        return;
+      }
+
+      savedDialogues = nextDialogues;
+      persistSavedDialogues();
+      renderDialogueHistory();
+      updateStatus(`已删除一条记录，剩余 ${savedDialogues.length} 条。`);
+    }
+
+    function splitLongUnit(text, maxChars) {
+      const parts = [];
+      let start = 0;
+
+      while (start < text.length) {
+        parts.push(text.slice(start, start + maxChars).trim());
+        start += maxChars;
+      }
+
+      return parts.filter(Boolean);
+    }
+
+    function splitTranslationChunks(text, maxChars = MAX_TRANSLATE_CHARS) {
+      const normalized = text.trim();
+
+      if (!normalized) {
+        return [];
+      }
+
+      const paragraphUnits = normalized
+        .split('\n')
+        .map((paragraph) => paragraph.trim())
+        .filter(Boolean)
+        .flatMap((paragraph) => {
+          const sentences = paragraph.match(/[^。！？!?\.]+[。！？!?\.]?|[^。！？!?\.]+$/g) || [paragraph];
+          return sentences.flatMap((sentence) => {
+            const cleanSentence = sentence.trim();
+            return cleanSentence.length > maxChars ? splitLongUnit(cleanSentence, maxChars) : [cleanSentence];
+          });
+        });
+
+      const chunks = [];
+      let currentChunk = '';
+
+      // 把较长文本按句子聚合成安全长度，避免超过公共翻译接口的 500 字符限制。
+      for (const unit of paragraphUnits) {
+        const candidate = currentChunk ? `${currentChunk} ${unit}` : unit;
+
+        if (candidate.length <= maxChars) {
+          currentChunk = candidate;
+          continue;
+        }
+
+        if (currentChunk) {
+          chunks.push(currentChunk);
+        }
+
+        currentChunk = unit;
+      }
+
+      if (currentChunk) {
+        chunks.push(currentChunk);
+      }
+
+      return chunks;
+    }
+
+    function setResultBox(element, text, emptyMessage) {
+      const hasText = Boolean(normalizeText(text));
+      element.textContent = hasText ? text : emptyMessage;
+      element.classList.toggle('empty-result', !hasText);
+    }
+
+    function splitIntoSentences(text) {
+      const cleaned = text
+        .replace(/([.!?])([A-Z])/g, '$1 $2')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      const matches = cleaned.match(/[^.!?]+[.!?]?/g) || [];
+      return matches.map((item) => item.trim()).filter(Boolean);
+    }
+
+    function parseDialogue(rawText) {
+      const lines = normalizeText(rawText).split('\n').map((line) => line.trim()).filter(Boolean);
+      const parsed = [];
+      let lastSpeaker = 'M';
+
+      for (const line of lines) {
+        const match = line.match(/^([MWmw])\s*[:：]\s*(.+)$/);
+        const speaker = match ? match[1].toUpperCase() : lastSpeaker;
+        const content = match ? match[2].trim() : line;
+        const sentences = splitIntoSentences(content);
+
+        if (!sentences.length) {
+          continue;
+        }
+
+        lastSpeaker = speaker;
+
+        for (const sentence of sentences) {
+          parsed.push({
+            id: crypto.randomUUID(),
+            speaker,
+            english: sentence,
+            translation: '',
+            translating: false,
+            error: ''
+          });
+        }
+      }
+
+      return parsed;
+    }
+
+    function pickVoiceForSpeaker(speaker) {
+      if (!voices.length) {
+        voices = synth.getVoices();
+      }
+
+      const englishVoices = voices.filter((voice) => /^en([-_]|$)/i.test(voice.lang));
+      const hints = speaker === 'M' ? maleHints : femaleHints;
+      const oppositeHints = speaker === 'M' ? femaleHints : maleHints;
+
+      const hintedVoice = englishVoices.find((voice) => {
+        const fullName = `${voice.name} ${voice.voiceURI}`.toLowerCase();
+        return hints.some((hint) => fullName.includes(hint));
+      });
+
+      if (hintedVoice) {
+        return hintedVoice;
+      }
+
+      const neutralVoice = englishVoices.find((voice) => {
+        const fullName = `${voice.name} ${voice.voiceURI}`.toLowerCase();
+        return !oppositeHints.some((hint) => fullName.includes(hint));
+      });
+
+      return neutralVoice || englishVoices[0] || voices[0] || null;
+    }
+
+    function pickEnglishVoice() {
+      if (!voices.length) {
+        voices = synth.getVoices();
+      }
+
+      return voices.find((voice) => /^en([-_]|$)/i.test(voice.lang)) || voices[0] || null;
+    }
+
+    function switchView(viewId) {
+      views.forEach((view) => {
+        view.classList.toggle('active', view.id === viewId);
+      });
+
+      navButtons.forEach((button) => {
+        button.classList.toggle('active', button.dataset.viewTarget === viewId);
+      });
+
+      if (viewId === 'dialogueView') {
+        scrollToActiveCard();
+      }
+    }
+
+    function scrollToActiveCard() {
+      if (!activeCardId) {
+        return;
+      }
+
+      const activeCard = document.querySelector(`.card[data-id="${activeCardId}"]`);
+
+      if (activeCard) {
+        activeCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function rememberCurrentSentence(segmentId) {
+      const dialogueText = normalizeText(sourceText.value);
+      const sentenceIndex = segments.findIndex((item) => item.id === segmentId);
+
+      if (!dialogueText || sentenceIndex < 0) {
+        return;
+      }
+
+      lastDialogueSentence = {
+        dialogueText,
+        sentenceIndex
+      };
+      persistLastDialogueSentence();
+    }
+
+    function restoreLastDialogueSentence() {
+      const dialogueText = normalizeText(sourceText.value);
+
+      if (!lastDialogueSentence || !dialogueText || lastDialogueSentence.dialogueText !== dialogueText) {
+        return false;
+      }
+
+      const segment = segments[lastDialogueSentence.sentenceIndex];
+
+      if (!segment) {
+        return false;
+      }
+
+      activeCardId = segment.id;
+      return true;
+    }
+
+    function getCurrentSentenceIndex() {
+      if (!segments.length) {
+        return -1;
+      }
+
+      if (activeCardId) {
+        const activeIndex = segments.findIndex((item) => item.id === activeCardId);
+
+        if (activeIndex >= 0) {
+          return activeIndex;
+        }
+      }
+
+      if (currentPlaybackIndex >= 0 && currentPlaybackIndex < segments.length) {
+        return currentPlaybackIndex;
+      }
+
+      if (lastDialogueSentence && normalizeText(sourceText.value) === lastDialogueSentence.dialogueText) {
+        return Math.min(lastDialogueSentence.sentenceIndex, segments.length - 1);
+      }
+
+      return 0;
+    }
+
+    function setActiveCard(id) {
+      rememberCurrentSentence(id);
+      activeCardId = id;
+      document.querySelectorAll('.card').forEach((card) => {
+        card.classList.toggle('active', card.dataset.id === id);
+      });
+      scrollToActiveCard();
+    }
+
+    function clearActiveCard() {
+      activeCardId = null;
+      document.querySelectorAll('.card').forEach((card) => card.classList.remove('active'));
+    }
+
+    function cancelSingleLoop() {
+      loopingSegmentId = null;
+    }
+
+    function renderCards() {
+      sentenceCount.textContent = String(segments.length);
+      maleCount.textContent = String(segments.filter((item) => item.speaker === 'M').length);
+      femaleCount.textContent = String(segments.filter((item) => item.speaker === 'W').length);
+
+      if (!segments.length) {
+        cards.innerHTML = '<div class="empty">还没有句子。请先输入对话并点击“生成句子和翻译”。</div>';
+        return;
+      }
+
+      cards.innerHTML = segments.map((segment, index) => {
+        const translationClass = segment.translating ? 'translation loading' : 'translation';
+        const translationText = segment.translating
+          ? '正在翻译...'
+          : segment.translation || segment.error || '暂无翻译';
+        const speakerLabel = segment.speaker === 'M' ? 'M 男声' : 'W 女声';
+        const badgeClass = segment.speaker === 'M' ? 'badge m' : 'badge w';
+        const isLooping = loopingSegmentId === segment.id;
+
+        return `
+          <article class="card ${activeCardId === segment.id ? 'active' : ''}" data-id="${segment.id}">
+            <div class="card-header">
+              <span class="${badgeClass}">${speakerLabel}</span>
+              <span class="card-index">第 ${index + 1} 句</span>
+            </div>
+            <p class="english">${escapeHtml(segment.english)}</p>
+            <p class="${translationClass}">${escapeHtml(translationText)}</p>
+            <div class="sentence-actions">
+              <button class="speak-btn" type="button" data-action="speak" data-id="${segment.id}" aria-label="朗读第 ${index + 1} 句">点击朗读</button>
+              <button class="speak-btn ${isLooping ? 'looping' : ''}" type="button" data-action="loop" data-id="${segment.id}" aria-label="循环朗读第 ${index + 1} 句">${isLooping ? '停止循环单句' : '循环单句朗读'}</button>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      document.querySelectorAll('[data-action="speak"]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const segment = segments.find((item) => item.id === button.dataset.id);
+          if (segment) {
+            rememberCurrentSentence(segment.id);
+            cancelSingleLoop();
+            renderCards();
+            speakSegment(segment);
+          }
+        });
+      });
+
+      document.querySelectorAll('[data-action="loop"]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const segment = segments.find((item) => item.id === button.dataset.id);
+          if (segment) {
+            rememberCurrentSentence(segment.id);
+            toggleSegmentLoop(segment);
+          }
+        });
+      });
+
+      scrollToActiveCard();
+    }
+
+    function escapeHtml(value) {
+      return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function speakSegment(segment) {
+      if (!synth) {
+        updateStatus('当前浏览器不支持语音朗读。');
+        return Promise.resolve();
+      }
+
+      const currentSpeechId = speechSessionId + 1;
+
+      speechSessionId = currentSpeechId;
+      synth.cancel();
+      setActiveCard(segment.id);
+      updateStatus(`正在朗读：${segment.english}`);
+
+      return new Promise((resolve) => {
+        const utterance = new SpeechSynthesisUtterance(segment.english);
+        const selectedVoice = pickVoiceForSpeaker(segment.speaker);
+        const rate = Number.parseFloat(speechRate.value) || 0.95;
+
+        utterance.lang = 'en-US';
+        utterance.rate = rate;
+
+        if (selectedVoice) {
+          utterance.voice = selectedVoice;
+        }
+
+        utterance.onend = () => {
+          if (currentSpeechId === speechSessionId) {
+            clearActiveCard();
+            updateStatus('朗读完成。');
+          }
+
+          resolve();
+        };
+
+        utterance.onerror = () => {
+          if (currentSpeechId === speechSessionId) {
+            clearActiveCard();
+            updateStatus('朗读失败，请检查浏览器语音权限。');
+          }
+
+          resolve();
+        };
+
+        synth.speak(utterance);
+      });
+    }
+
+    async function playSequenceFromIndex(startIndex, startMessage) {
+      if (!segments.length) {
+        updateStatus('请先生成句子。');
+        return;
+      }
+
+      const safeIndex = Math.max(0, Math.min(startIndex, segments.length - 1));
+      const sessionId = playbackSessionId + 1;
+
+      playbackSessionId = sessionId;
+      playAllCancelled = true;
+      cancelSingleLoop();
+      if (synth.speaking || synth.paused) {
+        synth.cancel();
+      }
+
+      playAllCancelled = false;
+      sequencePlaybackActive = true;
+      currentPlaybackIndex = safeIndex;
+      renderCards();
+      if (playAllBtn) {
+        playAllBtn.disabled = true;
+      }
+      buildBtn.disabled = true;
+      translateBtn.disabled = true;
+      updateStatus(startMessage || `正在从第 ${safeIndex + 1} 句开始顺序朗读...`);
+
+      try {
+        for (let index = safeIndex; index < segments.length; index += 1) {
+          if (playAllCancelled || sessionId !== playbackSessionId) {
+            break;
+          }
+
+          currentPlaybackIndex = index;
+          await speakSegment(segments[index]);
+
+          if (playAllCancelled || sessionId !== playbackSessionId) {
+            break;
+          }
+
+          if (index < segments.length - 1) {
+            await wait(Number.parseInt(pauseMs.value, 10) || 0);
+          }
+        }
+
+        if (sessionId === playbackSessionId) {
+          sequencePlaybackActive = false;
+          updateStatus(playAllCancelled ? '已停止顺序朗读。' : '全部朗读完成。');
+        }
+      } finally {
+        if (sessionId === playbackSessionId) {
+          sequencePlaybackActive = false;
+          if (playAllBtn) {
+            playAllBtn.disabled = false;
+          }
+          buildBtn.disabled = false;
+          translateBtn.disabled = false;
+        }
+      }
+    }
+
+    async function toggleSegmentLoop(segment) {
+      if (!synth) {
+        updateStatus('当前浏览器不支持语音朗读。');
+        return;
+      }
+
+      if (loopingSegmentId === segment.id) {
+        stopPlayback();
+        return;
+      }
+
+      playAllCancelled = true;
+      loopingSegmentId = segment.id;
+      renderCards();
+      synth.cancel();
+      updateStatus(`正在循环朗读：${segment.english}`);
+
+      while (loopingSegmentId === segment.id) {
+        await speakSegment(segment);
+
+        if (loopingSegmentId !== segment.id) {
+          break;
+        }
+
+        updateStatus(`正在循环朗读：${segment.english}`);
+        await wait(Number.parseInt(pauseMs.value, 10) || 0);
+      }
+
+      if (loopingSegmentId === null) {
+        renderCards();
+      }
+    }
+
+    function speakPlainEnglish(text, statusElement, idleMessage) {
+      if (!synth) {
+        updateMiniStatus(statusElement, '当前浏览器不支持语音朗读。');
+        return;
+      }
+
+      const cleanText = normalizeText(text);
+
+      if (!cleanText) {
+        updateMiniStatus(statusElement, '没有可朗读的英文内容。');
+        return;
+      }
+
+      synth.cancel();
+      updateMiniStatus(statusElement, `正在朗读：${cleanText}`);
+
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.lang = 'en-US';
+      utterance.rate = Number.parseFloat(speechRate.value) || 0.95;
+      utterance.voice = pickEnglishVoice();
+      utterance.onend = () => updateMiniStatus(statusElement, idleMessage);
+      utterance.onerror = () => updateMiniStatus(statusElement, '朗读失败，请检查浏览器语音权限。');
+      synth.speak(utterance);
+    }
+
+    function getTranslationErrorMessage(error) {
+      const rawMessage = error instanceof Error ? error.message : String(error || '');
+      const quotaWaitMatch = rawMessage.match(/NEXT AVAILABLE IN\s+(.+?)\s+VISIT/i);
+
+      if (/authentication_failed|access denied|credentials are missing/i.test(rawMessage)) {
+        return '翻译接口被当前网络拦截，需要先通过网络认证或更换可访问外网的网络。';
+      }
+
+      if (/used all available free translations for today|responsestatus":429|http 429/i.test(rawMessage)) {
+        return quotaWaitMatch
+          ? `免费翻译额度已用完，请等待 ${quotaWaitMatch[1]} 后再试。`
+          : '免费翻译额度已用完，请稍后再试。';
+      }
+
+      if (/failed to fetch|networkerror|load failed/i.test(rawMessage)) {
+        return '浏览器未能连接翻译接口，可能是网络限制、跨域限制或接口暂时不可用。';
+      }
+
+      if (/query length limit exceeded/i.test(rawMessage)) {
+        return '翻译内容过长，已超出接口限制。';
+      }
+
+      if (/http 4\d\d/i.test(rawMessage)) {
+        return `翻译接口请求被拒绝：${rawMessage}`;
+      }
+
+      if (/http 5\d\d/i.test(rawMessage)) {
+        return `翻译接口暂时异常：${rawMessage}`;
+      }
+
+      if (/empty input/i.test(rawMessage)) {
+        return '请输入要翻译的内容。';
+      }
+
+      return `翻译失败：${rawMessage || '未知错误'}`;
+    }
+
+    async function requestTranslationChunk(text, sourceLang, targetLang) {
+      const cacheKey = buildTranslationCacheKey(text, sourceLang, targetLang);
+
+      if (translationCache[cacheKey]) {
+        return translationCache[cacheKey];
+      }
+
+      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${encodeURIComponent(sourceLang)}|${encodeURIComponent(targetLang)}`;
+      const response = await fetchWithTimeout(url);
+
+      let responseBody = '';
+
+      try {
+        responseBody = await response.text();
+      } catch (error) {
+        responseBody = '';
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} ${responseBody}`.trim());
+      }
+
+      let data;
+
+      try {
+        data = responseBody ? JSON.parse(responseBody) : null;
+      } catch (error) {
+        throw new Error('翻译接口返回了无法解析的结果');
+      }
+
+      const translated = data?.responseData?.translatedText?.trim();
+
+      if (/QUERY LENGTH LIMIT EXCEEDED/i.test(translated || responseBody)) {
+        throw new Error('QUERY LENGTH LIMIT EXCEEDED');
+      }
+
+      if (/authentication_failed|access denied/i.test(responseBody)) {
+        throw new Error(responseBody);
+      }
+
+      if (/ERR_ACCESS_DENIED/i.test(responseBody)) {
+        throw new Error(responseBody);
+      }
+
+      if (!translated) {
+        throw new Error('翻译接口没有返回有效内容');
+      }
+
+      translationCache[cacheKey] = translated;
+      persistTranslationCache();
+
+      return translated;
+    }
+
+    async function translateText(text, sourceLang, targetLang) {
+      const lines = text.replace(/\r/g, '').split('\n');
+
+      if (!lines.some((line) => line.trim())) {
+        throw new Error('Empty input');
+      }
+
+      const translatedLines = [];
+
+      for (const line of lines) {
+        const cleanLine = line.trim();
+
+        if (!cleanLine) {
+          translatedLines.push('');
+          continue;
+        }
+
+        const chunks = splitTranslationChunks(cleanLine);
+        const translatedChunks = [];
+
+        for (const chunk of chunks) {
+          translatedChunks.push(await requestTranslationChunk(chunk, sourceLang, targetLang));
+        }
+
+        translatedLines.push(translatedChunks.join(' '));
+      }
+
+      return translatedLines.join('\n');
+    }
+
+    async function translateSentence(text, lang) {
+      return translateText(text, 'en', lang);
+    }
+
+    async function runSimpleTranslation({ sourceElement, resultElement, statusElement, sourceLang, targetLang, waitingMessage, doneMessage, emptyMessage, buttonElement }) {
+      const rawText = normalizeText(sourceElement.value);
+
+      if (!rawText) {
+        setResultBox(resultElement, '', emptyMessage);
+        updateMiniStatus(statusElement, '请输入要翻译的内容。');
+        return;
+      }
+
+      buttonElement.disabled = true;
+      updateMiniStatus(statusElement, waitingMessage);
+
+      try {
+        const translated = await translateText(rawText, sourceLang, targetLang);
+        setResultBox(resultElement, translated, emptyMessage);
+        updateMiniStatus(statusElement, doneMessage);
+      } catch (error) {
+        setResultBox(resultElement, '', emptyMessage);
+        updateMiniStatus(statusElement, getTranslationErrorMessage(error));
+      } finally {
+        buttonElement.disabled = false;
+      }
+    }
+
+    async function translateAllSegments() {
+      if (!segments.length) {
+        updateStatus('没有可翻译的句子。');
+        return;
+      }
+
+      stopPlayback({ preserveActiveCard: true });
+      updateStatus('正在翻译，请稍候...');
+      translateBtn.disabled = true;
+      buildBtn.disabled = true;
+
+      for (const segment of segments) {
+        segment.translating = true;
+        segment.error = '';
+        renderCards();
+
+        try {
+          segment.translation = await translateSentence(segment.english, targetLanguage.value);
+        } catch (error) {
+          segment.translation = '';
+          segment.error = getTranslationErrorMessage(error);
+        } finally {
+          segment.translating = false;
+          renderCards();
+        }
+      }
+
+      translateBtn.disabled = false;
+      buildBtn.disabled = false;
+      updateStatus('翻译完成，可以点击任意句子朗读。');
+    }
+
+    async function buildSegmentsAndTranslate() {
+      const rawText = normalizeText(sourceText.value);
+      stopPlayback();
+      segments = parseDialogue(rawText);
+      clearActiveCard();
+      restoreLastDialogueSentence();
+      renderCards();
+
+      if (!segments.length) {
+        updateStatus('没有识别到有效句子。请使用 M: 或 W: 开头。');
+        return;
+      }
+
+      await translateAllSegments();
+    }
+
+    async function playAll() {
+      await playSequenceFromIndex(0, '正在顺序朗读全部句子...');
+    }
+
+    async function playFromCurrentSentence() {
+      if (!segments.length) {
+        updateStatus('请先生成句子。');
+        return;
+      }
+
+      if (synth.paused) {
+        synth.resume();
+        updateStatus('已继续朗读。');
+        return;
+      }
+
+      await playSequenceFromIndex(getCurrentSentenceIndex(), '正在继续顺序朗读...');
+    }
+
+    function pausePlayback() {
+      if (!synth) {
+        updateStatus('当前浏览器不支持语音朗读。');
+        return;
+      }
+
+      if (!synth.speaking || synth.paused) {
+        updateStatus('当前没有可暂停的朗读。');
+        return;
+      }
+
+      synth.pause();
+      updateStatus('已暂停朗读。');
+    }
+
+    async function playPreviousSentence() {
+      if (!segments.length) {
+        updateStatus('请先生成句子。');
+        return;
+      }
+
+      const currentIndex = getCurrentSentenceIndex();
+      const previousIndex = Math.max(0, currentIndex - 1);
+      await playSequenceFromIndex(previousIndex, `正在从第 ${previousIndex + 1} 句继续朗读...`);
+    }
+
+    async function loopNextSentence() {
+      if (!segments.length) {
+        updateStatus('请先生成句子。');
+        return;
+      }
+
+      const currentIndex = getCurrentSentenceIndex();
+      const nextIndex = Math.min(segments.length - 1, currentIndex + 1);
+      const segment = segments[nextIndex];
+
+      if (!segment) {
+        updateStatus('没有可循环朗读的下一句。');
+        return;
+      }
+
+      rememberCurrentSentence(segment.id);
+      await toggleSegmentLoop(segment);
+    }
+
+    function wait(milliseconds) {
+      return new Promise((resolve) => {
+        window.setTimeout(resolve, milliseconds);
+      });
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToBottom() {
+      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+    }
+
+    function toggleFloatingActions() {
+      floatingActions.classList.toggle('open');
+    }
+
+    function flashFloatingButton(button) {
+      if (!button || !button.classList.contains('floating-btn')) {
+        return;
+      }
+
+      button.classList.remove('flash-active');
+      void button.offsetWidth;
+      button.classList.add('flash-active');
+      window.setTimeout(() => {
+        button.classList.remove('flash-active');
+      }, 2000);
+    }
+
+    function stopPlayback(options = {}) {
+      const { preserveActiveCard = false } = options;
+
+      playbackSessionId += 1;
+      speechSessionId += 1;
+      sequencePlaybackActive = false;
+      playAllCancelled = true;
+      cancelSingleLoop();
+      synth.cancel();
+
+      if (!preserveActiveCard) {
+        clearActiveCard();
+      }
+
+      updateStatus('已停止朗读。');
+      if (playAllBtn) {
+        playAllBtn.disabled = false;
+      }
+      buildBtn.disabled = false;
+      translateBtn.disabled = false;
+      renderCards();
+    }
+
+    function loadVoices() {
+      voices = synth.getVoices();
+    }
+
+    buildBtn.addEventListener('click', buildSegmentsAndTranslate);
+    translateBtn.addEventListener('click', translateAllSegments);
+    saveDialogueBtn.addEventListener('click', saveCurrentDialogue);
+    playBtn.addEventListener('click', playFromCurrentSentence);
+    pauseBtn.addEventListener('click', pausePlayback);
+    previousBtn.addEventListener('click', playPreviousSentence);
+    nextLoopBtn.addEventListener('click', loopNextSentence);
+    floatingBallBtn.addEventListener('click', toggleFloatingActions);
+    scrollTopBtn.addEventListener('click', scrollToTop);
+    scrollBottomBtn.addEventListener('click', scrollToBottom);
+    floatingMenu.addEventListener('click', (event) => {
+      const button = event.target.closest('.floating-btn');
+
+      if (button) {
+        flashFloatingButton(button);
+      }
+    });
+    document.addEventListener('click', (event) => {
+      if (!floatingActions.contains(event.target)) {
+        floatingActions.classList.remove('open');
+      }
+    });
+    navButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        switchView(button.dataset.viewTarget);
+      });
+    });
+    cnToEnBtn.addEventListener('click', () => {
+      runSimpleTranslation({
+        sourceElement: cnSourceText,
+        resultElement: cnToEnResult,
+        statusElement: cnToEnStatus,
+        sourceLang: 'zh-CN',
+        targetLang: 'en',
+        waitingMessage: '正在翻译成英文，请稍候... ',
+        doneMessage: '翻译完成，可以朗读英文结果。',
+        emptyMessage: '这里会显示英文翻译结果。',
+        buttonElement: cnToEnBtn
+      });
+    });
+    cnToEnSpeakBtn.addEventListener('click', () => {
+      speakPlainEnglish(cnToEnResult.classList.contains('empty-result') ? '' : cnToEnResult.textContent, cnToEnStatus, '英文朗读完成。');
+    });
+    enToCnBtn.addEventListener('click', () => {
+      runSimpleTranslation({
+        sourceElement: enSourceText,
+        resultElement: enToCnResult,
+        statusElement: enToCnStatus,
+        sourceLang: 'en',
+        targetLang: 'zh-CN',
+        waitingMessage: '正在翻译成中文，请稍候... ',
+        doneMessage: '翻译完成。',
+        emptyMessage: '这里会显示中文翻译结果。',
+        buttonElement: enToCnBtn
+      });
+    });
+    enToCnSpeakBtn.addEventListener('click', () => {
+      speakPlainEnglish(enSourceText.value, enToCnStatus, '英文原文朗读完成。');
+    });
+    vocabLookupBtn.addEventListener('click', lookupAndSaveWords);
+    vocabDirectSaveBtn.addEventListener('click', directSaveWord);
+    clearVocabNotebookBtn.addEventListener('click', clearVocabNotebook);
+    vocabClearInputsBtn.addEventListener('click', clearVocabInputs);
+    closeVocabDetailBtn.addEventListener('click', () => {
+      vocabDetailDialog.close();
+    });
+    vocabDetailDialog.addEventListener('click', (event) => {
+      if (event.target === vocabDetailDialog) {
+        vocabDetailDialog.close();
+      }
+    });
+
+    if ('speechSynthesis' in window) {
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    } else {
+      updateStatus('当前浏览器不支持语音朗读，只能显示文本和翻译。');
+      updateMiniStatus(cnToEnStatus, '当前浏览器不支持语音朗读。');
+      updateMiniStatus(enToCnStatus, '当前浏览器不支持语音朗读。');
+    }
+
+    setResultBox(cnToEnResult, '', '这里会显示英文翻译结果。');
+    setResultBox(enToCnResult, '', '这里会显示中文翻译结果。');
+    loadSavedDialogues();
+    loadLastDialogueSentence();
+    loadTranslationCache();
+    loadVocabNotebook();
+    loadVocabLookupCache();
+    renderDialogueHistory();
+    restoreLastDialogueSentence();
+    renderCards();
+    renderVocabNotebook();
+  </script>
+</body>
+</html>
