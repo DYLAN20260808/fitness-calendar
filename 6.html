@@ -6,17 +6,20 @@
   <title>ENG Learning Toolkit</title>
   <style>
     :root {
-      --bg: linear-gradient(135deg, #f4efe7 0%, #efe4d2 45%, #d8e4ec 100%);
-      --panel: rgba(255, 252, 247, 0.88);
-      --panel-border: rgba(91, 73, 57, 0.14);
-      --text: #1f2a30;
-      --muted: #59666d;
-      --accent: #b55d32;
-      --accent-strong: #8b3c19;
-      --male: #275d8c;
-      --female: #a23f63;
-      --shadow: 0 20px 40px rgba(73, 52, 39, 0.14);
+      --bg: linear-gradient(135deg, #edf5ee 0%, #e6f0e3 48%, #dde9e4 100%);
+      --panel: rgba(248, 252, 247, 0.9);
+      --panel-border: rgba(104, 124, 111, 0.18);
+      --text: #24312b;
+      --muted: #5b6d64;
+      --accent: #78956f;
+      --accent-strong: #5e7a56;
+      --male: #5b7d78;
+      --female: #86717b;
+      --shadow: 0 18px 36px rgba(72, 93, 80, 0.12);
       --radius: 22px;
+      --button-height: 42px;
+      --button-height-compact: 36px;
+      --button-height-mobile: 34px;
       --floating-button-width: 140px;
       --floating-ball-size: 62px;
       --floating-actions-gap: 6px;
@@ -30,6 +33,7 @@
       margin: 0;
       min-height: 100vh;
       font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 12px;
       color: var(--text);
       background: var(--bg);
     }
@@ -46,14 +50,14 @@
       flex-wrap: wrap;
       margin-bottom: 18px;
       padding: 10px;
-      background: rgba(255, 252, 247, 0.72);
-      border: 1px solid rgba(91, 73, 57, 0.14);
+      background: rgba(244, 250, 243, 0.84);
+      border: 1px solid rgba(104, 124, 111, 0.18);
       border-radius: 20px;
       box-shadow: var(--shadow);
     }
 
     .nav-btn {
-      background: rgba(31, 42, 48, 0.08);
+      background: rgba(89, 113, 101, 0.12);
       color: var(--text);
       padding: 12px 18px;
     }
@@ -61,7 +65,7 @@
     .nav-btn.active {
       background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
       color: #fff;
-      box-shadow: 0 14px 24px rgba(139, 60, 25, 0.2);
+      box-shadow: 0 14px 24px rgba(94, 122, 86, 0.24);
     }
 
     .hero,
@@ -87,13 +91,13 @@
       inset: auto -70px -90px auto;
       width: 220px;
       height: 220px;
-      background: radial-gradient(circle, rgba(181, 93, 50, 0.18), rgba(181, 93, 50, 0));
+      background: radial-gradient(circle, rgba(120, 149, 111, 0.2), rgba(120, 149, 111, 0));
       pointer-events: none;
     }
 
     h1 {
       margin: 0 0 10px;
-      font-size: clamp(28px, 4vw, 42px);
+      font-size: clamp(24px, 4vw, 38px);
       line-height: 1.05;
       letter-spacing: 0.02em;
     }
@@ -136,8 +140,8 @@
       min-height: 220px;
       padding: 18px;
       border-radius: 18px;
-      background: rgba(255, 255, 255, 0.72);
-      border: 1px solid rgba(91, 73, 57, 0.14);
+      background: rgba(252, 255, 251, 0.8);
+      border: 1px solid rgba(104, 124, 111, 0.18);
       line-height: 1.8;
       white-space: pre-wrap;
     }
@@ -156,7 +160,7 @@
     .mini-status {
       padding: 12px 14px;
       border-radius: 14px;
-      background: rgba(39, 93, 140, 0.08);
+      background: rgba(91, 125, 120, 0.1);
       color: var(--muted);
       min-height: 48px;
       display: flex;
@@ -178,7 +182,7 @@
     label {
       display: block;
       margin-bottom: 8px;
-      font-size: 14px;
+      font-size: 10px;
       font-weight: 700;
       color: var(--muted);
     }
@@ -187,12 +191,12 @@
     select,
     input {
       width: 100%;
-      border: 1px solid rgba(95, 85, 73, 0.18);
+      border: 1px solid rgba(113, 130, 119, 0.2);
       border-radius: 16px;
       padding: 14px 16px;
       font: inherit;
       color: var(--text);
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(251, 255, 250, 0.88);
       outline: none;
       transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
     }
@@ -203,6 +207,10 @@
       line-height: 1.65;
     }
 
+    #sourceText {
+      min-height: 180px;
+    }
+
     .compact-textarea {
       min-height: 120px;
     }
@@ -210,14 +218,34 @@
     textarea:focus,
     select:focus,
     input:focus {
-      border-color: rgba(181, 93, 50, 0.55);
-      box-shadow: 0 0 0 4px rgba(181, 93, 50, 0.12);
+      border-color: rgba(120, 149, 111, 0.55);
+      box-shadow: 0 0 0 4px rgba(120, 149, 111, 0.14);
     }
 
     .controls {
-      display: grid;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: flex-end;
       gap: 12px;
       margin-top: 14px;
+    }
+
+    .controls > * {
+      flex: 1 1 auto;
+    }
+
+    .dialogue-meta-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(88px, 0.7fr) minmax(110px, 0.9fr);
+      gap: 12px;
+      align-items: end;
+    }
+
+    .dialogue-action-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
     }
 
     .grid-two {
@@ -229,8 +257,10 @@
     button {
       border: 0;
       border-radius: 999px;
-      padding: 13px 18px;
+      min-height: var(--button-height);
+      padding: 10px 16px;
       font: inherit;
+      line-height: 1.2;
       font-weight: 700;
       cursor: pointer;
       transition: transform 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease;
@@ -243,16 +273,16 @@
     button.primary {
       background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
       color: #fff;
-      box-shadow: 0 14px 24px rgba(139, 60, 25, 0.25);
+      box-shadow: 0 14px 24px rgba(94, 122, 86, 0.26);
     }
 
     button.secondary {
-      background: rgba(39, 93, 140, 0.1);
+      background: rgba(91, 125, 120, 0.12);
       color: var(--male);
     }
 
     button.ghost {
-      background: rgba(31, 42, 48, 0.08);
+      background: rgba(89, 113, 101, 0.1);
       color: var(--text);
     }
 
@@ -270,10 +300,18 @@
       margin-bottom: 16px;
     }
 
+    .stats-status-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
     .status {
+      flex: 1 1 auto;
       padding: 12px 14px;
       border-radius: 14px;
-      background: rgba(39, 93, 140, 0.08);
+      background: rgba(91, 125, 120, 0.1);
       min-height: 48px;
       display: flex;
       align-items: center;
@@ -282,16 +320,18 @@
     .stats {
       display: flex;
       gap: 12px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
+      align-items: center;
+      overflow-x: auto;
       margin-bottom: 16px;
     }
 
     .stat {
       padding: 10px 14px;
       border-radius: 16px;
-      background: rgba(31, 42, 48, 0.06);
+      background: rgba(89, 113, 101, 0.08);
       color: var(--muted);
-      font-size: 14px;
+      font-size: 10px;
     }
 
     .cards {
@@ -300,17 +340,18 @@
     }
 
     .card {
-      border: 1px solid rgba(91, 73, 57, 0.14);
+      border: 1px solid rgba(104, 124, 111, 0.18);
       border-radius: 20px;
-      background: rgba(255, 255, 255, 0.78);
+      background: rgba(251, 255, 250, 0.84);
       padding: 16px;
+      cursor: pointer;
       transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
     }
 
     .card:hover {
       transform: translateY(-2px);
-      border-color: rgba(181, 93, 50, 0.35);
-      box-shadow: 0 10px 22px rgba(73, 52, 39, 0.12);
+      border-color: rgba(120, 149, 111, 0.35);
+      box-shadow: 0 10px 22px rgba(72, 93, 80, 0.12);
     }
 
     .card.active {
@@ -321,10 +362,12 @@
 
     .card-header {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
       margin-bottom: 10px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
     }
 
     .badge {
@@ -333,9 +376,10 @@
       gap: 8px;
       border-radius: 999px;
       padding: 7px 12px;
-      font-size: 13px;
+      font-size: 9px;
       font-weight: 700;
       color: #fff;
+      white-space: nowrap;
     }
 
     .badge.m {
@@ -348,21 +392,77 @@
 
     .card-index {
       color: var(--muted);
-      font-size: 13px;
+      font-size: 9px;
+      white-space: nowrap;
     }
 
     .sentence-actions {
       display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
+      gap: 8px;
+      flex-wrap: nowrap;
       justify-content: flex-end;
-      margin-top: 12px;
+      margin-left: auto;
     }
 
     .history-panel {
+      position: relative;
       margin-top: 18px;
       padding-top: 18px;
-      border-top: 1px dashed rgba(91, 73, 57, 0.18);
+      border-top: 1px dashed rgba(104, 124, 111, 0.2);
+    }
+
+    .dialogue-config-trigger {
+      width: auto;
+      position: absolute;
+      top: 14px;
+      right: 0;
+      z-index: 1;
+    }
+
+    .history-summary-title {
+      display: inline-flex;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .dialogue-config-content {
+      display: grid;
+      gap: 14px;
+    }
+
+    .history-summary {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      padding-right: 142px;
+      cursor: pointer;
+      list-style: none;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .history-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .history-summary::after {
+      content: "+";
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(31, 42, 48, 0.08);
+      color: var(--text);
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .history-panel[open] .history-summary::after {
+      content: "-";
     }
 
     .history-save-row {
@@ -379,31 +479,71 @@
       margin-top: 12px;
     }
 
+    .history-extra-panel {
+      margin-top: 6px;
+      border-top: 1px dashed rgba(104, 124, 111, 0.2);
+      padding-top: 10px;
+    }
+
+    .history-extra-summary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      list-style: none;
+      color: var(--accent-strong);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(120, 149, 111, 0.14);
+    }
+
+    .history-extra-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .history-extra-summary::after {
+      content: "+";
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    .history-extra-panel[open] .history-extra-summary::after {
+      content: "-";
+    }
+
+    .history-extra-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
     .vocab-list {
       display: grid;
       gap: 14px;
     }
 
     .vocab-card {
-      border: 1px solid rgba(91, 73, 57, 0.14);
+      border: 1px solid rgba(104, 124, 111, 0.18);
       border-radius: 20px;
-      background: rgba(255, 255, 255, 0.82);
+      background: rgba(250, 255, 249, 0.84);
       padding: 14px;
-      box-shadow: 0 10px 20px rgba(73, 52, 39, 0.08);
+      box-shadow: 0 10px 20px rgba(72, 93, 80, 0.08);
     }
 
     .vocab-card-main {
       width: 100%;
       border: 0;
       border-radius: 16px;
-      background: rgba(39, 93, 140, 0.06);
+      background: rgba(91, 125, 120, 0.08);
       padding: 14px;
       text-align: left;
       color: var(--text);
     }
 
     .vocab-card-main:hover {
-      box-shadow: 0 8px 18px rgba(39, 93, 140, 0.14);
+      box-shadow: 0 8px 18px rgba(91, 125, 120, 0.16);
     }
 
     .vocab-card-header {
@@ -416,25 +556,25 @@
 
     .vocab-word {
       margin: 0;
-      font-size: 24px;
+      font-size: 20px;
       line-height: 1.1;
     }
 
     .vocab-phonetic {
       margin-top: 4px;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 10px;
     }
 
     .vocab-section {
       margin-top: 12px;
       padding-top: 12px;
-      border-top: 1px dashed rgba(91, 73, 57, 0.18);
+      border-top: 1px dashed rgba(104, 124, 111, 0.2);
     }
 
     .vocab-section-title {
       margin: 0 0 8px;
-      font-size: 14px;
+      font-size: 10px;
       font-weight: 700;
       color: var(--accent-strong);
     }
@@ -456,7 +596,7 @@
       color: var(--female);
       padding: 10px 14px;
       border-radius: 12px;
-      font-size: 14px;
+      font-size: 10px;
       font-weight: 700;
     }
 
@@ -476,7 +616,7 @@
     }
 
     .dialog-panel {
-      background: rgba(255, 252, 247, 0.98);
+      background: rgba(248, 252, 247, 0.98);
       border: 1px solid var(--panel-border);
       border-radius: 24px;
       box-shadow: var(--shadow);
@@ -493,7 +633,7 @@
 
     .dialog-title {
       margin: 0;
-      font-size: 28px;
+      font-size: 24px;
       line-height: 1.1;
     }
 
@@ -519,9 +659,10 @@
       display: flex;
       flex-wrap: nowrap;
       justify-content: flex-end;
-      align-items: flex-end;
+      align-items: center;
       gap: var(--floating-actions-gap);
       max-width: calc(100vw - 36px - var(--floating-ball-size) - var(--floating-actions-gap));
+      width: auto;
       overflow-x: auto;
       overflow-y: hidden;
       visibility: hidden;
@@ -534,7 +675,10 @@
     .floating-group {
       width: auto;
       display: flex;
+      flex-direction: row;
       flex-wrap: nowrap;
+      align-items: center;
+      flex: 0 0 auto;
       gap: 10px;
       padding: 0;
       justify-content: flex-end;
@@ -557,16 +701,16 @@
       white-space: nowrap;
       padding: 12px 10px;
       border-radius: 16px;
-      background: rgba(255, 252, 247, 0.92);
+      background: rgba(248, 252, 247, 0.94);
       color: var(--text);
-      border: 1px solid rgba(91, 73, 57, 0.14);
-      box-shadow: 0 12px 24px rgba(73, 52, 39, 0.16);
+      border: 1px solid rgba(104, 124, 111, 0.18);
+      box-shadow: 0 12px 24px rgba(72, 93, 80, 0.16);
       -webkit-backdrop-filter: blur(14px);
       backdrop-filter: blur(14px);
     }
 
     .floating-btn:hover {
-      box-shadow: 0 14px 28px rgba(73, 52, 39, 0.22);
+      box-shadow: 0 14px 28px rgba(72, 93, 80, 0.2);
     }
 
     .floating-btn.flash-active {
@@ -575,15 +719,15 @@
 
     @keyframes floatingButtonFlash {
       0%, 100% {
-        background: rgba(255, 252, 247, 0.92);
+        background: rgba(248, 252, 247, 0.94);
         color: var(--text);
-        box-shadow: 0 12px 24px rgba(73, 52, 39, 0.16);
+        box-shadow: 0 12px 24px rgba(72, 93, 80, 0.16);
       }
 
       50% {
-        background: linear-gradient(135deg, #dff5c7 0%, #a7d66f 100%);
-        color: #1d3311;
-        box-shadow: 0 16px 28px rgba(111, 156, 58, 0.34);
+        background: linear-gradient(135deg, #dcecd7 0%, #bcd4b4 100%);
+        color: #2b3b2e;
+        box-shadow: 0 16px 28px rgba(120, 149, 111, 0.28);
       }
     }
 
@@ -598,8 +742,8 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 26px;
-      box-shadow: 0 18px 30px rgba(139, 60, 25, 0.28);
+      font-size: 22px;
+      box-shadow: 0 18px 30px rgba(94, 122, 86, 0.28);
     }
 
     .floating-ball-label {
@@ -609,13 +753,35 @@
 
     .history-row {
       display: grid;
-      grid-template-columns: 1fr auto auto;
+      grid-template-columns: 1fr auto auto auto;
       gap: 10px;
       align-items: center;
       padding: 10px;
-      border: 1px solid rgba(91, 73, 57, 0.14);
+      border: 1px solid rgba(104, 124, 111, 0.18);
       border-radius: 16px;
-      background: rgba(255, 255, 255, 0.66);
+      background: rgba(249, 255, 248, 0.78);
+      cursor: grab;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    }
+
+    .history-row.active {
+      border-color: rgba(120, 149, 111, 0.42);
+      box-shadow: 0 0 0 4px rgba(120, 149, 111, 0.14);
+      background: rgba(237, 246, 233, 0.95);
+    }
+
+    .history-row.active .history-load {
+      background: rgba(120, 149, 111, 0.14);
+    }
+
+    .history-row.dragging {
+      opacity: 0.58;
+      cursor: grabbing;
+    }
+
+    .history-row.drop-target {
+      border-color: rgba(108, 171, 63, 0.72);
+      box-shadow: 0 0 0 3px rgba(108, 171, 63, 0.16);
     }
 
     .history-load {
@@ -626,6 +792,7 @@
       width: 100%;
       text-align: left;
       border-radius: 14px;
+      min-height: var(--button-height);
       padding: 10px 12px;
       background: rgba(39, 93, 140, 0.08);
       color: var(--text);
@@ -640,7 +807,7 @@
       border-radius: 999px;
       background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
       color: #fff;
-      font-size: 14px;
+      font-size: 10px;
       font-weight: 700;
       flex-shrink: 0;
     }
@@ -651,7 +818,7 @@
 
     .history-title {
       display: block;
-      font-size: 14px;
+      font-size: 10px;
       font-weight: 700;
       color: var(--text);
     }
@@ -659,7 +826,7 @@
     .history-preview {
       display: block;
       margin-top: 3px;
-      font-size: 12px;
+      font-size: 8px;
       color: var(--muted);
       white-space: nowrap;
       overflow: hidden;
@@ -667,52 +834,73 @@
     }
 
     .delete-btn {
+      min-height: var(--button-height-compact);
       padding: 10px 14px;
       border-radius: 12px;
       background: rgba(162, 63, 99, 0.1);
       color: var(--female);
-      font-size: 14px;
+      font-size: 10px;
       font-weight: 700;
     }
 
     .rename-btn {
+      min-height: var(--button-height-compact);
       padding: 10px 14px;
       border-radius: 12px;
-      background: rgba(181, 93, 50, 0.1);
+      background: rgba(120, 149, 111, 0.14);
       color: var(--accent-strong);
-      font-size: 14px;
+      font-size: 10px;
       font-weight: 700;
+    }
+
+    .read-btn {
+      min-height: var(--button-height-compact);
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(39, 93, 140, 0.1);
+      color: var(--male);
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .read-btn.is-read {
+      background: linear-gradient(135deg, #9fd16d 0%, #6cab3f 100%);
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(108, 171, 63, 0.22);
     }
 
     .speak-btn {
+      min-height: var(--button-height-compact);
       padding: 10px 14px;
       border-radius: 12px;
-      background: rgba(181, 93, 50, 0.1);
+      background: rgba(120, 149, 111, 0.14);
       color: var(--accent-strong);
-      font-size: 14px;
+      font-size: 10px;
       font-weight: 700;
+      white-space: nowrap;
     }
 
     .speak-btn:hover {
-      box-shadow: 0 8px 18px rgba(139, 60, 25, 0.16);
+      box-shadow: 0 8px 18px rgba(94, 122, 86, 0.18);
     }
 
     .speak-btn.looping {
-      background: linear-gradient(135deg, var(--male), #173a56);
+      background: linear-gradient(135deg, var(--male), #47655f);
       color: #fff;
-      box-shadow: 0 8px 18px rgba(39, 93, 140, 0.2);
+      box-shadow: 0 8px 18px rgba(91, 125, 120, 0.22);
     }
 
     .english {
       margin: 0;
-      font-size: 18px;
+      font-size: 14px;
       line-height: 1.6;
     }
 
     .translation {
       margin: 10px 0 0;
       padding-top: 10px;
-      border-top: 1px dashed rgba(91, 73, 57, 0.18);
+      border-top: 1px dashed rgba(104, 124, 111, 0.2);
       color: var(--muted);
       line-height: 1.7;
     }
@@ -725,17 +913,139 @@
       padding: 34px 18px;
       text-align: center;
       color: var(--muted);
-      border: 1px dashed rgba(91, 73, 57, 0.2);
+      border: 1px dashed rgba(104, 124, 111, 0.22);
       border-radius: 20px;
-      background: rgba(255, 255, 255, 0.55);
+      background: rgba(248, 252, 247, 0.72);
     }
 
     .note {
       margin-top: 14px;
-      font-size: 13px;
+      font-size: 9px;
+    }
+
+    .nav,
+    .translator-meta,
+    .stats,
+    .toolbar,
+    .card-header,
+    .sentence-actions,
+    .vocab-card-header,
+    .dialog-header,
+    .floating-menu,
+    .floating-group,
+    .floating-group.single-column {
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .layout,
+    .history-save-row {
+      grid-template-columns: 1fr;
+    }
+
+    .dialogue-action-row {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card-header {
+      flex-wrap: nowrap;
+      align-items: center;
+      overflow-x: auto;
+    }
+
+    .sentence-actions {
+      width: auto;
+      flex-wrap: nowrap;
+      justify-content: flex-end;
+      margin-left: auto;
+    }
+
+    .sentence-actions,
+    .floating-group {
+      justify-content: flex-start;
+      margin-left: 0;
+    }
+
+    .card-header,
+    .sentence-actions,
+    .history-row,
+    .history-load,
+    .nav,
+    .translator-meta,
+    .stats,
+    .toolbar,
+    .vocab-card-header,
+    .dialog-header {
+      width: 100%;
+    }
+
+    .nav-btn,
+    .history-save-row button,
+    .read-btn,
+    .rename-btn,
+    .delete-btn,
+    .speak-btn,
+    .floating-btn,
+    .danger-btn,
+    .dialog-close {
+      width: 100%;
+    }
+
+    .dialogue-action-row button,
+    .grid-two button,
+    .nav-btn,
+    .read-btn,
+    .rename-btn,
+    .delete-btn,
+    .speak-btn,
+    .floating-btn,
+    .danger-btn,
+    .dialog-close {
+      width: auto;
+    }
+
+    .card-header,
+    .sentence-actions,
+    .floating-menu,
+    .floating-group {
+      gap: 10px;
+    }
+
+    .floating-actions {
+      left: auto;
+      right: 18px;
+      bottom: 12px;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .floating-menu {
+      max-width: calc(100vw - 36px - var(--floating-ball-size) - var(--floating-actions-gap));
+      width: auto;
+      overflow-x: auto;
+      overflow-y: auto;
+      transform: translateX(10px) scale(0.96);
+    }
+
+    .floating-actions.open .floating-menu {
+      transform: translateX(0) scale(1);
+    }
+
+    .floating-ball {
+      align-self: center;
     }
 
     @media (max-width: 900px) {
+      button {
+        min-height: var(--button-height-mobile);
+        padding: 9px 12px;
+      }
+
       .layout {
         grid-template-columns: 1fr;
       }
@@ -744,13 +1054,233 @@
         min-height: 250px;
       }
 
+      .history-save-row,
+      .dialog-header,
+      .translator-meta,
+      .nav {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .history-load,
+      .vocab-card-header,
+      .sentence-actions {
+        width: 100%;
+      }
+
+      .history-row {
+        grid-template-columns: minmax(0, 1fr) auto auto auto;
+        gap: 8px;
+      }
+
+      .history-load {
+        grid-template-columns: auto minmax(0, 1fr);
+        text-align: left;
+        min-height: var(--button-height-mobile);
+        padding: 9px 12px;
+      }
+
+      .read-btn,
+      .rename-btn,
+      .delete-btn {
+        width: auto;
+        min-height: var(--button-height-mobile);
+        padding: 9px 12px;
+        font-size: 9px;
+        white-space: nowrap;
+      }
+
+      .vocab-card-header,
+      .dialog-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .card-header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+      }
+
+      .history-load,
+      .sentence-actions,
+      .history-save-row {
+        gap: 10px;
+      }
+
+      .danger-btn,
+      .history-save-row button {
+        width: 100%;
+      }
+
+      .sentence-actions {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: flex-end;
+        margin-left: auto;
+      }
+
+      .sentence-actions button {
+        width: auto;
+        min-width: 0;
+        flex: 0 1 auto;
+        white-space: nowrap;
+      }
+
+      .grid-two {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .grid-two button {
+        width: 100%;
+        min-width: 0;
+        min-height: var(--button-height-mobile);
+        padding: 9px 12px;
+        font-size: 10px;
+      }
+
+      .history-save-row {
+        grid-template-columns: 1fr auto;
+        align-items: end;
+      }
+
+      .history-save-row button {
+        width: auto;
+        min-height: var(--button-height-mobile);
+        padding: 9px 12px;
+        white-space: nowrap;
+      }
+
+      .page {
+        padding: 18px 12px 110px;
+      }
+
+      .dialogue-meta-row {
+        grid-template-columns: minmax(0, 1.15fr) minmax(76px, 0.65fr) minmax(96px, 0.8fr);
+        gap: 8px;
+      }
+
+      .dialogue-meta-row label {
+        margin-bottom: 6px;
+        font-size: 9px;
+      }
+
+      .dialogue-meta-row select,
+      .dialogue-meta-row input {
+        padding: 11px 10px;
+        font-size: 10px;
+      }
+
+      .nav {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: stretch;
+      }
+
+      .nav-btn {
+        width: 100%;
+      }
+
+      .panel,
+      .hero,
+      .dialog-panel {
+        padding: 16px;
+      }
+
+      .dialog-title,
+      .vocab-word {
+        font-size: 18px;
+      }
+
       .floating-menu {
-        max-width: calc(100vw - 24px - var(--floating-ball-size) - var(--floating-actions-gap));
+        max-width: calc(100vw - 24px);
+        width: auto;
+        order: initial;
+        overflow-x: auto;
+        padding-bottom: 2px;
+      }
+
+      .floating-actions {
+        left: auto;
+        right: 12px;
+        bottom: 12px;
+        gap: 8px;
+        flex-direction: row;
+        align-items: center;
+      }
+
+      .floating-group {
+        gap: 8px;
       }
 
       .floating-btn {
         width: auto;
+        min-height: var(--button-height-mobile);
+        padding: 9px 12px;
+        font-size: 10px;
       }
+
+      .floating-ball {
+        width: 56px;
+        height: 56px;
+        min-width: 56px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 26px;
+      }
+
+      textarea,
+      select,
+      input,
+      .result-box {
+        padding: 12px 14px;
+      }
+
+      .history-load {
+        grid-template-columns: auto minmax(0, 1fr);
+        text-align: left;
+      }
+
+      .history-number {
+        margin: 0;
+      }
+
+      .dialogue-meta-row {
+        grid-template-columns: minmax(0, 1fr) 72px 90px;
+        gap: 6px;
+      }
+
+      .dialogue-meta-row label {
+        font-size: 8px;
+      }
+
+      .dialogue-meta-row select,
+      .dialogue-meta-row input {
+        padding: 10px 8px;
+        font-size: 9px;
+      }
+
+      .grid-two button,
+      .history-save-row button,
+      .sentence-actions button {
+        min-height: var(--button-height-mobile);
+        padding: 8px 10px;
+        font-size: 9px;
+      }
+
+      .history-save-row {
+        grid-template-columns: 1fr;
+      }
+
+      .history-save-row button {
+        width: 100%;
+      }
+
     }
   </style>
 </head>
@@ -763,74 +1293,26 @@
       <button class="nav-btn" type="button" data-view-target="vocabView">单词本</button>
     </nav>
 
-    <section class="hero">
-      <h1>英语学习工具页</h1>
-      <p>一个页面里放三种功能：长对话逐句朗读、中文翻译成英文、英文翻译成中文。顶部导航可直接切换。</p>
-    </section>
-
     <section id="dialogueView" class="view active">
       <div class="layout">
         <section class="panel">
-          <label for="sourceText">原始对话</label>
-          <textarea id="sourceText" spellcheck="false">M: Hello, welcome back. How was your trip?
-W: It was great. I met a lot of interesting people.
-M: That sounds exciting! Did you take many photos?
-W: Yes, I did. I can show them to you later.
-M: Perfect. Let's grab a coffee first.
-W: Sure. That sounds nice.</textarea>
-
-          <div class="controls">
-            <div>
-              <label for="targetLanguage">翻译语言</label>
-              <select id="targetLanguage">
-                <option value="zh-CN" selected>中文（简体）</option>
-                <option value="zh-TW">中文（繁体）</option>
-                <option value="ja">日语</option>
-                <option value="ko">韩语</option>
-              </select>
-            </div>
-
-            <div class="grid-two">
-              <div>
-                <label for="speechRate">语速</label>
-                <input id="speechRate" type="number" min="0.6" max="1.4" step="0.1" value="0.95">
-              </div>
-              <div>
-                <label for="pauseMs">每句间隔毫秒</label>
-                <input id="pauseMs" type="number" min="0" max="3000" step="100" value="350">
-              </div>
-            </div>
-
-            <div class="grid-two">
-              <button id="buildBtn" class="primary">生成句子和翻译</button>
-              <button id="translateBtn" class="ghost">重新翻译</button>
-            </div>
-
-            <div class="history-save-row">
-              <div>
-                <label for="dialogueName">记录名称</label>
-                <input id="dialogueName" type="text" maxlength="60" placeholder="例如：机场问路对话、Lesson 3">
-              </div>
-              <button id="saveDialogueBtn" class="secondary" type="button">保存当前对话</button>
-            </div>
-          </div>
-
-          <p class="note">格式示例：每行以 M: 或 W: 开头。也支持一行里有多句，系统会自动按标点继续拆分。</p>
-
-          <div class="history-panel">
-            <label>已保存对话记录</label>
+          <details class="history-panel" open>
+            <summary class="history-summary">
+              <span class="history-summary-title">已保存对话记录</span>
+            </summary>
+            <button id="openDialogueConfigBtn" class="secondary dialogue-config-trigger" type="button">参数和操作区</button>
             <div id="dialogueHistory" class="history-list"></div>
-          </div>
+          </details>
         </section>
 
         <section class="panel">
-          <div class="stats">
-            <div class="stat">句子数：<span id="sentenceCount">0</span></div>
-            <div class="stat">男声句数：<span id="maleCount">0</span></div>
-            <div class="stat">女声句数：<span id="femaleCount">0</span></div>
+          <div class="stats-status-row">
+            <div class="stats">
+              <div class="stat">句子数：<span id="sentenceCount">0</span></div>
+              <div class="stat">男声句数：<span id="maleCount">0</span></div>
+              <div class="stat">女声句数：<span id="femaleCount">0</span></div>
+            </div>
           </div>
-
-          <div id="status" class="status">等待生成。</div>
           <div id="cards" class="cards" aria-live="polite"></div>
         </section>
       </div>
@@ -929,6 +1411,7 @@ W: Sure. That sounds nice.</textarea>
         <button id="pauseBtn" class="floating-btn" type="button">暂停</button>
         <button id="previousBtn" class="floating-btn" type="button">上句</button>
         <button id="nextLoopBtn" class="floating-btn" type="button">下句</button>
+        <button id="loopCountBtn" class="floating-btn" type="button">循环次数5</button>
       </div>
       <div class="floating-group single-column">
         <button id="scrollTopBtn" class="floating-btn" type="button">置顶</button>
@@ -939,6 +1422,59 @@ W: Sure. That sounds nice.</textarea>
       <span class="floating-ball-label">+</span>
     </button>
   </div>
+
+  <dialog id="dialogueConfigDialog" class="dialog-backdrop">
+    <div class="dialog-panel">
+      <div class="dialog-header">
+        <div>
+          <h2 class="dialog-title">参数和操作区</h2>
+        </div>
+        <button id="closeDialogueConfigBtn" class="dialog-close" type="button">关闭</button>
+      </div>
+
+      <div class="dialogue-config-content">
+        <div>
+          <label for="sourceText">原始对话</label>
+          <textarea id="sourceText" spellcheck="false">M: Hello, welcome back. How was your trip?
+W: It was great. I met a lot of interesting people.
+M: That sounds exciting! Did you take many photos?
+W: Yes, I did. I can show them to you later.
+M: Perfect. Let's grab a coffee first.
+W: Sure. That sounds nice.</textarea>
+        </div>
+
+        <div class="controls">
+          <div class="dialogue-meta-row">
+            <div>
+              <label for="targetLanguage">翻译语言</label>
+              <select id="targetLanguage">
+                <option value="zh-CN" selected>中文（简体）</option>
+                <option value="zh-TW">中文（繁体）</option>
+                <option value="ja">日语</option>
+                <option value="ko">韩语</option>
+              </select>
+            </div>
+            <div>
+              <label for="speechRate">语速</label>
+              <input id="speechRate" type="number" min="0.6" max="1.4" step="0.1" value="0.95">
+            </div>
+            <div>
+              <label for="pauseMs">每句间隔毫秒</label>
+              <input id="pauseMs" type="number" min="0" max="3000" step="100" value="350">
+            </div>
+          </div>
+
+          <div class="dialogue-action-row">
+            <button id="buildBtn" class="primary">生成句子/翻译</button>
+            <button id="translateBtn" class="ghost">重新翻译</button>
+            <button id="saveDialogueBtn" class="secondary" type="button">保存当前对话</button>
+          </div>
+        </div>
+
+        <p class="note">格式示例：每行以 M: 或 W: 开头。也支持一行里有多句，系统会自动按标点继续拆分。</p>
+      </div>
+    </div>
+  </dialog>
 
   <dialog id="vocabDetailDialog" class="dialog-backdrop">
     <div class="dialog-panel">
@@ -970,6 +1506,9 @@ W: Sure. That sounds nice.</textarea>
   <script>
     const navButtons = document.querySelectorAll('.nav-btn');
     const views = document.querySelectorAll('.view');
+    const openDialogueConfigBtn = document.getElementById('openDialogueConfigBtn');
+    const dialogueConfigDialog = document.getElementById('dialogueConfigDialog');
+    const closeDialogueConfigBtn = document.getElementById('closeDialogueConfigBtn');
     const sourceText = document.getElementById('sourceText');
     const targetLanguage = document.getElementById('targetLanguage');
     const speechRate = document.getElementById('speechRate');
@@ -982,6 +1521,7 @@ W: Sure. That sounds nice.</textarea>
     const pauseBtn = document.getElementById('pauseBtn');
     const previousBtn = document.getElementById('previousBtn');
     const nextLoopBtn = document.getElementById('nextLoopBtn');
+    const loopCountBtn = document.getElementById('loopCountBtn');
     const playAllBtn = document.getElementById('playAllBtn');
     const floatingActions = document.getElementById('floatingActions');
     const floatingBallBtn = document.getElementById('floatingBallBtn');
@@ -1037,13 +1577,18 @@ W: Sure. That sounds nice.</textarea>
     let playbackSessionId = 0;
     let speechSessionId = 0;
     let sequencePlaybackActive = false;
+    let singleLoopSessionId = 0;
     let loopingSegmentId = null;
+    let singleLoopPaused = false;
+    let singleLoopRepeatCount = 5;
     let activeCardId = null;
     let savedDialogues = [];
+    let selectedHistoryId = null;
     let lastDialogueSentence = null;
     let translationCache = {};
     let savedWords = [];
     let vocabLookupCache = {};
+    let draggedHistoryId = null;
 
     // 尽量通过常见语音名称关键词去匹配男声和女声。
     // 浏览器对“性别”没有统一标准，所以这里使用可读性较好的启发式匹配。
@@ -1051,7 +1596,9 @@ W: Sure. That sounds nice.</textarea>
     const femaleHints = ['zira', 'aria', 'samantha', 'female', 'woman', 'jenny', 'ava', 'emma'];
 
     function updateStatus(message) {
-      status.textContent = message;
+      if (status) {
+        status.textContent = message;
+      }
     }
 
     function updateMiniStatus(element, message) {
@@ -1549,6 +2096,13 @@ W: Sure. That sounds nice.</textarea>
         && record.savedSegments.some((item) => Boolean((item.translation || '').trim() || (item.error || '').trim()));
     }
 
+    function setSelectedHistoryRow(historyId) {
+      selectedHistoryId = historyId || null;
+      document.querySelectorAll('.history-row').forEach((row) => {
+        row.classList.toggle('active', row.dataset.historyId === selectedHistoryId);
+      });
+    }
+
     async function loadSavedDialogueRecord(historyId) {
       const record = savedDialogues.find((item) => item.id === historyId);
 
@@ -1556,10 +2110,13 @@ W: Sure. That sounds nice.</textarea>
         return;
       }
 
-        stopPlayback();
+      setSelectedHistoryRow(historyId);
+      stopPlayback();
 
       sourceText.value = record.text;
-      dialogueName.value = typeof record.name === 'string' ? record.name : '';
+      if (dialogueName) {
+        dialogueName.value = typeof record.name === 'string' ? record.name : '';
+      }
       if (record.targetLanguage) {
         targetLanguage.value = record.targetLanguage;
       }
@@ -1573,7 +2130,7 @@ W: Sure. That sounds nice.</textarea>
         return;
       }
 
-      updateStatus('已加载记录，正在自动生成句子和翻译...');
+      updateStatus('已加载记录，正在自动生成句子/翻译...');
       await buildSegmentsAndTranslate();
     }
 
@@ -1583,8 +2140,8 @@ W: Sure. That sounds nice.</textarea>
         return;
       }
 
-      dialogueHistory.innerHTML = savedDialogues.map((item, index) => `
-        <div class="history-row" data-history-id="${item.id}">
+      const renderHistoryRow = (item, index) => `
+        <div class="history-row ${selectedHistoryId === item.id ? 'active' : ''}" data-history-id="${item.id}" draggable="true" aria-label="拖动调整第 ${index + 1} 条对话顺序">
           <button class="history-load" type="button" data-action="load-dialogue" data-history-id="${item.id}" aria-label="加载第 ${index + 1} 条对话">
             <span class="history-number">${index + 1}</span>
             <span class="history-text">
@@ -1592,10 +2149,34 @@ W: Sure. That sounds nice.</textarea>
               <span class="history-preview">${escapeHtml(getDialoguePreview(item.text))}</span>
             </span>
           </button>
+          <button class="read-btn ${item.read ? 'is-read' : ''}" type="button" data-action="toggle-read" data-history-id="${item.id}">${item.read ? '已读' : '已读'}</button>
           <button class="rename-btn" type="button" data-action="rename-dialogue" data-history-id="${item.id}">重命名</button>
           <button class="delete-btn" type="button" data-action="delete-dialogue" data-history-id="${item.id}">删除</button>
         </div>
-      `).join('');
+      `;
+
+      const unreadRows = savedDialogues
+        .map((item, index) => ({ item, index }))
+        .filter(({ item }) => !item.read)
+        .map(({ item, index }) => renderHistoryRow(item, index))
+        .join('');
+
+      const readRows = savedDialogues
+        .map((item, index) => ({ item, index }))
+        .filter(({ item }) => item.read)
+        .map(({ item, index }) => renderHistoryRow(item, index))
+        .join('');
+
+      const unreadSection = unreadRows || '<div class="empty">当前没有未读记录。</div>';
+      const readSection = readRows
+        ? `
+          <details class="history-extra-panel">
+            <summary class="history-extra-summary">展开已读 ${savedDialogues.filter((item) => item.read).length} 条记录</summary>
+            <div class="history-extra-list">${readRows}</div>
+          </details>`
+        : '';
+
+      dialogueHistory.innerHTML = `${unreadSection}${readSection}`;
 
       document.querySelectorAll('[data-action="load-dialogue"]').forEach((button) => {
         button.addEventListener('click', async () => {
@@ -1609,16 +2190,58 @@ W: Sure. That sounds nice.</textarea>
         });
       });
 
+      document.querySelectorAll('[data-action="toggle-read"]').forEach((button) => {
+        button.addEventListener('click', () => {
+          toggleSavedDialogueRead(button.dataset.historyId);
+        });
+      });
+
       document.querySelectorAll('[data-action="rename-dialogue"]').forEach((button) => {
         button.addEventListener('click', () => {
           renameSavedDialogue(button.dataset.historyId);
+        });
+      });
+
+      document.querySelectorAll('.history-row').forEach((row) => {
+        row.addEventListener('dragstart', (event) => {
+          draggedHistoryId = row.dataset.historyId;
+          row.classList.add('dragging');
+
+          if (event.dataTransfer) {
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', draggedHistoryId);
+          }
+        });
+
+        row.addEventListener('dragover', (event) => {
+          event.preventDefault();
+
+          if (row.dataset.historyId !== draggedHistoryId) {
+            row.classList.add('drop-target');
+          }
+        });
+
+        row.addEventListener('dragleave', () => {
+          row.classList.remove('drop-target');
+        });
+
+        row.addEventListener('drop', (event) => {
+          event.preventDefault();
+          row.classList.remove('drop-target');
+          moveSavedDialogue(draggedHistoryId, row.dataset.historyId);
+        });
+
+        row.addEventListener('dragend', () => {
+          draggedHistoryId = null;
+          row.classList.remove('dragging');
+          document.querySelectorAll('.history-row').forEach((item) => item.classList.remove('drop-target'));
         });
       });
     }
 
     function saveCurrentDialogue() {
       const rawText = sourceText.value.replace(/\r/g, '').trim();
-      const customName = dialogueName.value.trim();
+      const customName = dialogueName ? dialogueName.value.trim() : '';
 
       if (!rawText) {
         updateStatus('没有可保存的对话原文。');
@@ -1628,6 +2251,7 @@ W: Sure. That sounds nice.</textarea>
       savedDialogues.unshift({
         id: crypto.randomUUID(),
         name: customName,
+        read: false,
         text: rawText,
         targetLanguage: targetLanguage.value,
         savedSegments: serializeSegmentsForSave(segments),
@@ -1636,7 +2260,9 @@ W: Sure. That sounds nice.</textarea>
 
       persistSavedDialogues();
       renderDialogueHistory();
-      dialogueName.value = '';
+      if (dialogueName) {
+        dialogueName.value = '';
+      }
       updateStatus(`当前对话和当前翻译已保存，共 ${savedDialogues.length} 条记录。`);
     }
 
@@ -1660,6 +2286,39 @@ W: Sure. That sounds nice.</textarea>
       updateStatus('记录名称已更新。');
     }
 
+    function toggleSavedDialogueRead(historyId) {
+      const record = savedDialogues.find((item) => item.id === historyId);
+
+      if (!record) {
+        return;
+      }
+
+      record.read = !record.read;
+      persistSavedDialogues();
+      renderDialogueHistory();
+      updateStatus(record.read ? '已标记为已读。' : '已取消已读标记。');
+    }
+
+    // 拖动记录后，按新的目标位置重排并保存到本地。
+    function moveSavedDialogue(sourceId, targetId) {
+      if (!sourceId || !targetId || sourceId === targetId) {
+        return;
+      }
+
+      const sourceIndex = savedDialogues.findIndex((item) => item.id === sourceId);
+      const targetIndex = savedDialogues.findIndex((item) => item.id === targetId);
+
+      if (sourceIndex < 0 || targetIndex < 0) {
+        return;
+      }
+
+      const [movedRecord] = savedDialogues.splice(sourceIndex, 1);
+      savedDialogues.splice(targetIndex, 0, movedRecord);
+      persistSavedDialogues();
+      renderDialogueHistory();
+      updateStatus('已更新对话记录顺序。');
+    }
+
     function deleteSavedDialogue(historyId) {
       const nextDialogues = savedDialogues.filter((item) => item.id !== historyId);
 
@@ -1668,6 +2327,9 @@ W: Sure. That sounds nice.</textarea>
       }
 
       savedDialogues = nextDialogues;
+      if (selectedHistoryId === historyId) {
+        selectedHistoryId = null;
+      }
       persistSavedDialogues();
       renderDialogueHistory();
       updateStatus(`已删除一条记录，剩余 ${savedDialogues.length} 条。`);
@@ -1909,7 +2571,61 @@ W: Sure. That sounds nice.</textarea>
     }
 
     function cancelSingleLoop() {
+      singleLoopSessionId += 1;
       loopingSegmentId = null;
+      singleLoopPaused = false;
+    }
+
+    async function waitForSingleLoopResume(sessionId) {
+      while (singleLoopPaused && sessionId === singleLoopSessionId && loopingSegmentId !== null) {
+        await wait(120);
+      }
+
+      return sessionId === singleLoopSessionId && loopingSegmentId !== null;
+    }
+
+    function pauseSingleLoop() {
+      if (loopingSegmentId === null || singleLoopPaused) {
+        return;
+      }
+
+      singleLoopPaused = true;
+
+      if (synth.speaking && !synth.paused) {
+        synth.pause();
+      }
+
+      updateStatus('已暂停循环朗读。再次点击当前句可继续。');
+    }
+
+    function resumeSingleLoop() {
+      if (loopingSegmentId === null || !singleLoopPaused) {
+        return;
+      }
+
+      singleLoopPaused = false;
+
+      if (synth.paused) {
+        synth.resume();
+      }
+
+      const currentSegment = segments.find((item) => item.id === loopingSegmentId);
+
+      if (currentSegment) {
+        updateStatus(`已继续循环朗读：${currentSegment.english}`);
+      } else {
+        updateStatus('已继续循环朗读。');
+      }
+    }
+
+    function getSingleLoopRepeatLabel() {
+      return singleLoopRepeatCount > 0 ? String(singleLoopRepeatCount) : '∞';
+    }
+
+    function updateLoopCountButton() {
+      if (loopCountBtn) {
+        loopCountBtn.textContent = `循环次数${getSingleLoopRepeatLabel()}`;
+      }
     }
 
     function renderCards() {
@@ -1918,7 +2634,7 @@ W: Sure. That sounds nice.</textarea>
       femaleCount.textContent = String(segments.filter((item) => item.speaker === 'W').length);
 
       if (!segments.length) {
-        cards.innerHTML = '<div class="empty">还没有句子。请先输入对话并点击“生成句子和翻译”。</div>';
+        cards.innerHTML = '<div class="empty">还没有句子。请先输入对话并点击“生成句子/翻译”。</div>';
         return;
       }
 
@@ -1936,13 +2652,13 @@ W: Sure. That sounds nice.</textarea>
             <div class="card-header">
               <span class="${badgeClass}">${speakerLabel}</span>
               <span class="card-index">第 ${index + 1} 句</span>
+              <div class="sentence-actions">
+                <button class="speak-btn" type="button" data-action="speak" data-id="${segment.id}" aria-label="朗读第 ${index + 1} 句">点击朗读</button>
+                <button class="speak-btn ${isLooping ? 'looping' : ''}" type="button" data-action="loop" data-id="${segment.id}" aria-label="循环朗读第 ${index + 1} 句">${isLooping ? '停止循环单句' : '循环单句朗读'}</button>
+              </div>
             </div>
             <p class="english">${escapeHtml(segment.english)}</p>
             <p class="${translationClass}">${escapeHtml(translationText)}</p>
-            <div class="sentence-actions">
-              <button class="speak-btn" type="button" data-action="speak" data-id="${segment.id}" aria-label="朗读第 ${index + 1} 句">点击朗读</button>
-              <button class="speak-btn ${isLooping ? 'looping' : ''}" type="button" data-action="loop" data-id="${segment.id}" aria-label="循环朗读第 ${index + 1} 句">${isLooping ? '停止循环单句' : '循环单句朗读'}</button>
-            </div>
           </article>
         `;
       }).join('');
@@ -1962,6 +2678,21 @@ W: Sure. That sounds nice.</textarea>
       document.querySelectorAll('[data-action="loop"]').forEach((button) => {
         button.addEventListener('click', () => {
           const segment = segments.find((item) => item.id === button.dataset.id);
+          if (segment) {
+            rememberCurrentSentence(segment.id);
+            toggleSegmentLoop(segment);
+          }
+        });
+      });
+
+      document.querySelectorAll('.card').forEach((card) => {
+        card.addEventListener('click', (event) => {
+          if (event.target.closest('button')) {
+            return;
+          }
+
+          const segment = segments.find((item) => item.id === card.dataset.id);
+
           if (segment) {
             rememberCurrentSentence(segment.id);
             toggleSegmentLoop(segment);
@@ -2096,30 +2827,139 @@ W: Sure. That sounds nice.</textarea>
       }
 
       if (loopingSegmentId === segment.id) {
-        stopPlayback();
+        if (singleLoopPaused) {
+          resumeSingleLoop();
+        } else {
+          pauseSingleLoop();
+        }
         return;
       }
 
       playAllCancelled = true;
-      loopingSegmentId = segment.id;
-      renderCards();
       synth.cancel();
-      updateStatus(`正在循环朗读：${segment.english}`);
+      singleLoopPaused = false;
+      const startIndex = segments.findIndex((item) => item.id === segment.id);
 
-      while (loopingSegmentId === segment.id) {
-        await speakSegment(segment);
+      if (startIndex < 0) {
+        updateStatus('没有找到要循环的句子。');
+        return;
+      }
 
-        if (loopingSegmentId !== segment.id) {
+      singleLoopSessionId += 1;
+      const sessionId = singleLoopSessionId;
+
+      if (singleLoopRepeatCount === 0) {
+        loopingSegmentId = segment.id;
+        renderCards();
+        updateStatus(`正在循环朗读：${segment.english}（∞次）`);
+
+        while (loopingSegmentId === segment.id && sessionId === singleLoopSessionId) {
+          if (!(await waitForSingleLoopResume(sessionId))) {
+            break;
+          }
+
+          await speakSegment(segment);
+
+          if (loopingSegmentId !== segment.id || sessionId !== singleLoopSessionId) {
+            break;
+          }
+
+          if (!(await waitForSingleLoopResume(sessionId))) {
+            break;
+          }
+
+          updateStatus(`正在循环朗读：${segment.english}（∞次）`);
+          await wait(Number.parseInt(pauseMs.value, 10) || 0);
+        }
+
+        if (loopingSegmentId === null || sessionId !== singleLoopSessionId) {
+          updateStatus('已停止朗读。');
+          renderCards();
+        }
+
+        return;
+      }
+
+      const targetCount = singleLoopRepeatCount;
+
+      for (let index = startIndex; index < segments.length; index += 1) {
+        const currentSegment = segments[index];
+        let playedCount = 0;
+
+        loopingSegmentId = currentSegment.id;
+        rememberCurrentSentence(currentSegment.id);
+        currentPlaybackIndex = index;
+        renderCards();
+        updateStatus(`正在循环朗读第 ${index + 1} 句：${currentSegment.english}（${targetCount}次）`);
+
+        while (loopingSegmentId === currentSegment.id && playedCount < targetCount && sessionId === singleLoopSessionId) {
+          if (!(await waitForSingleLoopResume(sessionId))) {
+            break;
+          }
+
+          await speakSegment(currentSegment);
+          playedCount += 1;
+
+          if (loopingSegmentId !== currentSegment.id || sessionId !== singleLoopSessionId) {
+            break;
+          }
+
+          if (playedCount >= targetCount) {
+            break;
+          }
+
+          if (!(await waitForSingleLoopResume(sessionId))) {
+            break;
+          }
+
+          updateStatus(`正在循环朗读第 ${index + 1} 句：${currentSegment.english}（${targetCount}次）`);
+          await wait(Number.parseInt(pauseMs.value, 10) || 0);
+        }
+
+        if (loopingSegmentId !== currentSegment.id || sessionId !== singleLoopSessionId) {
           break;
         }
 
-        updateStatus(`正在循环朗读：${segment.english}`);
-        await wait(Number.parseInt(pauseMs.value, 10) || 0);
+        if (index < segments.length - 1) {
+          if (!(await waitForSingleLoopResume(sessionId))) {
+            break;
+          }
+
+          await wait(Number.parseInt(pauseMs.value, 10) || 0);
+        }
       }
 
-      if (loopingSegmentId === null) {
+      if (sessionId !== singleLoopSessionId) {
+        renderCards();
+        return;
+      }
+
+      if (loopingSegmentId !== null) {
+        loopingSegmentId = null;
+        updateStatus('已按设置次数完成后续句子循环。');
+        renderCards();
+      } else {
         renderCards();
       }
+    }
+
+    function configureSingleLoopRepeatCount() {
+      const input = window.prompt('请输入循环单句的次数。\n输入 0 表示无限循环。', String(singleLoopRepeatCount));
+
+      if (input === null) {
+        return;
+      }
+
+      const nextCount = Number.parseInt(input.trim(), 10);
+
+      if (!Number.isInteger(nextCount) || nextCount < 0) {
+        updateStatus('循环次数无效，请输入 0 或正整数。');
+        return;
+      }
+
+      singleLoopRepeatCount = nextCount;
+      updateLoopCountButton();
+      updateStatus(nextCount === 0 ? '单句循环次数已设置为无限。' : `单句循环次数已设置为 ${nextCount} 次。`);
     }
 
     function speakPlainEnglish(text, statusElement, idleMessage) {
@@ -2473,6 +3313,7 @@ W: Sure. That sounds nice.</textarea>
     pauseBtn.addEventListener('click', pausePlayback);
     previousBtn.addEventListener('click', playPreviousSentence);
     nextLoopBtn.addEventListener('click', loopNextSentence);
+    loopCountBtn.addEventListener('click', configureSingleLoopRepeatCount);
     floatingBallBtn.addEventListener('click', toggleFloatingActions);
     scrollTopBtn.addEventListener('click', scrollToTop);
     scrollBottomBtn.addEventListener('click', scrollToBottom);
@@ -2532,6 +3373,22 @@ W: Sure. That sounds nice.</textarea>
     closeVocabDetailBtn.addEventListener('click', () => {
       vocabDetailDialog.close();
     });
+    openDialogueConfigBtn.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (dialogueConfigDialog && typeof dialogueConfigDialog.showModal === 'function') {
+        dialogueConfigDialog.showModal();
+      }
+    });
+    closeDialogueConfigBtn.addEventListener('click', () => {
+      dialogueConfigDialog.close();
+    });
+    dialogueConfigDialog.addEventListener('click', (event) => {
+      if (event.target === dialogueConfigDialog) {
+        dialogueConfigDialog.close();
+      }
+    });
     vocabDetailDialog.addEventListener('click', (event) => {
       if (event.target === vocabDetailDialog) {
         vocabDetailDialog.close();
@@ -2554,6 +3411,7 @@ W: Sure. That sounds nice.</textarea>
     loadTranslationCache();
     loadVocabNotebook();
     loadVocabLookupCache();
+    updateLoopCountButton();
     renderDialogueHistory();
     restoreLastDialogueSentence();
     renderCards();
