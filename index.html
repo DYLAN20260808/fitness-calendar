@@ -327,20 +327,20 @@
         .detail-action-bar .tab-btn,
         .detail-action-bar .exercise-timer-btn,
         .detail-action-bar .exercise-timer-reset-btn,
-        .detail-action-bar .add-btn-small { min-width: 0; width: 100%; justify-content: center; }
-        .detail-action-bar .exercise-timer-btn { flex-direction: row; align-items: center; justify-content: center; gap: 4px; padding: 4px 6px; box-sizing: border-box; overflow: hidden; white-space: nowrap; }
-        #simpleContent .detail-action-bar { gap: 14px; margin-top: 18px; padding-top: 14px; }
+        .detail-action-bar .add-btn-small { min-width: 0; width: 100%; justify-content: center; font-size: clamp(8px, 2vw, 10px); line-height: 1.15; text-align: center; }
+        .detail-action-bar .exercise-timer-btn { flex-direction: row; align-items: center; justify-content: center; gap: 3px; padding: 3px 5px; box-sizing: border-box; overflow: hidden; white-space: nowrap; }
+        #simpleContent .detail-action-bar { gap: 10px; margin-top: 14px; padding-top: 12px; }
         #simpleContent .detail-action-bar .tab-btn,
         #simpleContent .detail-action-bar .exercise-timer-btn,
         #simpleContent .detail-action-bar .exercise-timer-reset-btn,
-        #simpleContent .detail-action-bar .add-btn-small { min-height: calc(var(--detail-tab-height) * 1.2); font-size: 18px; }
+        #simpleContent .detail-action-bar .add-btn-small { min-height: calc(var(--detail-tab-height) * 0.84); font-size: 13px; }
         #simpleContent .detail-action-bar .tab-btn,
-        #simpleContent .detail-action-bar .add-btn-small { padding: 8px 12px; }
+        #simpleContent .detail-action-bar .add-btn-small { padding: 6px 8px; }
         #simpleContent .detail-action-bar .exercise-timer-btn,
-        #simpleContent .detail-action-bar .exercise-timer-reset-btn { padding: 6px 10px; }
-        #simpleContent .detail-action-bar .exercise-timer-meta { font-size: 15px; }
-        #simpleContent .detail-action-bar .exercise-timer-value { font-size: 18px; }
-        .detail-action-bar .exercise-timer-meta { flex: 0 0 auto; font-size: 10px; line-height: 1; }
+        #simpleContent .detail-action-bar .exercise-timer-reset-btn { padding: 4px 7px; }
+        #simpleContent .detail-action-bar .exercise-timer-meta { font-size: 11px; }
+        #simpleContent .detail-action-bar .exercise-timer-value { font-size: 13px; }
+        .detail-action-bar .exercise-timer-meta { flex: 0 0 auto; font-size: 8px; line-height: 1; }
         .detail-action-bar .exercise-timer-value { min-width: 0; flex: 0 1 auto; text-align: center; line-height: 1; }
         .tab-btn { flex: 1; min-height: var(--detail-tab-height); padding: 7px 8px; border: none; border-radius: 12px; background: var(--neutral-gradient); -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%); color: #3a3a3c; font-size: 12px; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; border: 1px solid rgba(255,255,255,0.78); box-shadow: inset 0 1px 0 rgba(255,255,255,0.88), 0 8px 16px rgba(17,24,39,0.06); }
         .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -3px 0 rgba(0,88,176,0.22), 0 14px 24px rgba(0,113,227,0.22); transform: translateY(-2px); }
@@ -375,6 +375,14 @@
             .chart-mode-pill { display: flex; width: 100%; gap: 1px; }
             .chart-mode-toggle { flex: 1 1 0; min-width: 0; padding: 5px 2px; font-size: 9px; }
             .detail-action-bar { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+            .detail-action-bar .tab-btn,
+            .detail-action-bar .exercise-timer-btn,
+            .detail-action-bar .exercise-timer-reset-btn,
+            .detail-action-bar .add-btn-small { min-height: auto; padding: 5px 2px; font-size: clamp(7px, 2vw, 8px); line-height: 1.05; white-space: nowrap; }
+            .detail-action-bar .exercise-timer-btn { flex-wrap: nowrap; gap: 2px; white-space: nowrap; }
+            .detail-action-bar .exercise-timer-meta,
+            .detail-action-bar .exercise-timer-value { white-space: nowrap; }
+            .detail-action-bar .exercise-timer-value { min-width: 0; }
         }
         .muscle-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
         .legend-item { display: flex; align-items: center; gap: 4px; font-size: 12px; cursor: pointer; opacity: 0.5; transition: opacity 0.2s; }
