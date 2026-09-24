@@ -218,6 +218,7 @@
         .exercise-timer-reset-btn:active { transform: translateY(1px) scale(0.98); }
         .exercise-timer-meta { white-space: nowrap; color: var(--muted); font-size: 11px; font-weight: 600; }
         .exercise-timer-value { min-width: 42px; text-align: right; color: var(--accent-deep); }
+        .exercise-timer-value.is-alert { color: #dc2626; }
         .exercise-capacity-hint { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; padding: 8px 10px; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(240,245,252,0.88) 100%); border: 1px solid rgba(0,113,227,0.08); color: var(--muted); font-size: 11px; line-height: 1.45; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9); cursor: pointer; overflow: hidden; }
         .exercise-capacity-hint-text { min-width: 0; width: 100%; flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; }
         .exercise-capacity-hint-line { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; width: 100%; color: var(--muted); }
@@ -238,6 +239,7 @@
         .timer-modal-display-wrap { padding: 18px 14px; border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(241,246,252,0.9) 100%); border: 1px solid rgba(0,113,227,0.1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 12px 20px rgba(17,24,39,0.06); }
         .timer-modal-display-label { color: var(--muted); font-size: 12px; font-weight: 600; white-space: nowrap; }
         .timer-modal-display { margin-top: 8px; color: var(--accent-deep); font-size: 88px; font-weight: 800; line-height: 1; text-align: center; font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
+        .timer-modal-display.is-alert { color: #dc2626; }
         .timer-modal-hint { color: var(--muted); font-size: 12px; line-height: 1.6; }
         .timer-modal-settings { padding: 12px; border-radius: 16px; background: linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(243,246,250,0.86) 100%); border: 1px solid rgba(255,255,255,0.72); box-shadow: inset 0 1px 0 rgba(255,255,255,0.88); }
         .timer-modal-settings label { display: block; margin-bottom: 8px; color: var(--text); font-size: 13px; font-weight: 700; }
@@ -790,6 +792,7 @@ var exerciseDropdownOpen = false;
 var recordActionClickTimers = {};
 var recordActionLongPressTimers = {};
 var recordActionLongPressTriggered = {};
+var detailTimerClickTimers = {};
 var detailTimerLongPressTimers = {};
 var detailTimerLongPressTriggered = {};
 var recordGroupTimerReminderState = {};
@@ -887,11 +890,12 @@ function syncTimerModalDisplay(){
     if(!display||!title||!badge||!hint||!label)return;
     if(!timerModalContext){
         display.textContent='00:00';
+        display.classList.remove('is-alert');
         title.textContent='秒表提醒';
         badge.textContent='当前提醒 '+formatReminderThreshold(timerReminderConfig.thresholdSeconds);
         badge.classList.remove('is-alert');
         label.textContent='当前秒表';
-        hint.textContent='点击底部秒表会重新计时，长按则会打开这个放大窗口。';
+        hint.textContent='单击底部秒表会重新计时，双击或长按会打开这个放大窗口。';
         return;
     }
     var elapsedMs=getRecordGroupTimerElapsedMs(timerModalContext.dateKey,timerModalContext.muscle,timerModalContext.segmentId);
@@ -902,7 +906,8 @@ function syncTimerModalDisplay(){
     display.textContent=formatRecordGroupTimer(elapsedMs);
     badge.textContent=isAlert?'已到提醒时间':'当前提醒 '+formatReminderThreshold(thresholdSeconds);
     badge.classList.toggle('is-alert',isAlert);
-    hint.textContent=isAlert?'当前秒表已超过提醒时长，你可以直接在这里调整下一次提醒时间。':'点击底部秒表会重新计时，长按则会打开这个放大窗口。';
+    display.classList.toggle('is-alert',isAlert);
+    hint.textContent=isAlert?'当前秒表已超过提醒时长，你可以直接在这里调整下一次提醒时间。':'单击底部秒表会重新计时，双击或长按会打开这个放大窗口。';
 }
 function openTimerModal(dk,muscle,segmentId,forceAlert){
     var modal=document.getElementById('timerModal');
@@ -962,8 +967,10 @@ function renderRecordGroupTimerButtons(){
         var valueEl=button.querySelector('.exercise-timer-value');
         var elapsedMs=getRecordGroupTimerElapsedMs(button.dataset.dateKey,button.dataset.muscle,button.dataset.segmentId);
         var nextLabel=formatRecordGroupTimer(elapsedMs);
+        var isAlert=elapsedMs>=timerReminderConfig.thresholdSeconds*1000;
         if(valueEl)valueEl.textContent=nextLabel;
         else button.textContent=nextLabel;
+        if(valueEl)valueEl.classList.toggle('is-alert',isAlert);
         maybeTriggerRecordGroupTimerReminder(button.dataset.dateKey,button.dataset.muscle,button.dataset.segmentId,elapsedMs);
     });
     syncTimerModalDisplay();
@@ -2153,17 +2160,36 @@ function updateDetailTimerButton(){
     }
     slot.hidden=false;
     resetSlot.hidden=false;
-    slot.innerHTML='<button class="exercise-timer-btn" data-date-key="'+selDate+'" data-muscle="'+activeMuscle+'" data-segment-id="'+getDefaultSegmentId()+'" onclick="handleDetailTimerClick(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" onmousedown="startDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" onmouseup="cancelDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" onmouseleave="cancelDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" ontouchstart="startDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" ontouchend="cancelDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" ontouchcancel="cancelDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" title="点击重新计时，长按打开放大秒表"><span class="exercise-timer-meta">⏱</span><span class="exercise-timer-value">'+getRecordGroupTimerLabel(selDate,activeMuscle)+'</span></button>';
+    slot.innerHTML='<button class="exercise-timer-btn" data-date-key="'+selDate+'" data-muscle="'+activeMuscle+'" data-segment-id="'+getDefaultSegmentId()+'" onclick="handleDetailTimerClick(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" ondblclick="handleDetailTimerDoubleClick(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" onmousedown="startDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" onmouseup="cancelDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" onmouseleave="cancelDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" ontouchstart="startDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" ontouchend="cancelDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" ontouchcancel="cancelDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" title="单击重新计时，双击或长按打开放大秒表"><span class="exercise-timer-meta">⏱</span><span class="exercise-timer-value">'+getRecordGroupTimerLabel(selDate,activeMuscle)+'</span></button>';
     resetSlot.innerHTML='<button class="exercise-timer-reset-btn" type="button" onclick="recalibrateRecordGroupTimer(\''+selDate+'\',\''+activeMuscle+'\')" title="将开始时间校准为当前时间并重新计时">重置</button>';
     updateDetailActionBarVisibility();
+}
+function clearDetailTimerClick(dk,muscle,segmentId){
+    var timerKey=getDetailTimerLongPressKey(dk,muscle,segmentId);
+    if(detailTimerClickTimers[timerKey]){
+        clearTimeout(detailTimerClickTimers[timerKey]);
+        delete detailTimerClickTimers[timerKey];
+    }
 }
 function handleDetailTimerClick(dk,muscle,segmentId){
     var timerKey=getDetailTimerLongPressKey(dk,muscle,segmentId);
     if(detailTimerLongPressTriggered[timerKey]){
+        clearDetailTimerClick(dk,muscle,segmentId);
         delete detailTimerLongPressTriggered[timerKey];
         return;
     }
-    resetRecordGroupTimer(dk,muscle,segmentId);
+    clearDetailTimerClick(dk,muscle,segmentId);
+    detailTimerClickTimers[timerKey]=setTimeout(function(){
+        delete detailTimerClickTimers[timerKey];
+        resetRecordGroupTimer(dk,muscle,segmentId);
+    },320);
+}
+function handleDetailTimerDoubleClick(dk,muscle,segmentId){
+    var timerKey=getDetailTimerLongPressKey(dk,muscle,segmentId);
+    clearDetailTimerClick(dk,muscle,segmentId);
+    cancelDetailTimerLongPress(dk,muscle,segmentId);
+    delete detailTimerLongPressTriggered[timerKey];
+    openTimerModal(dk,muscle,segmentId,false);
 }
 function startDetailTimerLongPress(dk,muscle,segmentId){
     var timerKey=getDetailTimerLongPressKey(dk,muscle,segmentId);
