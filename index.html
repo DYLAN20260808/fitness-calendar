@@ -87,6 +87,7 @@
         .app-content { position: relative; z-index: 1; width: min(100%, var(--page-max-width)); margin: 0 auto; padding: 0 10px; --active-page-surface: var(--page-surface-calendar); }
         .app-content.page-calendar { --active-page-surface: var(--page-surface-calendar); }
         .app-content.page-record { --active-page-surface: var(--page-surface-record); }
+        .app-content.page-simple { --active-page-surface: var(--page-surface-record); }
         .app-content.page-volume { --active-page-surface: var(--page-surface-volume); }
         .app-content.page-stats { --active-page-surface: var(--page-surface-stats); }
         .page-section { position: relative; z-index: 1; width: 100%; margin: 0 auto; padding: 0; }
@@ -154,6 +155,28 @@
         .record-muscle-icon { display: block; font-size: 15px; line-height: 1; }
         .record-muscle-label { display: block; max-width: 100%; font-size: 9px; line-height: 1.05; word-break: break-all; }
         .exercise-empty-state { padding: 14px 12px; border-radius: 14px; background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(241,246,252,0.92) 100%); border: 1px dashed rgba(0,113,227,0.16); color: var(--muted); font-size: 12px; line-height: 1.6; text-align: center; }
+        .simple-record-launch { margin-top: 12px; }
+        .simple-record-wrap { display: flex; flex-direction: column; gap: 12px; }
+        .simple-record-toolbar { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,0.76) 0%, rgba(239,243,249,0.54) 100%); border: 1px solid rgba(255,255,255,0.58); box-shadow: inset 0 1px 0 rgba(255,255,255,0.8); overflow-x: auto; }
+        .simple-record-toolbar::-webkit-scrollbar { display: none; }
+        .simple-record-muscles { display: flex; align-items: stretch; gap: 6px; flex: 0 0 auto; }
+        .simple-record-actions { flex: 1 1 auto; min-width: 0; padding-left: 8px; border-left: 1px solid rgba(0,113,227,0.1); }
+        .simple-record-actions.exercise-tabs { overflow-x: auto; }
+        .simple-record-actions .exercise-tab-btn { padding: 4px 10px; font-size: 11px; }
+        .simple-record-actions .exercise-tab-btn.active { transform: scale(1.08); }
+        .simple-record-card { padding: 14px; border-radius: 20px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,249,252,0.92) 45%, rgba(234,238,244,0.84) 100%); border: 1px solid rgba(255,255,255,0.76); box-shadow: var(--highlight), 0 14px 26px rgba(17,24,39,0.08), 0 2px 0 rgba(255,255,255,0.88); }
+        .simple-record-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+        .simple-record-metric { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 18px 12px; border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(241,246,252,0.88) 100%); border: 1px solid rgba(0,113,227,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92); }
+        .simple-record-metric-label { color: var(--muted); font-size: 18px; font-weight: 700; line-height: 1.1; }
+        .simple-record-stepper { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; }
+        .simple-record-stepper .adjust-btn { width: 56px; height: 56px; border-radius: 12px; font-size: 28px; }
+        .simple-record-stepper .adjust-value { min-width: 0; font-size: 40px; line-height: 1.2; }
+        .simple-record-stepper .simple-record-value-box { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 144px; height: 68px; padding: 0 10px; border: 1px solid rgba(0,113,227,0.14); border-radius: 7px; background: rgba(255,255,255,0.96); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92); }
+        .simple-record-stepper .simple-record-value-box.capacity-best-box,
+        .simple-record-stepper .metric-input.capacity-best-box { background: linear-gradient(180deg, rgba(212,255,223,0.96) 0%, rgba(161,240,184,0.82) 100%); border-color: rgba(48,209,88,0.42); box-shadow: inset 0 1px 0 rgba(255,255,255,0.84), 0 0 0 1px rgba(48,209,88,0.12); }
+        .simple-record-stepper .metric-input { width: 100%; max-width: 144px; height: 68px; font-size: 36px; text-align: center; padding: 0 10px; }
+        .simple-record-card-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+        .simple-record-footer-btn { width: 100%; }
         .exercise-item { background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,249,252,0.92) 45%, rgba(234,238,244,0.84) 100%); -webkit-backdrop-filter: blur(18px) saturate(165%); backdrop-filter: blur(18px) saturate(165%); border: 1px solid rgba(255,255,255,0.76); border-radius: 20px; padding: 13px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--highlight), 0 14px 26px rgba(17,24,39,0.08), 0 2px 0 rgba(255,255,255,0.88); }
         .exercise-row1 { display: flex; align-items: center; gap: 6px; min-height: 28px; margin-bottom: 4px; }
         .group-order-controls { margin-left: auto; display: flex; gap: 4px; }
@@ -195,12 +218,13 @@
         .exercise-timer-reset-btn:active { transform: translateY(1px) scale(0.98); }
         .exercise-timer-meta { white-space: nowrap; color: var(--muted); font-size: 11px; font-weight: 600; }
         .exercise-timer-value { min-width: 42px; text-align: right; color: var(--accent-deep); }
-        .exercise-capacity-hint { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; padding: 8px 10px; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(240,245,252,0.88) 100%); border: 1px solid rgba(0,113,227,0.08); color: var(--muted); font-size: 11px; line-height: 1.45; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9); cursor: pointer; }
-        .exercise-capacity-hint-text { min-width: 0; flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px; }
-        .exercise-capacity-hint-line { display: flex; flex-wrap: wrap; gap: 4px; width: 100%; }
-        .exercise-capacity-hint-line.is-current { color: var(--accent-deep); }
-        .exercise-capacity-hint-line.is-current .exercise-capacity-hint-value { color: var(--accent-deep); }
-        .exercise-capacity-hint-value { color: #16a34a; font-weight: 700; }
+        .exercise-capacity-hint { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; padding: 8px 10px; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(240,245,252,0.88) 100%); border: 1px solid rgba(0,113,227,0.08); color: var(--muted); font-size: 15px; line-height: 1.45; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9); cursor: pointer; overflow: hidden; }
+        .exercise-capacity-hint-text { min-width: 0; width: 100%; flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; }
+        .exercise-capacity-hint-line { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; width: 100%; color: var(--muted); }
+        .exercise-capacity-hint-item { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .exercise-capacity-hint-line.is-current { color: var(--muted); }
+        .exercise-capacity-hint-line.is-current .exercise-capacity-hint-value { color: #16a34a; }
+        .exercise-capacity-hint-value { color: inherit; font-weight: 700; }
         @media (max-width: 480px) {
             .exercise-time-row { gap: 0; flex-wrap: nowrap; }
             .exercise-time-parts { gap: 2px; }
@@ -215,7 +239,7 @@
             .exercise-timer-btn { min-width: 118px; min-height: var(--detail-tab-height); padding: 0 10px; gap: 6px; font-size: 11px; }
             .exercise-timer-reset-btn { min-width: 60px; min-height: var(--detail-tab-height); padding: 0 10px; font-size: 11px; }
             .exercise-timer-meta { font-size: 10px; }
-            .exercise-capacity-hint { align-items: flex-start; font-size: 10px; }
+            .exercise-capacity-hint { align-items: flex-start; font-size: 14px; }
         }
         .exercise-subitem,
         .exercise-best-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(88px, 1fr) auto auto; align-items: center; gap: 6px; min-height: 24px; min-width: 0; font-size: clamp(13px, 3.4vw, 16px); }
@@ -243,7 +267,7 @@
         .exercise-best-badge { grid-column: 4 / 6; justify-self: end; display: inline-flex; align-items: center; justify-content: center; width: calc((clamp(18px, 5vw, 20px) * 2) + 6px); max-width: 100%; box-sizing: border-box; min-width: 0; height: clamp(22px, 6vw, 24px); padding: 0 4px; border: 1px solid rgba(0,113,227,0.12); border-radius: 9px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent); font-size: 10px; font-weight: 700; line-height: 1; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); white-space: nowrap; }
         .adjust-btn-placeholder { visibility: hidden; pointer-events: none; }
         .metric-input.metric-input-readonly { pointer-events: none; color: var(--text); font-weight: 600; background: rgba(255,255,255,0.96); text-align: left; padding-left: 8px; }
-        .adjust-btn { background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); border: 1px solid rgba(0,113,227,0.12); color: var(--accent); width: clamp(14px, 3.8vw, 15px); height: clamp(14px, 3.8vw, 15px); border-radius: 999px; cursor: pointer; font-size: clamp(8px, 2.4vw, 10px); line-height: 1; display: inline-flex; align-items: center; justify-content: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); flex-shrink: 0; }
+        .adjust-btn { background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); border: 1px solid rgba(0,113,227,0.12); color: var(--accent); width: clamp(14px, 3.8vw, 15px); height: clamp(14px, 3.8vw, 15px); border-radius: 6px; cursor: pointer; font-size: clamp(8px, 2.4vw, 10px); line-height: 1; display: inline-flex; align-items: center; justify-content: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.08); flex-shrink: 0; }
         .adjust-btn:active { background: linear-gradient(180deg, rgba(240,245,252,0.98) 0%, rgba(221,233,247,0.92) 100%); transform: translateY(1px); }
         .adjust-value { display: inline-block; min-width: 20px; text-align: center; font-size: clamp(13px, 3.4vw, 16px); font-weight: 600; line-height: clamp(22px, 6vw, 24px); }
         .adjust-value.count-slot { width: clamp(28px, 9vw, 36px); min-width: 0; }
@@ -261,9 +285,9 @@
             0% { color: #ff5f57; transform: scale(1.18); text-shadow: 0 0 10px rgba(255,95,87,0.24); }
             100% { color: inherit; transform: scale(1); text-shadow: 0 0 0 rgba(255,95,87,0); }
         }
-        .delete-btn { background: linear-gradient(180deg, var(--danger-top) 0%, var(--danger-mid) 58%, var(--danger-bottom) 100%); border: 1px solid rgba(255,255,255,0.3); color: white; width: clamp(18px, 5vw, 20px); height: clamp(18px, 5vw, 20px); padding: 0; border-radius: 999px; cursor: pointer; font-size: clamp(10px, 2.8vw, 11px); font-weight: 700; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(217,52,43,0.18); }
+        .delete-btn { background: linear-gradient(180deg, var(--danger-top) 0%, var(--danger-mid) 58%, var(--danger-bottom) 100%); border: 1px solid rgba(255,255,255,0.3); color: white; width: clamp(18px, 5vw, 20px); height: clamp(18px, 5vw, 20px); padding: 0; border-radius: 6px; cursor: pointer; font-size: clamp(10px, 2.8vw, 11px); font-weight: 700; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(217,52,43,0.18); }
         .delete-btn:active { transform: translateY(1px) scale(0.96); box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 4px 10px rgba(217,52,43,0.14); }
-        .copy-btn { background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.3); color: white; width: clamp(18px, 5vw, 20px); height: clamp(18px, 5vw, 20px); padding: 0; border-radius: 999px; cursor: pointer; font-size: clamp(10px, 2.8vw, 11px); font-weight: 700; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(0,113,227,0.18); }
+        .copy-btn { background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.3); color: white; width: clamp(18px, 5vw, 20px); height: clamp(18px, 5vw, 20px); padding: 0; border-radius: 6px; cursor: pointer; font-size: clamp(10px, 2.8vw, 11px); font-weight: 700; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(0,113,227,0.18); }
         .copy-btn:active { transform: translateY(1px) scale(0.96); box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 4px 10px rgba(0,113,227,0.14); }
         .param-group { display: flex; align-items: center; gap: 3px; flex: 0 1 auto; min-width: 0; }
         .param-label { color: var(--muted); font-size: clamp(13px, 3.4vw, 16px); margin-left: 2px; line-height: clamp(22px, 6vw, 24px); white-space: nowrap; }
@@ -305,6 +329,17 @@
         .detail-action-bar .exercise-timer-reset-btn,
         .detail-action-bar .add-btn-small { min-width: 0; width: 100%; justify-content: center; }
         .detail-action-bar .exercise-timer-btn { flex-direction: row; align-items: center; justify-content: center; gap: 4px; padding: 4px 6px; box-sizing: border-box; overflow: hidden; white-space: nowrap; }
+        #simpleContent .detail-action-bar { gap: 14px; margin-top: 18px; padding-top: 14px; }
+        #simpleContent .detail-action-bar .tab-btn,
+        #simpleContent .detail-action-bar .exercise-timer-btn,
+        #simpleContent .detail-action-bar .exercise-timer-reset-btn,
+        #simpleContent .detail-action-bar .add-btn-small { min-height: calc(var(--detail-tab-height) * 1.2); font-size: 18px; }
+        #simpleContent .detail-action-bar .tab-btn,
+        #simpleContent .detail-action-bar .add-btn-small { padding: 8px 12px; }
+        #simpleContent .detail-action-bar .exercise-timer-btn,
+        #simpleContent .detail-action-bar .exercise-timer-reset-btn { padding: 6px 10px; }
+        #simpleContent .detail-action-bar .exercise-timer-meta { font-size: 15px; }
+        #simpleContent .detail-action-bar .exercise-timer-value { font-size: 18px; }
         .detail-action-bar .exercise-timer-meta { flex: 0 0 auto; font-size: 10px; line-height: 1; }
         .detail-action-bar .exercise-timer-value { min-width: 0; flex: 0 1 auto; text-align: center; line-height: 1; }
         .tab-btn { flex: 1; min-height: var(--detail-tab-height); padding: 7px 8px; border: none; border-radius: 12px; background: var(--neutral-gradient); -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%); color: #3a3a3c; font-size: 12px; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; border: 1px solid rgba(255,255,255,0.78); box-shadow: inset 0 1px 0 rgba(255,255,255,0.88), 0 8px 16px rgba(17,24,39,0.06); }
@@ -409,6 +444,7 @@
         .bottom-nav-icon { font-size: 18px; line-height: 1; flex-shrink: 0; }
         #calendarPage .nav { margin-top: 10px; border-top-left-radius: 0; border-top-right-radius: 18px; }
         #recordContent,
+        #simpleContent,
         #volumeContent,
         #statsContent { min-height: 280px; }
         .page-date-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 14px 0 0; padding: 10px 12px; border-radius: 18px; background: var(--active-page-surface, var(--panel-surface)); border: var(--panel-border); box-shadow: var(--panel-shadow); }
@@ -486,8 +522,12 @@
         </div>
     </div>
     <div class="detail-section page-section hidden" id="detailSection">
-        <div class="tab-content active" id="recordContent">
+        <div class="tab-content" id="recordContent">
             <div class="exercise-list" id="exerciseList"><div class="no-data">点击日期添加/查看训练记录</div></div>
+        </div>
+        <div class="tab-content active" id="simpleContent">
+            <div class="exercise-list" id="simpleExerciseList"><div class="no-data">点击日期添加/查看训练记录</div></div>
+            <div id="simpleDetailActionBarMount"></div>
         </div>
         <div class="tab-content" id="volumeContent">
             <div class="chart-container" id="chartContainer"></div>
@@ -495,12 +535,14 @@
         <div class="tab-content" id="statsContent">
             <div class="stats-container" id="statsContainer"></div>
         </div>
+        <div id="detailActionBarHome"></div>
         <div class="detail-action-bar" id="detailActionBar" hidden>
             <button class="tab-btn active" id="tabRecord" onclick="switchTab('volume','interval')" hidden>每组间隔</button>
             <span class="detail-timer-slot" id="detailTimerSlot" hidden></span>
             <span class="detail-reset-slot" id="detailResetSlot" hidden></span>
             <button class="add-btn-small" id="addActionBtn" onclick="openM()" hidden>+ 添加</button>
         </div>
+        <div id="detailFooterMetricsHome"></div>
         <div class="detail-footer-metrics" id="detailFooterMetrics" hidden></div>
     </div>
     <div class="page-date-footer" id="pageDateFooter">
@@ -1561,8 +1603,16 @@ function getCapacityHintText(dk,items,bestRecord){
     }else if(bestVolume>0){
         neededSetsText=String(currentSets);
     }
-    return '<div class="exercise-capacity-hint-line">最大组数：<span class="exercise-capacity-hint-value">'+formatMetricNumber(maxSets)+'组</span>；最大重量：<span class="exercise-capacity-hint-value">'+formatMetricNumber(maxWeight)+'kg</span>；最大容量：<span class="exercise-capacity-hint-value">'+formatMetricNumber(bestVolume)+'</span>；</div>'+
-        '<div class="exercise-capacity-hint-line is-current">达标组数：<span class="exercise-capacity-hint-value">'+neededSetsText+'组</span>；当前重量：<span class="exercise-capacity-hint-value">'+formatMetricNumber(weightValue)+'kg</span>；当前容量：<span class="exercise-capacity-hint-value">'+formatMetricNumber(currentActionVolume)+'</span>；</div>';
+    return '<div class="exercise-capacity-hint-line">'+
+            '<span class="exercise-capacity-hint-item">最大组数：<span class="exercise-capacity-hint-value">'+formatMetricNumber(maxSets)+'组</span></span>'+
+            '<span class="exercise-capacity-hint-item">最大重量：<span class="exercise-capacity-hint-value">'+formatMetricNumber(maxWeight)+'kg</span></span>'+
+            '<span class="exercise-capacity-hint-item">最大容量：<span class="exercise-capacity-hint-value">'+formatMetricNumber(bestVolume)+'</span></span>'+
+        '</div>'+
+        '<div class="exercise-capacity-hint-line is-current">'+
+            '<span class="exercise-capacity-hint-item">达标组数：<span class="exercise-capacity-hint-value">'+neededSetsText+'组</span></span>'+
+            '<span class="exercise-capacity-hint-item">当前重量：<span class="exercise-capacity-hint-value">'+formatMetricNumber(weightValue)+'kg</span></span>'+
+            '<span class="exercise-capacity-hint-item">当前容量：<span class="exercise-capacity-hint-value">'+formatMetricNumber(currentActionVolume)+'</span></span>'+
+        '</div>';
 }
 function getExerciseBestRecord(m,name){
     var bestRecord=null;
@@ -1948,6 +1998,20 @@ function updateDetailFooterMetricsVisibility(){
     if(!footer)return;
     footer.hidden=(currentPage!=='record'&&currentPage!=='volume')||!footer.innerHTML;
 }
+function relocateDetailAuxiliarySections(){
+    var footer=document.getElementById('detailFooterMetrics');
+    var footerHome=document.getElementById('detailFooterMetricsHome');
+    var actionBar=document.getElementById('detailActionBar');
+    var actionHome=document.getElementById('detailActionBarHome');
+    var actionMount=document.getElementById('simpleDetailActionBarMount');
+    if(!footer||!footerHome||!actionBar||!actionHome||!actionMount)return;
+    if(currentPage==='record'){
+        actionMount.appendChild(actionBar);
+        return;
+    }
+    footerHome.parentNode.insertBefore(footer,footerHome.nextSibling);
+    actionHome.parentNode.insertBefore(actionBar,actionHome.nextSibling);
+}
 function jumpToRecordFromCapacityHint(){
     if(currentPage==='record')return;
     switchPage('record');
@@ -1968,7 +2032,7 @@ function updateBottomNavState(){
 function updateAppContentThemeState(){
     var container=document.querySelector('.app-content');
     if(!container)return;
-    container.classList.remove('page-calendar','page-record','page-volume','page-stats');
+    container.classList.remove('page-calendar','page-record','page-simple','page-volume','page-stats');
     container.classList.add('page-'+currentPage);
 }
 function updateDetailTabsState(){
@@ -1994,6 +2058,7 @@ function switchPage(page){
     updateAddActionVisibility();
     updateDetailTimerButton();
     updatePageDateFooter();
+    relocateDetailAuxiliarySections();
     if(currentPage==='record')switchTab('record');
     if(currentPage==='volume')switchTab('volume');
     if(currentPage==='stats')switchTab('stats');
@@ -2166,6 +2231,101 @@ function setRecordActionTab(dk,muscle,segmentId,actionName){
     recordActionTabs[getRecordActionTabKey(dk,muscle,segmentId)]=actionName;
     showDetail(dk);
 }
+function buildActiveRecordSelectionState(dk){
+    var ex=data[dk]||[];
+    if(!ex.length)return null;
+    var groups=getExerciseGroups(ex);
+    if(!groups.length)return null;
+    var activeMuscle=recordMuscleTabs[getRecordMuscleTabKey(dk)];
+    if(!activeMuscle||!groups.some(function(group){return group.muscle===activeMuscle;})){
+        activeMuscle=groups[0].muscle;
+        recordMuscleTabs[getRecordMuscleTabKey(dk)]=activeMuscle;
+    }
+    var group=groups[0];
+    for(var gi=0;gi<groups.length;gi++){
+        if(groups[gi].muscle===activeMuscle){
+            group=groups[gi];
+            break;
+        }
+    }
+    var firstAction=group&&group.actions[0]?group.actions[0]:null;
+    var tabKey=getRecordActionTabKey(dk,group.muscle);
+    var activeActionName=recordActionTabs[tabKey];
+    if(firstAction&&(!activeActionName||!group.actionMap[activeActionName])){
+        activeActionName=firstAction.name;
+        recordActionTabs[tabKey]=activeActionName;
+    }
+    var activeAction=group&&activeActionName?group.actionMap[activeActionName]:null;
+    var displayItems=activeAction&&activeAction.items.length>1
+        ? activeAction.items.slice().sort(function(a,b){
+            var weightA=a&&a.exercise&&a.exercise.weight!=null?Number(a.exercise.weight):0;
+            var weightB=b&&b.exercise&&b.exercise.weight!=null?Number(b.exercise.weight):0;
+            if(isNaN(weightA))weightA=0;
+            if(isNaN(weightB))weightB=0;
+            if(weightB!==weightA)return weightB-weightA;
+            return a.index-b.index;
+        })
+        : (activeAction?activeAction.items:[]);
+    return {
+        groups:groups,
+        activeMuscle:activeMuscle,
+        group:group,
+        activeActionName:activeActionName,
+        activeAction:activeAction,
+        displayItems:displayItems
+    };
+}
+function renderSimpleRecordDetail(dk){
+    var lst=document.getElementById('simpleExerciseList');
+    if(!lst)return;
+    var selectionState=buildActiveRecordSelectionState(dk);
+    var bestRecord=selectionState&&selectionState.activeAction?getExerciseBestRecord(selectionState.group.muscle,selectionState.activeActionName):null;
+    var capacityHintText=selectionState&&selectionState.activeAction?getCapacityHintText(dk,selectionState.activeAction.items,bestRecord):'';
+    if(!selectionState){
+        lst.innerHTML='<div class="no-data">暂无训练记录，返回记录页后先添加动作</div>';
+        return;
+    }
+    var htm='<div class="simple-record-wrap">';
+    htm+='<div class="simple-record-toolbar"><div class="simple-record-muscles">';
+    for(var gi=0;gi<selectionState.groups.length;gi++){
+        var muscleGroup=selectionState.groups[gi];
+        htm+='<button class="record-muscle-btn '+muscleGroup.muscle+(muscleGroup.muscle===selectionState.activeMuscle?' active':'')+'" onclick="setRecordMuscleTab(\''+dk+'\',\''+muscleGroup.muscle+'\')"><span class="record-muscle-icon">'+getMuscleIconText(muscleGroup.muscle)+'</span><span class="record-muscle-label">'+(muscleNames[muscleGroup.muscle]||muscleGroup.muscle)+'</span></button>';
+    }
+    htm+='</div><div class="exercise-tabs simple-record-actions">';
+    if(selectionState.group){
+        for(var ai=0;ai<selectionState.group.actions.length;ai++){
+            var action=selectionState.group.actions[ai];
+            var escapedActionName=escapeJsSingleQuotedString(action.name);
+            htm+='<button class="exercise-tab-btn'+(action.name===selectionState.activeActionName?' active':'')+'" onclick="setRecordActionTab(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')">'+escapeHtml(action.name)+'</button>';
+        }
+    }
+    htm+='</div></div>';
+    if(selectionState.activeAction){
+        for(var ii=0;ii<selectionState.displayItems.length;ii++){
+            var item=selectionState.displayItems[ii];
+            var itemVolume=calcEntryVolume(item.exercise);
+            var bestBoxClass=bestRecord&&bestRecord.volume>0&&itemVolume>=bestRecord.volume?' capacity-best-box':'';
+            var setsFlashClass=getRecordValueFlashClass(dk,item.index,'sets');
+            var repsFlashClass=getRecordValueFlashClass(dk,item.index,'reps');
+            var weightFlashClass=getRecordValueFlashClass(dk,item.index,'weight');
+            htm+='<div class="simple-record-card">'+
+                '<div class="simple-record-metrics">'+
+                    '<div class="simple-record-metric"><span class="simple-record-metric-label">组数</span><div class="simple-record-stepper"><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button><span class="simple-record-value-box'+bestBoxClass+'"><span class="adjust-value'+setsFlashClass+'">'+item.exercise.sets+'</span></span><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',-1)">−</button></div></div>'+
+                    '<div class="simple-record-metric"><span class="simple-record-metric-label">次数</span><div class="simple-record-stepper"><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button><span class="simple-record-value-box'+bestBoxClass+'"><span class="adjust-value'+repsFlashClass+'">'+item.exercise.reps+'</span></span><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',-1)">−</button></div></div>'+
+                    '<div class="simple-record-metric"><span class="simple-record-metric-label">重量 kg</span><div class="simple-record-stepper"><button class="adjust-btn" onclick="adjWeight(\''+dk+'\','+item.index+',1)">+</button><input type="number" class="metric-input'+weightFlashClass+bestBoxClass+'" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="0.5" min="0" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><button class="adjust-btn" onclick="adjWeight(\''+dk+'\','+item.index+',-1)">−</button></div></div>'+
+                '</div>'+
+                '<div class="simple-record-card-actions"><button class="delete-btn" onclick="del(\''+dk+'\','+item.index+')" title="删除" aria-label="删除">-</button><button class="copy-btn" onclick="dup(\''+dk+'\','+item.index+')" title="复制" aria-label="复制">+</button></div>'+
+            '</div>';
+        }
+    }else{
+        htm+='<div class="exercise-empty-state">当前部位还没有动作。返回记录页后点击“+ 添加”继续记录。</div>';
+    }
+    if(capacityHintText){
+        htm+='<div class="exercise-capacity-hint" onclick="jumpToRecordFromCapacityHint()" title="点击返回记录页面"><div class="exercise-capacity-hint-text">'+capacityHintText+'</div></div>';
+    }
+    htm+='</div>';
+    lst.innerHTML=htm;
+}
 function getRecordActionClickKey(dk,muscle,segmentId,actionName){
     return dk+'__'+muscle+'__'+actionName;
 }
@@ -2272,40 +2432,29 @@ function showDetail(dk){
     if(!ex.length){
         lst.innerHTML='<div class="no-data">暂无训练记录，点击上方添加</div>';
         if(footer)footer.innerHTML='';
+        renderSimpleRecordDetail(dk);
         updateDetailFooterMetricsVisibility();
         updateDetailTimerButton();
         return;
     }
     var htm='';
-    var groups=getExerciseGroups(ex);
-    var activeMuscle=recordMuscleTabs[getRecordMuscleTabKey(dk)];
-    if(!activeMuscle||!groups.some(function(group){return group.muscle===activeMuscle;})){
-        activeMuscle=groups[0].muscle;
-        recordMuscleTabs[getRecordMuscleTabKey(dk)]=activeMuscle;
-    }
+    var selectionState=buildActiveRecordSelectionState(dk);
+    var groups=selectionState.groups;
+    var activeMuscle=selectionState.activeMuscle;
     htm+='<div class="record-muscle-tabs">';
     for(var gi=0;gi<groups.length;gi++){
         var muscleGroup=groups[gi];
         htm+='<button class="record-muscle-btn '+muscleGroup.muscle+(muscleGroup.muscle===activeMuscle?' active':'')+'" onclick="setRecordMuscleTab(\''+dk+'\',\''+muscleGroup.muscle+'\')"><span class="record-muscle-icon">'+getMuscleIconText(muscleGroup.muscle)+'</span><span class="record-muscle-label">'+(muscleNames[muscleGroup.muscle]||muscleGroup.muscle)+'</span></button>';
     }
     htm+='</div>';
-    var groupIndex=0;
-    for(var gsi=0;gsi<groups.length;gsi++){
-        if(groups[gsi].muscle===activeMuscle){groupIndex=gsi;break;}
-    }
-    var group=groups[groupIndex];
+    var group=selectionState.group;
     var groupExercises=ex.filter(function(exercise){return exercise.muscle===group.muscle;});
     var dayTimeMeta=getDayTimeMeta(dk,groupExercises,group.muscle);
     // Reuse the original day grouping so item indexes still point at data[dk].
     var segmentGroup=group;
     var firstAction=segmentGroup&&segmentGroup.actions[0]?segmentGroup.actions[0]:null;
     var e=firstAction&&firstAction.items[0]?firstAction.items[0].exercise:{muscle:group.muscle};
-    var tabKey=getRecordActionTabKey(dk,group.muscle);
-    var activeActionName=recordActionTabs[tabKey];
-    if(firstAction&&(!activeActionName||!segmentGroup.actionMap[activeActionName])){
-        activeActionName=firstAction.name;
-        recordActionTabs[tabKey]=activeActionName;
-    }
+    var activeActionName=selectionState.activeActionName;
     htm+='<div class="exercise-item">'+
         '<div class="exercise-tabs">';
     if(segmentGroup){
@@ -2316,19 +2465,10 @@ function showDetail(dk){
         }
     }
     htm+='</div>';
-    var activeAction=segmentGroup&&activeActionName?segmentGroup.actionMap[activeActionName]:null;
+    var activeAction=selectionState.activeAction;
     var bestRecord=activeAction?getExerciseBestRecord(e.muscle,activeActionName):null;
     var capacityHintText=activeAction?getCapacityHintText(dk,activeAction.items,bestRecord):'';
-    var displayItems=activeAction&&activeAction.items.length>1
-        ? activeAction.items.slice().sort(function(a,b){
-            var weightA=a&&a.exercise&&a.exercise.weight!=null?Number(a.exercise.weight):0;
-            var weightB=b&&b.exercise&&b.exercise.weight!=null?Number(b.exercise.weight):0;
-            if(isNaN(weightA))weightA=0;
-            if(isNaN(weightB))weightB=0;
-            if(weightB!==weightA)return weightB-weightA;
-            return a.index-b.index;
-        })
-        : (activeAction?activeAction.items:[]);
+    var displayItems=selectionState.displayItems;
     htm+='<div class="exercise-action-group">'+
         '<div class="exercise-tab-panel">';
     if(activeAction){
@@ -2377,11 +2517,11 @@ function showDetail(dk){
                 '<span class="exercise-time-colon">:</span>'+
                 '<span class="exercise-time-part"><input type="text" inputmode="numeric" class="exercise-time-input" value="'+endParts.seconds+'" maxlength="2" spellcheck="false" onchange="setDayTimePart(\''+dk+'\',\''+group.muscle+'\',\'lastUpdatedAt\',\'seconds\',this.value)" /></span>'+
             '</span></span>'+
-        '</div>'+
-        '<div class="exercise-capacity-hint" onclick="jumpToRecordFromCapacityHint()" title="点击返回记录页面"><div class="exercise-capacity-hint-text">'+(capacityHintText||'')+'</div></div>';
+        '</div><div class="exercise-capacity-hint" onclick="jumpToRecordFromCapacityHint()" title="点击返回记录页面"><div class="exercise-capacity-hint-text">'+(capacityHintText||'')+'</div></div>';
     htm+='</div></div>';
     lst.innerHTML=htm;
-    if(footer)footer.innerHTML=footerHtm;
+    if(footer)footer.innerHTML='';
+    renderSimpleRecordDetail(dk);
     updateDetailFooterMetricsVisibility();
     updateDetailTimerButton();
     ensureRecordGroupTimerInterval();
@@ -2676,15 +2816,24 @@ function switchTab(tab,metricMode){
     updateBottomNavState();
     updateDetailTabsState();
     updateAddActionVisibility();
+    relocateDetailAuxiliarySections();
     var recordTab=document.getElementById('tabRecord');
     var volumeTab=document.getElementById('tabVolume');
     var statsTab=document.getElementById('tabStats');
     if(recordTab)recordTab.classList.toggle('active',tab==='record');
     if(volumeTab)volumeTab.classList.toggle('active',tab==='volume');
     if(statsTab)statsTab.classList.toggle('active',tab==='stats');
-    document.getElementById('recordContent').classList.toggle('active',tab==='record');
+    document.getElementById('recordContent').classList.remove('active');
+    document.getElementById('simpleContent').classList.toggle('active',tab==='record');
     document.getElementById('volumeContent').classList.toggle('active',tab==='volume');
     document.getElementById('statsContent').classList.toggle('active',tab==='stats');
+    if(tab==='record'){
+        renderSimpleRecordDetail(selDate);
+        setTimeout(function(){
+            var el=document.getElementById('detailSection');
+            if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+        },50);
+    }
     if(tab==='volume'){
         volumeMetricMode=metricMode||'maxReps';
         volumeMuscle=getActiveRecordMuscle(selDate);
