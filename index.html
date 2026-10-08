@@ -128,10 +128,13 @@
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.28); z-index: 200; align-items: center; justify-content: center; padding: 5px; }
         .modal.show { display: flex; }
         .modal-content { background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(247,248,251,0.9) 40%, rgba(232,236,242,0.82) 100%); -webkit-backdrop-filter: blur(28px) saturate(185%); backdrop-filter: blur(28px) saturate(185%); border: 1px solid rgba(255,255,255,0.8); border-radius: 20px; padding: 14px; width: 100%; max-width: 280px; height: 66vh; max-height: 66vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--highlight), var(--shadow-deep), 0 2px 0 rgba(255,255,255,0.9); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px; }
         .modal-header h2 { font-size: 13px; color: var(--text); }
+        .modal-header-actions { display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; min-width: 0; margin-left: auto; }
         .close-btn { background: none; border: none; color: var(--accent); font-size: 15px; cursor: pointer; }
         .close-btn:active { transform: scale(0.9) rotate(-8deg); }
+        .modal-confirm-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 30px; padding: 0 12px; border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; background: var(--primary-gradient); color: white; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.36), 0 8px 14px rgba(0,113,227,0.18); white-space: nowrap; }
+        .modal-confirm-btn:active { transform: translateY(1px) scale(0.98); }
         .muscle-select { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 10px; }
         .muscle-btn { padding: 8px 6px; border: 1px solid rgba(255,255,255,0.32); border-radius: 10px; color: white; font-size: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.26), inset 0 -4px 10px rgba(0,0,0,0.08), 0 8px 16px rgba(15,23,42,0.12); transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease; }
         .muscle-btn:active { transform: translateY(2px) scale(0.97); }
@@ -597,7 +600,10 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>添加训练</h2>
-                <button class="close-btn" id="closeModal">×</button>
+                <div class="modal-header-actions">
+                    <button class="modal-confirm-btn" id="addExercise" hidden>添加动作</button>
+                    <button class="close-btn" id="closeModal">×</button>
+                </div>
             </div>
             <div class="muscle-select" id="muscleSelect">
                 <button class="muscle-btn chest" data-muscle="chest"><span>❤️</span>胸肌</button>
@@ -614,7 +620,6 @@
                 <div class="form-group inline-field" id="exerciseSetsGroup"><label>组数</label><input type="number" id="exerciseSets" placeholder="如：4" min="1"></div>
                 <div class="form-group inline-field" id="exerciseRepsGroup"><label>次数/组</label><input type="text" id="exerciseReps" placeholder="如：12 或 8-12"></div>
                 <div class="form-group inline-field" id="exerciseWeightGroup"><label>重量(kg)</label><input type="number" id="exerciseWeight" placeholder="如：60" step="1"></div>
-                <button class="add-exercise-btn" id="addExercise">添加动作</button>
             </div>
         </div>
     </div>
@@ -625,6 +630,7 @@
                 <div class="timer-modal-badge" id="timerModalBadge">当前提醒 03:00</div>
                 <div class="timer-modal-header-right">
                     <div class="timer-modal-display-label" id="timerModalDisplayLabel">当前秒表</div>
+                    <button class="modal-confirm-btn" type="button" id="saveTimerReminderBtn">保存提醒</button>
                     <button class="close-btn" id="closeTimerModal">×</button>
                 </div>
             </div>
@@ -643,7 +649,6 @@
                     </div>
                 </div>
                 <div class="timer-modal-actions">
-                    <button class="timer-modal-btn primary" type="button" id="saveTimerReminderBtn">保存提醒</button>
                     <button class="timer-modal-btn secondary" type="button" id="resetTimerFromModalBtn">重新计时</button>
                 </div>
             </div>
@@ -1972,6 +1977,13 @@ function setAddFormMode(mode){
         muscleSelect.hidden=modalMode==='renameAction';
         muscleSelect.style.display=modalMode==='renameAction'?'none':'';
     }
+    updateAddExerciseButtonVisibility();
+}
+function updateAddExerciseButtonVisibility(){
+    var addExerciseBtn=document.getElementById('addExercise');
+    var addForm=document.getElementById('addForm');
+    if(!addExerciseBtn||!addForm)return;
+    addExerciseBtn.hidden=!addForm.classList.contains('show');
 }
 function resetModalState(){
     renameActionState=null;
@@ -1979,6 +1991,7 @@ function resetModalState(){
     setAddFormMode('add');
     document.querySelector('.modal-header h2').textContent='添加训练';
     document.getElementById('addExercise').textContent='添加动作';
+    updateAddExerciseButtonVisibility();
 }
 function bindExerciseNameDropdown(){
     var input=document.getElementById('exerciseName');
@@ -2594,6 +2607,7 @@ function openRecordActionRenameModal(dk,muscle,actionName){
     document.getElementById('addForm').classList.add('show');
     document.querySelector('.modal-header h2').textContent='修改动作名称';
     document.getElementById('addExercise').textContent='确认';
+    updateAddExerciseButtonVisibility();
     fillExerciseNameOptions(muscle);
     document.getElementById('exerciseName').value=actionName;
     closeExerciseNameDropdown();
@@ -3010,14 +3024,15 @@ function adjReps(dk,i,d){
     save();
     showDetail(dk);
 }
-function openM(){if(!selDate){var today=new Date();selDate=getTodayKey();curDate=new Date(today.getFullYear(),today.getMonth(),1);}resetModalState();document.getElementById('modal').classList.add('show');document.getElementById('addForm').classList.remove('show');selMuscle=null;document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});renderAddFormSegmentPicker();var activeMuscle=currentPage==='record'&&selDate?getActiveRecordMuscle(selDate):null;if(activeMuscle)selM(activeMuscle);render();showDetail(selDate);setTimeout(function(){scrollToDateCell(selDate);var el=document.getElementById('modal');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);}
-function closeM(){document.getElementById('modal').classList.remove('show');document.getElementById('addForm').classList.remove('show');selMuscle=null;closeExerciseNameDropdown();resetModalState();renderAddFormSegmentPicker();}
+function openM(){if(!selDate){var today=new Date();selDate=getTodayKey();curDate=new Date(today.getFullYear(),today.getMonth(),1);}resetModalState();document.getElementById('modal').classList.add('show');document.getElementById('addForm').classList.remove('show');updateAddExerciseButtonVisibility();selMuscle=null;document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});renderAddFormSegmentPicker();var activeMuscle=currentPage==='record'&&selDate?getActiveRecordMuscle(selDate):null;if(activeMuscle)selM(activeMuscle);render();showDetail(selDate);setTimeout(function(){scrollToDateCell(selDate);var el=document.getElementById('modal');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);}
+function closeM(){document.getElementById('modal').classList.remove('show');document.getElementById('addForm').classList.remove('show');updateAddExerciseButtonVisibility();selMuscle=null;closeExerciseNameDropdown();resetModalState();renderAddFormSegmentPicker();}
 function selM(m){
     selMuscle=m;
     setAddFormMode('add');
     document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});
     document.querySelector('.muscle-btn[data-muscle="'+m+'"]').classList.add('selected');
     document.getElementById('addForm').classList.add('show');
+    updateAddExerciseButtonVisibility();
     renderAddFormSegmentPicker();
     fillExerciseNameOptions(m);
     var exerciseNameInput=document.getElementById('exerciseName');
@@ -3041,6 +3056,7 @@ function editEx(dk,i){
     document.getElementById('addForm').classList.add('show');
     document.querySelector('.modal-header h2').textContent='编辑训练';
     document.getElementById('addExercise').textContent='保存修改';
+    updateAddExerciseButtonVisibility();
     document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});
     document.querySelector('.muscle-btn[data-muscle="'+e.muscle+'"]').classList.add('selected');
     fillExerciseNameOptions(e.muscle);
