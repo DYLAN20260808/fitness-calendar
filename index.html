@@ -94,6 +94,7 @@
         .page-section.hidden { display: none; }
         .calendar-add-wrap { padding: 16px 0 0; }
         .calendar-add-btn { width: 100%; }
+        .calendar-edit-timestamp { display: flex; justify-content: flex-end; padding: 10px 4px 0; color: var(--muted); font-size: 11px; font-weight: 600; line-height: 1.3; text-align: right; }
         .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; padding: 14px 10px 12px; position: relative; z-index: 1; background: var(--active-page-surface, var(--panel-surface)); border: var(--panel-border); border-radius: var(--panel-radius); box-shadow: var(--panel-shadow); }
         .weekday { text-align: center; padding: 8px 3px; font-weight: 700; color: var(--accent-deep); font-size: 11px; letter-spacing: 0.03em; }
         .day { aspect-ratio: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background: linear-gradient(180deg, var(--surface-top) 0%, var(--surface-mid) 42%, var(--surface-bot) 100%); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); border: 1px solid rgba(255,255,255,0.82); border-radius: 11px; padding: 1px; cursor: pointer; min-height: 16px; box-shadow: var(--highlight), 0 10px 18px rgba(17,24,39,0.08), 0 2px 0 rgba(255,255,255,0.9); overflow: hidden; transform: translateY(0); transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
@@ -189,6 +190,8 @@
         .exercise-row2 { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; font-size: 12px; }
         .exercise-tabs { display: flex; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; margin-bottom: 0; overflow-x: auto; }
         .exercise-tabs::-webkit-scrollbar { display: none; }
+        .exercise-tabs.multi-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: stretch; overflow: visible; }
+        .exercise-tabs.multi-row .exercise-tab-btn { width: 100%; min-width: 0; }
         .exercise-tab-btn { border: 1px solid rgba(0,113,227,0.12); border-radius: 999px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); padding: 4px 10px; font-size: 10px; font-weight: 600; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.06); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .exercise-tab-btn.active { background: var(--primary-gradient); color: #fff; border-color: rgba(255,255,255,0.34); box-shadow: inset 0 1px 0 rgba(255,255,255,0.36), 0 8px 14px rgba(0,113,227,0.18); transform: scale(1.1); }
         .exercise-tab-btn:active { transform: translateY(1px) scale(0.98); box-shadow: inset 0 1px 0 rgba(255,255,255,0.84), 0 3px 8px rgba(0,113,227,0.12); }
@@ -561,6 +564,7 @@
         <div class="calendar-add-wrap">
             <button class="add-exercise-btn calendar-add-btn" onclick="openM()">+ 添加训练</button>
         </div>
+        <div class="calendar-edit-timestamp" id="calendarEditTimestamp">最后改动：--</div>
     </div>
     <div class="detail-section page-section hidden" id="detailSection">
         <div class="tab-content" id="recordContent">
@@ -1258,6 +1262,16 @@ function rememberCustomExerciseName(m,name){
 }
 hydrateCustomExerciseNamesFromData();
 function pad(n){return String(n).padStart(2,'0');}
+function formatLastModifiedLabel(value){
+    var date=new Date(value);
+    if(isNaN(date.getTime()))return '最后改动：--';
+    return '最后改动：'+date.getFullYear()+'-'+pad(date.getMonth()+1)+'-'+pad(date.getDate())+' '+pad(date.getHours())+':'+pad(date.getMinutes())+':'+pad(date.getSeconds());
+}
+function updateCalendarEditTimestamp(){
+    var timestampEl=document.getElementById('calendarEditTimestamp');
+    if(!timestampEl)return;
+    timestampEl.textContent=formatLastModifiedLabel(document.lastModified);
+}
 function getNowTimestamp(){
     return Date.now();
 }
@@ -2535,7 +2549,8 @@ function renderSimpleRecordDetail(dk){
         var muscleGroup=selectionState.groups[gi];
         htm+='<button class="record-muscle-btn '+muscleGroup.muscle+(muscleGroup.muscle===selectionState.activeMuscle?' active':'')+'" onclick="setRecordMuscleTab(\''+dk+'\',\''+muscleGroup.muscle+'\')"><span class="record-muscle-icon">'+getMuscleIconText(muscleGroup.muscle)+'</span><span class="record-muscle-label">'+(muscleNames[muscleGroup.muscle]||muscleGroup.muscle)+'</span></button>';
     }
-    htm+='</div><div class="exercise-tabs simple-record-actions">';
+    var simpleActionTabsClass='exercise-tabs simple-record-actions'+(selectionState.group&&selectionState.group.actions.length>4?' multi-row':'');
+    htm+='</div><div class="'+simpleActionTabsClass+'">';
     if(selectionState.group){
         for(var ai=0;ai<selectionState.group.actions.length;ai++){
             var action=selectionState.group.actions[ai];
@@ -2768,8 +2783,9 @@ function showDetail(dk){
     var firstAction=segmentGroup&&segmentGroup.actions[0]?segmentGroup.actions[0]:null;
     var e=firstAction&&firstAction.items[0]?firstAction.items[0].exercise:{muscle:group.muscle};
     var activeActionName=selectionState.activeActionName;
+    var actionTabsClass='exercise-tabs'+(segmentGroup&&segmentGroup.actions.length>4?' multi-row':'');
     htm+='<div class="exercise-item">'+
-        '<div class="exercise-tabs">';
+        '<div class="'+actionTabsClass+'">';
     if(segmentGroup){
         for(var ai=0;ai<segmentGroup.actions.length;ai++){
             var action=segmentGroup.actions[ai];
@@ -3117,6 +3133,7 @@ document.getElementById('resetTimerFromModalBtn').onclick=resetTimerFromModal;
 document.querySelectorAll('.muscle-btn').forEach(function(b){b.onclick=function(){selM(this.dataset.muscle);};});
 document.getElementById('addExercise').onclick=addEx;
 bindExerciseNameDropdown();
+updateCalendarEditTimestamp();
 window.addEventListener('resize',syncAllDetailWeightInputFontSizes);
 if(window.visualViewport)window.visualViewport.addEventListener('resize',syncAllDetailWeightInputFontSizes);
 function triggerButtonTapFeedback(btn){
