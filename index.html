@@ -2634,14 +2634,23 @@ function confirmRecordActionRename(){
         return;
     }
     if(newName!==oldName){
+        var renamed=false;
         for(var idx=0;idx<(data[dk]||[]).length;idx++){
             if(data[dk][idx].muscle===muscle&&data[dk][idx].name===oldName){
                 data[dk][idx].name=newName;
+                renamed=true;
             }
         }
-        rememberCustomExerciseName(muscle,newName);
-        recordActionTabs[getRecordActionTabKey(dk,muscle)]=newName;
-        save();
+        if(renamed){
+            rememberCustomExerciseName(muscle,newName);
+            recordActionTabs[getRecordActionTabKey(dk,muscle)]=newName;
+            if(selDate===dk&&selMuscle===muscle){
+                fillExerciseNameOptions(muscle);
+                var exerciseNameInput=document.getElementById('exerciseName');
+                if(exerciseNameInput)exerciseNameInput.value=newName;
+            }
+            save();
+        }
     }
     closeM();
     render();
