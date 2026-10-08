@@ -302,7 +302,7 @@
         .metric-input.value-flash-up { animation: valueFlashUp 0.48s ease-out; }
         .adjust-value.value-flash-down,
         .metric-input.value-flash-down { animation: valueFlashDown 0.48s ease-out; }
-        .metric-input { width: clamp(46px, 13vw, 56px); height: clamp(22px, 6vw, 24px); padding: 0 4px 0 8px; border: 1px solid rgba(0,113,227,0.14); border-radius: 7px; background: rgba(255,255,255,0.96); color: var(--text); font-size: clamp(13px, 3.4vw, 16px); text-align: left; min-width: 0; }
+        .metric-input { width: clamp(56px, 16vw, 72px); height: clamp(22px, 6vw, 24px); padding: 0 6px 0 8px; border: 1px solid rgba(0,113,227,0.14); border-radius: 7px; background: rgba(255,255,255,0.96); color: var(--text); font-size: clamp(13px, 3.4vw, 16px); text-align: left; min-width: 0; }
         .metric-input:focus { outline: none; border-color: rgba(0,113,227,0.42); box-shadow: 0 0 0 2px rgba(0,113,227,0.12); }
         @keyframes valueFlashUp {
             0% { color: #16a34a; transform: scale(1.18); text-shadow: 0 0 10px rgba(22,163,74,0.24); }
@@ -913,8 +913,8 @@ function openTimerModal(dk,muscle,segmentId,forceAlert){
     var modal=document.getElementById('timerModal');
     if(!modal||!dk||!muscle)return;
     timerModalContext={dateKey:dk,muscle:muscle,segmentId:segmentId||getDefaultSegmentId()};
-    timerModalAlertMode=!!forceAlert;
     var thresholdSeconds=Math.max(10,parseInt(timerReminderConfig.thresholdSeconds,10)||180);
+    timerModalAlertMode=!!forceAlert||getRecordGroupTimerElapsedMs(dk,muscle,segmentId)>=thresholdSeconds*1000;
     document.getElementById('timerReminderMinutes').value=String(Math.floor(thresholdSeconds/60));
     document.getElementById('timerReminderSeconds').value=String(thresholdSeconds%60);
     syncTimerModalDisplay();
@@ -960,7 +960,10 @@ function maybeTriggerRecordGroupTimerReminder(dk,muscle,segmentId,elapsedMs){
     if(recordGroupTimerReminderState[timerKey])return;
     if(elapsedMs<timerReminderConfig.thresholdSeconds*1000)return;
     recordGroupTimerReminderState[timerKey]=true;
-    openTimerModal(dk,muscle,segmentId,true);
+    if(timerModalContext&&timerModalContext.dateKey===dk&&timerModalContext.muscle===muscle&&timerModalContext.segmentId===normalizeSegmentIdValue(segmentId)){
+        timerModalAlertMode=true;
+        syncTimerModalDisplay();
+    }
 }
 function renderRecordGroupTimerButtons(){
     document.querySelectorAll('.exercise-timer-btn').forEach(function(button){
@@ -2521,7 +2524,8 @@ function renderSimpleRecordDetail(dk){
         for(var ai=0;ai<selectionState.group.actions.length;ai++){
             var action=selectionState.group.actions[ai];
             var escapedActionName=escapeJsSingleQuotedString(action.name);
-            htm+='<button class="exercise-tab-btn'+(action.name===selectionState.activeActionName?' active':'')+'" onclick="setRecordActionTab(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')">'+escapeHtml(action.name)+'</button>';
+            var actionIndex=action.items&&action.items[0]?action.items[0].index:-1;
+            htm+='<button class="exercise-tab-btn'+(action.name===selectionState.activeActionName?' active':'')+'" onclick="handleRecordActionTabClick(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" onmousedown="startRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+')" onmouseup="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" onmouseleave="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchstart="startRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+')" ontouchend="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchcancel="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" title="点击切换动作，长按修改动作名称">'+escapeHtml(action.name)+'</button>';
         }
     }
     htm+='</div></div>';
@@ -2567,11 +2571,13 @@ function getRecordValueFlashClass(dk,index,field){
     return state.direction==='down'?' value-flash-down':' value-flash-up';
 }
 function handleRecordActionTabClick(dk,muscle,segmentId,actionName){
-    var activeActionName=recordActionTabs[getRecordActionTabKey(dk,muscle)];
-    if(activeActionName===actionName){
-        openRecordActionRenameModal(dk,muscle,actionName);
+    var timerKey=getRecordActionClickKey(dk,muscle,segmentId,actionName);
+    if(recordActionLongPressTriggered[timerKey]){
+        delete recordActionLongPressTriggered[timerKey];
         return;
     }
+    var activeActionName=recordActionTabs[getRecordActionTabKey(dk,muscle)];
+    if(activeActionName===actionName)return;
     setRecordActionTab(dk,muscle,segmentId,actionName);
 }
 function openRecordActionRenameModal(dk,muscle,actionName){
@@ -2631,7 +2637,7 @@ function handleRecordActionTabDoubleClick(dk,muscle,segmentId,actionName,index,e
         delete recordActionClickTimers[timerKey];
     }
     cancelRecordActionLongPress(dk,muscle,segmentId,actionName);
-    editNameGroup(dk,index,el);
+    openRecordActionRenameModal(dk,muscle,actionName);
 }
 function startRecordActionLongPress(dk,muscle,segmentId,actionName,index,el){
     var timerKey=getRecordActionClickKey(dk,muscle,segmentId,actionName);
@@ -2640,7 +2646,7 @@ function startRecordActionLongPress(dk,muscle,segmentId,actionName,index,el){
     recordActionLongPressTimers[timerKey]=setTimeout(function(){
         delete recordActionLongPressTimers[timerKey];
         recordActionLongPressTriggered[timerKey]=true;
-        editNameGroup(dk,index,el);
+        openRecordActionRenameModal(dk,muscle,actionName);
     },450);
 }
 function cancelRecordActionLongPress(dk,muscle,segmentId,actionName){
@@ -2649,6 +2655,23 @@ function cancelRecordActionLongPress(dk,muscle,segmentId,actionName){
         clearTimeout(recordActionLongPressTimers[timerKey]);
         delete recordActionLongPressTimers[timerKey];
     }
+}
+function syncDetailWeightInputFontSize(input){
+    if(!input)return;
+    var text=String(input.value||'').trim();
+    var baseFontSize=parseFloat(window.getComputedStyle(input).fontSize)||16;
+    var nextFontSize=baseFontSize;
+    if(text.length>=6)nextFontSize=Math.max(10,baseFontSize-6);
+    else if(text.length===5)nextFontSize=Math.max(11,baseFontSize-4);
+    else if(text.length===4)nextFontSize=Math.max(12,baseFontSize-2);
+    input.style.fontSize=nextFontSize+'px';
+}
+function syncDetailWeightInputFontSizes(root){
+    if(!root)return;
+    // Keep three-digit and decimal weights fully visible in the record-page inputs.
+    root.querySelectorAll('.metric-input').forEach(function(input){
+        syncDetailWeightInputFontSize(input);
+    });
 }
 function showDetail(dk){
     var lst=document.getElementById('exerciseList');
@@ -2686,7 +2709,8 @@ function showDetail(dk){
         for(var ai=0;ai<segmentGroup.actions.length;ai++){
             var action=segmentGroup.actions[ai];
             var escapedActionName=escapeJsSingleQuotedString(action.name);
-            htm+='<button class="exercise-tab-btn'+(action.name===activeActionName?' active':'')+'" onclick="handleRecordActionTabClick(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" title="点击未高亮动作切换，点击当前高亮动作修改名称">'+escapeHtml(action.name)+'</button>';
+            var actionIndex=action.items&&action.items[0]?action.items[0].index:-1;
+            htm+='<button class="exercise-tab-btn'+(action.name===activeActionName?' active':'')+'" onclick="handleRecordActionTabClick(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ondblclick="handleRecordActionTabDoubleClick(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this)" onmousedown="startRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this)" onmouseup="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" onmouseleave="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchstart="startRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this)" ontouchend="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchcancel="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" title="点击切换动作，长按修改动作名称">'+escapeHtml(action.name)+'</button>';
         }
     }
     htm+='</div>';
@@ -2715,7 +2739,7 @@ function showDetail(dk){
             htm+='<div class="exercise-subitem'+rowBestClass+'">'+
                 '<div class="param-group"><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value count-slot'+setsFlashClass+'">'+item.exercise.sets+'</span><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">组</span></div>'+
                 '<div class="param-group"><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value count-slot'+repsFlashClass+'">'+item.exercise.reps+'</span><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">次</span></div>'+
-                '<div class="param-group"><input type="number" class="metric-input'+weightFlashClass+'" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="0.5" min="0" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><span class="param-label">kg</span></div>'+
+                '<div class="param-group"><input type="number" class="metric-input'+weightFlashClass+'" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="0.5" min="0" oninput="syncDetailWeightInputFontSize(this)" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><span class="param-label">kg</span></div>'+
                 '<button class="delete-btn" onclick="del(\''+dk+'\','+item.index+')" title="删除" aria-label="删除">-</button>'+
                 '<button class="copy-btn" onclick="dup(\''+dk+'\','+item.index+')" title="复制" aria-label="复制">+</button>'+
             '</div>';
@@ -3201,6 +3225,7 @@ function showVolumeChart(){
                 });
             if(hasData&&!firstAvailableMuscle)firstAvailableMuscle=muBtn;
             var btnActive=(volumeMuscle===muBtn)?' active':'';
+                syncDetailWeightInputFontSizes(lst);
             var btnEmpty=!hasData?' is-empty':'';
             htm+='<button class="stats-btn muscle-filter-btn '+muBtn+btnActive+btnEmpty+'" onclick="setVolumeMuscle(\''+muBtn+'\')"><span class="stats-btn-icon">'+getMuscleIconText(muBtn)+'</span><span class="stats-btn-label">'+muscleNames[muBtn]+'</span></button>';
         }
