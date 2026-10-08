@@ -303,6 +303,9 @@
         .adjust-value.value-flash-down,
         .metric-input.value-flash-down { animation: valueFlashDown 0.48s ease-out; }
         .metric-input { width: clamp(56px, 16vw, 72px); height: clamp(22px, 6vw, 24px); padding: 0 6px 0 8px; border: 1px solid rgba(0,113,227,0.14); border-radius: 7px; background: rgba(255,255,255,0.96); color: var(--text); font-size: clamp(13px, 3.4vw, 16px); text-align: left; min-width: 0; }
+        .metric-input[type="number"] { appearance: textfield; -moz-appearance: textfield; }
+        .metric-input[type="number"]::-webkit-outer-spin-button,
+        .metric-input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .metric-input:focus { outline: none; border-color: rgba(0,113,227,0.42); box-shadow: 0 0 0 2px rgba(0,113,227,0.12); }
         @keyframes valueFlashUp {
             0% { color: #16a34a; transform: scale(1.18); text-shadow: 0 0 10px rgba(22,163,74,0.24); }
@@ -610,7 +613,7 @@
                 <div class="form-group" id="exerciseNameGroup"><label>动作名称</label><div class="dropdown-field"><div class="dropdown-control"><input type="text" id="exerciseName" class="dropdown-input" placeholder="可选择或手动输入" autocomplete="off"><button type="button" class="dropdown-toggle-btn" id="exerciseNameToggle" aria-label="展开动作名称下拉" aria-expanded="false">▾</button></div><div class="dropdown-list" id="exerciseNameOptions"></div></div></div>
                 <div class="form-group inline-field" id="exerciseSetsGroup"><label>组数</label><input type="number" id="exerciseSets" placeholder="如：4" min="1"></div>
                 <div class="form-group inline-field" id="exerciseRepsGroup"><label>次数/组</label><input type="text" id="exerciseReps" placeholder="如：12 或 8-12"></div>
-                <div class="form-group inline-field" id="exerciseWeightGroup"><label>重量(kg)</label><input type="number" id="exerciseWeight" placeholder="如：60" step="0.5"></div>
+                <div class="form-group inline-field" id="exerciseWeightGroup"><label>重量(kg)</label><input type="number" id="exerciseWeight" placeholder="如：60" step="1"></div>
                 <button class="add-exercise-btn" id="addExercise">添加动作</button>
             </div>
         </div>
@@ -2541,7 +2544,7 @@ function renderSimpleRecordDetail(dk){
                 '<div class="simple-record-metrics">'+
                     '<div class="simple-record-metric"><span class="simple-record-metric-label">组数</span><div class="simple-record-stepper"><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button><span class="simple-record-value-box'+bestBoxClass+'"><span class="adjust-value'+setsFlashClass+'">'+item.exercise.sets+'</span></span><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',-1)">−</button></div></div>'+
                     '<div class="simple-record-metric"><span class="simple-record-metric-label">次数</span><div class="simple-record-stepper"><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button><span class="simple-record-value-box'+bestBoxClass+'"><span class="adjust-value'+repsFlashClass+'">'+item.exercise.reps+'</span></span><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',-1)">−</button></div></div>'+
-                    '<div class="simple-record-metric"><span class="simple-record-metric-label">重量 kg</span><div class="simple-record-stepper"><button class="adjust-btn" onclick="adjWeight(\''+dk+'\','+item.index+',1)">+</button><input type="number" class="metric-input'+weightFlashClass+bestBoxClass+'" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="0.5" min="0" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><button class="adjust-btn" onclick="adjWeight(\''+dk+'\','+item.index+',-1)">−</button></div></div>'+
+                    '<div class="simple-record-metric"><span class="simple-record-metric-label">重量 kg</span><div class="simple-record-stepper"><button class="adjust-btn" onclick="adjWeight(\''+dk+'\','+item.index+',1)">+</button><input type="number" class="metric-input'+weightFlashClass+bestBoxClass+'" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="1" min="0" oninput="syncDetailWeightInputFontSize(this)" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><button class="adjust-btn" onclick="adjWeight(\''+dk+'\','+item.index+',-1)">−</button></div></div>'+
                 '</div>'+
                 '<div class="simple-record-card-actions"><button class="delete-btn" onclick="del(\''+dk+'\','+item.index+')" title="删除" aria-label="删除">-</button><button class="copy-btn" onclick="dup(\''+dk+'\','+item.index+')" title="复制" aria-label="复制">+</button></div>'+
             '</div>';
@@ -2554,6 +2557,7 @@ function renderSimpleRecordDetail(dk){
     }
     htm+='</div>';
     lst.innerHTML=htm;
+    syncDetailWeightInputFontSizes(lst);
 }
 function getRecordActionClickKey(dk,muscle,segmentId,actionName){
     return dk+'__'+muscle+'__'+actionName;
@@ -2659,11 +2663,45 @@ function cancelRecordActionLongPress(dk,muscle,segmentId,actionName){
 function syncDetailWeightInputFontSize(input){
     if(!input)return;
     var text=String(input.value||'').trim();
-    var baseFontSize=parseFloat(window.getComputedStyle(input).fontSize)||16;
+    input.style.fontSize='';
+    var computed=window.getComputedStyle(input);
+    var baseFontSize=parseFloat(computed.fontSize)||16;
+    if(!text){
+        input.style.fontSize=baseFontSize+'px';
+        return;
+    }
+    if(!syncDetailWeightInputFontSize.measureEl){
+        var measureEl=document.createElement('span');
+        measureEl.style.position='absolute';
+        measureEl.style.visibility='hidden';
+        measureEl.style.pointerEvents='none';
+        measureEl.style.whiteSpace='pre';
+        measureEl.style.left='-9999px';
+        measureEl.style.top='-9999px';
+        document.body.appendChild(measureEl);
+        syncDetailWeightInputFontSize.measureEl=measureEl;
+    }
+    var measureEl=syncDetailWeightInputFontSize.measureEl;
+    measureEl.style.fontFamily=computed.fontFamily;
+    measureEl.style.fontWeight=computed.fontWeight;
+    measureEl.style.fontStyle=computed.fontStyle;
+    measureEl.style.letterSpacing=computed.letterSpacing;
+    measureEl.style.fontVariantNumeric=computed.fontVariantNumeric;
+    var inputWidth=input.clientWidth;
+    var paddingLeft=parseFloat(computed.paddingLeft)||0;
+    var paddingRight=parseFloat(computed.paddingRight)||0;
+    var availableWidth=Math.max(18,inputWidth-paddingLeft-paddingRight-2);
     var nextFontSize=baseFontSize;
-    if(text.length>=6)nextFontSize=Math.max(10,baseFontSize-6);
-    else if(text.length===5)nextFontSize=Math.max(11,baseFontSize-4);
-    else if(text.length===4)nextFontSize=Math.max(12,baseFontSize-2);
+    // Fit the current weight text into the visible input width instead of relying on fixed digit thresholds.
+    for(var size=baseFontSize;size>=10;size-=0.5){
+        measureEl.style.fontSize=size+'px';
+        measureEl.textContent=text;
+        if(measureEl.getBoundingClientRect().width<=availableWidth){
+            nextFontSize=size;
+            break;
+        }
+        nextFontSize=size;
+    }
     input.style.fontSize=nextFontSize+'px';
 }
 function syncDetailWeightInputFontSizes(root){
@@ -2672,6 +2710,10 @@ function syncDetailWeightInputFontSizes(root){
     root.querySelectorAll('.metric-input').forEach(function(input){
         syncDetailWeightInputFontSize(input);
     });
+}
+function syncAllDetailWeightInputFontSizes(){
+    syncDetailWeightInputFontSizes(document.getElementById('exerciseList'));
+    syncDetailWeightInputFontSizes(document.getElementById('simpleExerciseList'));
 }
 function showDetail(dk){
     var lst=document.getElementById('exerciseList');
@@ -2739,7 +2781,7 @@ function showDetail(dk){
             htm+='<div class="exercise-subitem'+rowBestClass+'">'+
                 '<div class="param-group"><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value count-slot'+setsFlashClass+'">'+item.exercise.sets+'</span><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">组</span></div>'+
                 '<div class="param-group"><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value count-slot'+repsFlashClass+'">'+item.exercise.reps+'</span><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">次</span></div>'+
-                '<div class="param-group"><input type="number" class="metric-input'+weightFlashClass+'" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="0.5" min="0" oninput="syncDetailWeightInputFontSize(this)" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><span class="param-label">kg</span></div>'+
+                '<div class="param-group"><input type="number" class="metric-input'+weightFlashClass+'" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="1" min="0" oninput="syncDetailWeightInputFontSize(this)" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><span class="param-label">kg</span></div>'+
                 '<button class="delete-btn" onclick="del(\''+dk+'\','+item.index+')" title="删除" aria-label="删除">-</button>'+
                 '<button class="copy-btn" onclick="dup(\''+dk+'\','+item.index+')" title="复制" aria-label="复制">+</button>'+
             '</div>';
@@ -2925,7 +2967,7 @@ function setWeightValue(dk,i,val){
     save();
     showDetail(dk);
 }
-function adjWeight(dk,i,d){var updatedAt=getNowTimestampForDateKey(dk);data[dk][i].weight=Math.max(0,(data[dk][i].weight||0)+d*2.5);resetExerciseSetsOnWeightChange(data[dk][i]);data[dk][i].updatedAt=updatedAt;syncRecordGroupLatestTime(dk,data[dk][i].muscle,updatedAt);resetRecordGroupTimer(dk,data[dk][i].muscle);save();showDetail(dk);}
+function adjWeight(dk,i,d){var updatedAt=getNowTimestampForDateKey(dk);data[dk][i].weight=Math.max(0,(data[dk][i].weight||0)+d);resetExerciseSetsOnWeightChange(data[dk][i]);data[dk][i].updatedAt=updatedAt;syncRecordGroupLatestTime(dk,data[dk][i].muscle,updatedAt);resetRecordGroupTimer(dk,data[dk][i].muscle);save();showDetail(dk);}
 function dup(dk,i){
     if(!data[dk]||!data[dk][i])return;
     var source=data[dk][i];
@@ -3050,6 +3092,8 @@ document.getElementById('resetTimerFromModalBtn').onclick=resetTimerFromModal;
 document.querySelectorAll('.muscle-btn').forEach(function(b){b.onclick=function(){selM(this.dataset.muscle);};});
 document.getElementById('addExercise').onclick=addEx;
 bindExerciseNameDropdown();
+window.addEventListener('resize',syncAllDetailWeightInputFontSizes);
+if(window.visualViewport)window.visualViewport.addEventListener('resize',syncAllDetailWeightInputFontSizes);
 function triggerButtonTapFeedback(btn){
     if(!btn||btn.disabled)return;
     btn.classList.remove('tap-feedback');
@@ -3225,7 +3269,6 @@ function showVolumeChart(){
                 });
             if(hasData&&!firstAvailableMuscle)firstAvailableMuscle=muBtn;
             var btnActive=(volumeMuscle===muBtn)?' active':'';
-                syncDetailWeightInputFontSizes(lst);
             var btnEmpty=!hasData?' is-empty':'';
             htm+='<button class="stats-btn muscle-filter-btn '+muBtn+btnActive+btnEmpty+'" onclick="setVolumeMuscle(\''+muBtn+'\')"><span class="stats-btn-icon">'+getMuscleIconText(muBtn)+'</span><span class="stats-btn-label">'+muscleNames[muBtn]+'</span></button>';
         }
