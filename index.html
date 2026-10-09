@@ -801,7 +801,6 @@ var pageDateFooterAction = '';
 var bottomNavCollapsed = readStoredJson(STORAGE_KEYS.bottomNavCollapsed,true);
 var timerReminderConfig = normalizeTimerReminderConfig(readStoredJson(STORAGE_KEYS.timerReminderConfig,{}));
 var exerciseDropdownOpen = false;
-var recordActionClickTimers = {};
 var recordActionLongPressTimers = {};
 var recordActionLongPressTriggered = {};
 var detailTimerClickTimers = {};
@@ -1287,12 +1286,6 @@ function formatClockTime(timestamp){
     var date=new Date(normalized);
     return pad(date.getHours())+':'+pad(date.getMinutes())+':'+pad(date.getSeconds());
 }
-function formatClockTimeInput(timestamp){
-    var normalized=normalizeTimestampValue(timestamp);
-    if(!normalized)return '';
-    var date=new Date(normalized);
-    return pad(date.getHours())+':'+pad(date.getMinutes())+':'+pad(date.getSeconds());
-}
 function getClockParts(timestamp){
     var normalized=normalizeTimestampValue(timestamp);
     if(!normalized)return {hours:'00',minutes:'00',seconds:'00'};
@@ -1691,16 +1684,6 @@ function syncRecordGroupLatestTime(dk,muscle,timestamp,segmentId){
     if(!dk||!muscle)return;
     updateDayLatestTimeForMuscle(dk,muscle,timestamp,true,segmentId);
 }
-function adjustDayTimePart(dk,field,part,delta){
-    if(part!=='hours'&&part!=='minutes'&&part!=='seconds')return;
-    var exercises=data[dk]||[];
-    var timeMeta=getDayTimeMeta(dk,exercises);
-    var baseParts=getClockParts(timeMeta[field]);
-    var maxValue=part==='hours'?24:60;
-    var currentValue=parseInt(baseParts[part],10)||0;
-    baseParts[part]=(currentValue+delta+maxValue)%maxValue;
-    setDayTimeValue(dk,null,field,buildClockValueFromParts(baseParts));
-}
 function getExerciseNamesFromData(m){
     var latestByName={};
     var dateKeys=Object.keys(data);
@@ -1751,6 +1734,27 @@ function getExerciseHistoryDefaults(m,name){
         }
     }
     return bestMatch;
+}
+function getMuscleMaxWeight(m){
+    var maxWeight=null;
+    var dateKeys=Object.keys(data);
+    for(var di=0;di<dateKeys.length;di++){
+        var exercises=data[dateKeys[di]]||[];
+        for(var ei=0;ei<exercises.length;ei++){
+            var exercise=exercises[ei];
+            if(!exercise||exercise.muscle!==m)continue;
+            var weight=exercise.weight==null?null:Number(exercise.weight);
+            if(weight===null||isNaN(weight))continue;
+            if(maxWeight===null||weight>maxWeight)maxWeight=weight;
+        }
+    }
+    return maxWeight;
+}
+function applyNewExerciseDefaults(m){
+    document.getElementById('exerciseSets').value='1';
+    document.getElementById('exerciseReps').value=m==='shoulder'?'16':'10';
+    var defaultWeight=getMuscleMaxWeight(m);
+    document.getElementById('exerciseWeight').value=defaultWeight==null?'':defaultWeight;
 }
 function extractMaxRepsValue(repsText){
     var matches=String(repsText||'').match(/\d+(?:\.\d+)?/g);
@@ -2015,6 +2019,16 @@ function bindExerciseNameDropdown(){
         closeExerciseNameDropdown();
     };
     input.oninput=function(){
+        if(modalMode!=='renameAction'&&selMuscle){
+            var typedName=input.value.trim();
+            var defaults=typedName?getExerciseHistoryDefaults(selMuscle,typedName):null;
+            if(defaults){
+                document.getElementById('exerciseReps').value=defaults.reps||'';
+                document.getElementById('exerciseWeight').value=defaults.weight==null?'':defaults.weight;
+            }else{
+                applyNewExerciseDefaults(selMuscle);
+            }
+        }
         closeExerciseNameDropdown();
     };
     toggleBtn.onclick=function(e){
@@ -2068,14 +2082,6 @@ function focusCalendarDate(dk){
     curDate=new Date(Number(parts[0]),Number(parts[1])-1,1);
     render();
     setTimeout(function(){scrollToDateCell(dk);},50);
-}
-function goToCalendarForSelectedDate(){
-    if(!selDate){
-        switchPage('calendar');
-        return;
-    }
-    switchPage('calendar');
-    focusCalendarDate(selDate);
 }
 function getOffsetDateKey(offsetDays){
     var baseDate=new Date();
@@ -2377,29 +2383,6 @@ function calcEntryVolume(exercise){
     if(isNaN(weight))weight=0;
     return sets*reps*weight;
 }
-function getExerciseMaxWeightVolumeTarget(m,name){
-    var maxWeight=0;
-    var bestVolumeAtMaxWeight=0;
-    var dateKeys=Object.keys(data);
-    for(var di=0;di<dateKeys.length;di++){
-        var exercises=data[dateKeys[di]]||[];
-        for(var ei=0;ei<exercises.length;ei++){
-            var exercise=exercises[ei];
-            var exerciseName=(exercise.name||'').trim();
-            if(exercise.muscle!==m||exerciseName!==name)continue;
-            var weight=exercise.weight==null?0:Number(exercise.weight);
-            if(isNaN(weight))weight=0;
-            var volume=calcEntryVolume(exercise);
-            if(weight>maxWeight){
-                maxWeight=weight;
-                bestVolumeAtMaxWeight=volume;
-                continue;
-            }
-            if(weight===maxWeight&&volume>bestVolumeAtMaxWeight)bestVolumeAtMaxWeight=volume;
-        }
-    }
-    return {maxWeight:maxWeight,bestVolume:bestVolumeAtMaxWeight};
-}
 function calcMaxWeight(ex){
     var maxWeight=0;
     for(var i=0;i<ex.length;i++){
@@ -2673,11 +2656,6 @@ function confirmRecordActionRename(){
     switchPage('record');
 }
 function handleRecordActionTabDoubleClick(dk,muscle,segmentId,actionName,index,el){
-    var timerKey=getRecordActionClickKey(dk,muscle,segmentId,actionName);
-    if(recordActionClickTimers[timerKey]){
-        clearTimeout(recordActionClickTimers[timerKey]);
-        delete recordActionClickTimers[timerKey];
-    }
     cancelRecordActionLongPress(dk,muscle,segmentId,actionName);
     openRecordActionRenameModal(dk,muscle,actionName);
 }
@@ -2858,19 +2836,6 @@ function showDetail(dk){
     renderRecordGroupTimerButtons();
     if(document.getElementById('statsContent').classList.contains('active'))showStats();
 }
-function moveExerciseGroup(dk,groupIdx,delta){
-    var ex=data[dk]||[];
-    if(!ex.length)return;
-    var groups=getExerciseGroups(ex);
-    var targetIdx=groupIdx+delta;
-    if(targetIdx<0||targetIdx>=groups.length)return;
-    var movedGroup=groups.splice(groupIdx,1)[0];
-    groups.splice(targetIdx,0,movedGroup);
-    data[dk]=reorderExercisesByGroups(groups);
-    save();
-    render();
-    showDetail(dk);
-}
 function getTopExerciseMuscle(dk){
     var ex=data[dk]||[];
     if(!ex.length)return null;
@@ -2911,33 +2876,6 @@ function getTopSelectedRecordInfo(dk){
         activeActionName=segmentGroup.actions[0].name;
     }
     return {muscle:topGroup.muscle||null,name:activeActionName||''};
-}
-function editName(dk,i,el){
-    var curName=data[dk][i].name;
-    var input=document.createElement('input');
-    input.type='text';
-    input.className='exercise-name-input';
-    input.value=curName;
-    input.onblur=function(){
-        var newName=this.value.trim();
-        if(newName&&newName!==curName){
-            data[dk][i].name=newName;
-            save();
-        }
-        showDetail(dk);
-    };
-    input.onkeydown=function(e){
-        if(e.key==='Enter')this.blur();
-        if(e.key==='Escape'){this.value=curName;this.blur();}
-    };
-    el.innerHTML='';
-    el.appendChild(input);
-    input.focus();
-    input.select();
-}
-function editNameGroup(dk,i,el){
-    if(!data[dk]||!data[dk][i])return;
-    openRecordActionRenameModal(dk,data[dk][i].muscle,data[dk][i].name);
 }
 function renameExerciseAcrossData(targetMuscle,oldName,newName){
     var changed=false;
@@ -3049,7 +2987,7 @@ function adjReps(dk,i,d){
     save();
     showDetail(dk);
 }
-function openM(){if(!selDate){var today=new Date();selDate=getTodayKey();curDate=new Date(today.getFullYear(),today.getMonth(),1);}resetModalState();document.getElementById('modal').classList.add('show');document.getElementById('addForm').classList.remove('show');updateAddExerciseButtonVisibility();selMuscle=null;document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});renderAddFormSegmentPicker();var activeMuscle=currentPage==='record'&&selDate?getActiveRecordMuscle(selDate):null;if(activeMuscle)selM(activeMuscle);render();showDetail(selDate);setTimeout(function(){scrollToDateCell(selDate);var el=document.getElementById('modal');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);}
+function openM(){if(!selDate){var today=new Date();selDate=getTodayKey();curDate=new Date(today.getFullYear(),today.getMonth(),1);}resetModalState();document.getElementById('modal').classList.add('show');document.getElementById('addForm').classList.remove('show');updateAddExerciseButtonVisibility();selMuscle=null;document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});document.getElementById('exerciseName').value='';document.getElementById('exerciseSets').value='';document.getElementById('exerciseReps').value='';document.getElementById('exerciseWeight').value='';closeExerciseNameDropdown();renderAddFormSegmentPicker();render();showDetail(selDate);setTimeout(function(){scrollToDateCell(selDate);var el=document.getElementById('modal');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);}
 function closeM(){document.getElementById('modal').classList.remove('show');document.getElementById('addForm').classList.remove('show');updateAddExerciseButtonVisibility();selMuscle=null;closeExerciseNameDropdown();resetModalState();renderAddFormSegmentPicker();}
 function selM(m){
     selMuscle=m;
@@ -3065,10 +3003,7 @@ function selM(m){
     setTimeout(function(){
         openExerciseNameDropdown();
     },0);
-    document.getElementById('exerciseSets').value='1';
-    document.getElementById('exerciseReps').value=m==='shoulder'?'16':'10';
-    var defaultWeight = (m==='chest'||m==='back')?'100':'20';
-    document.getElementById('exerciseWeight').value=defaultWeight;
+    applyNewExerciseDefaults(m);
 }
 function editEx(dk,i){
     editIdx=i;
@@ -3698,9 +3633,7 @@ function generateSummaryMarkdown(){
     var summaryByMuscle={};
     var exerciseSummary={};
     var monthSummary={};
-    var dailySummary={};
-    var totalEntries=0,totalSets=0,totalVolume=0,totalWeightEntries=0,totalWeight=0;
-    var maxWeightRecord=null;
+    var totalEntries=0,totalSets=0,totalVolume=0;
     for(var ai=0;ai<allMuscles.length;ai++){
         summaryByMuscle[allMuscles[ai]]={days:{},entries:0,maxWeight:0,totalSets:0,totalVolume:0};
     }
@@ -3709,7 +3642,6 @@ function generateSummaryMarkdown(){
         var exs=data[dk]||[];
         var monthKey=dk.slice(0,7);
         if(!monthSummary[monthKey])monthSummary[monthKey]={days:{},entries:0,totalSets:0,totalVolume:0,maxWeight:0};
-        if(!dailySummary[dk])dailySummary[dk]={entries:0,totalSets:0,totalVolume:0,muscles:{},names:[]};
         for(var i=0;i<exs.length;i++){
             var e=exs[i];
             var sets=parseInt(e.sets)||0;
@@ -3719,7 +3651,6 @@ function generateSummaryMarkdown(){
             totalEntries++;
             totalSets+=sets;
             totalVolume+=volume;
-            if(weight>0){totalWeightEntries++;totalWeight+=weight;}
             if(!summaryByMuscle[e.muscle])summaryByMuscle[e.muscle]={days:{},entries:0,maxWeight:0,totalSets:0,totalVolume:0};
             summaryByMuscle[e.muscle].days[dk]=true;
             summaryByMuscle[e.muscle].entries++;
@@ -3737,48 +3668,12 @@ function generateSummaryMarkdown(){
             monthSummary[monthKey].totalSets+=sets;
             monthSummary[monthKey].totalVolume+=volume;
             if(weight>monthSummary[monthKey].maxWeight)monthSummary[monthKey].maxWeight=weight;
-            dailySummary[dk].entries++;
-            dailySummary[dk].totalSets+=sets;
-            dailySummary[dk].totalVolume+=volume;
-            dailySummary[dk].muscles[e.muscle]=true;
-            dailySummary[dk].names.push(e.name);
-            if(weight>0&&(!maxWeightRecord||weight>maxWeightRecord.weight)){
-                maxWeightRecord={name:e.name,muscle:e.muscle,weight:weight,date:dk};
-            }
         }
     }
     var firstDate=new Date(dateKeys[0]);
     var lastDate=new Date(dateKeys[dateKeys.length-1]);
     var spanDays=Math.max(1,Math.round((lastDate-firstDate)/86400000)+1);
-    var avgEntriesPerDay=(totalEntries/dateKeys.length).toFixed(1);
-    var avgVolumePerDay=Math.round(totalVolume/dateKeys.length);
-    var avgWeight=totalWeightEntries?Math.round(totalWeight/totalWeightEntries*10)/10:0;
-    var longestStreak=0,currentStreak=0,streak=0,previousTime=null;
-    var todayKey=curDate.getFullYear()+'-'+pad(curDate.getMonth()+1)+'-'+pad(curDate.getDate());
-    for(var si=0;si<dateKeys.length;si++){
-        var currentTime=new Date(dateKeys[si]).getTime();
-        if(previousTime!==null&&currentTime-previousTime===86400000){
-            streak++;
-        }else{
-            streak=1;
-        }
-        if(streak>longestStreak)longestStreak=streak;
-        previousTime=currentTime;
-    }
-    currentStreak=0;
-    var cursor=new Date(todayKey+'T00:00:00');
-    while(true){
-        var key=cursor.getFullYear()+'-'+pad(cursor.getMonth()+1)+'-'+pad(cursor.getDate());
-        if(!data[key])break;
-        currentStreak++;
-        cursor.setDate(cursor.getDate()-1);
-    }
     var monthKeys=Object.keys(monthSummary).sort();
-    var currentMonthKey=curDate.getFullYear()+'-'+pad(curDate.getMonth()+1);
-    var currentMonthDays=monthSummary[currentMonthKey]?Object.keys(monthSummary[currentMonthKey].days).length:0;
-    var currentMonthEntries=monthSummary[currentMonthKey]?monthSummary[currentMonthKey].entries:0;
-    var currentMonthVolume=monthSummary[currentMonthKey]?Math.round(monthSummary[currentMonthKey].totalVolume):0;
-    var currentMonthAttendance=Math.round(currentMonthDays/Math.max(1,getMonthDays(curDate.getFullYear(),curDate.getMonth()))*100);
     var lines=[];
     lines.push('# 健身数据总结');
     lines.push('');
