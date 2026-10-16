@@ -192,9 +192,14 @@
         .exercise-tabs::-webkit-scrollbar { display: none; }
         .exercise-tabs.multi-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: stretch; overflow: visible; }
         .exercise-tabs.multi-row .exercise-tab-btn { width: 100%; min-width: 0; }
-        .exercise-tab-btn { border: 1px solid rgba(0,113,227,0.12); border-radius: 999px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); padding: 4px 10px; font-size: 10px; font-weight: 600; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.06); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .exercise-tab-btn { border: 1px solid rgba(0,113,227,0.12); border-radius: 999px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); padding: 4px 10px; font-size: 10px; font-weight: 600; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(0,113,227,0.06); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; touch-action: manipulation; }
         .exercise-tab-btn.active { background: var(--primary-gradient); color: #fff; border-color: rgba(255,255,255,0.34); box-shadow: inset 0 1px 0 rgba(255,255,255,0.36), 0 8px 14px rgba(0,113,227,0.18); transform: scale(1.1); }
         .exercise-tab-btn:active { transform: translateY(1px) scale(0.98); box-shadow: inset 0 1px 0 rgba(255,255,255,0.84), 0 3px 8px rgba(0,113,227,0.12); }
+        .exercise-tab-btn.drag-armed { box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 0 0 2px rgba(0,113,227,0.16), 0 8px 18px rgba(0,113,227,0.14); }
+        .exercise-tab-btn.drag-target { box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 0 0 2px rgba(89,183,255,0.48), 0 10px 20px rgba(0,113,227,0.14); }
+        .exercise-tab-btn.is-dragging { opacity: 0.96; box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 16px 28px rgba(0,113,227,0.24); cursor: grabbing; transition: none; pointer-events: none; }
+        body.record-action-dragging { user-select: none; overflow-x: hidden; }
+        body.record-action-dragging .exercise-tab-btn { transition: box-shadow 0.16s ease, background 0.16s ease, color 0.16s ease; }
         .exercise-summary { display: flex; align-items: center; gap: 10px; margin: 4px 0 6px; padding: 10px 12px; border-radius: 14px; background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(241,246,252,0.92) 100%); border: 1px solid rgba(0,113,227,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 8px 16px rgba(17,24,39,0.04); }
         .exercise-summary-icon { width: 30px; height: 30px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.32), 0 5px 12px rgba(17,24,39,0.1); }
         .exercise-summary-body { min-width: 0; flex: 1; display: flex; align-items: center; gap: 8px; }
@@ -803,6 +808,7 @@ var timerReminderConfig = normalizeTimerReminderConfig(readStoredJson(STORAGE_KE
 var exerciseDropdownOpen = false;
 var recordActionLongPressTimers = {};
 var recordActionLongPressTriggered = {};
+var recordActionDragState = null;
 var detailTimerClickTimers = {};
 var detailTimerLongPressTimers = {};
 var detailTimerLongPressTriggered = {};
@@ -2458,6 +2464,47 @@ function reorderExercisesByGroups(groups){
     }
     return reordered;
 }
+function moveArrayItem(items,fromIndex,toIndex){
+    if(!Array.isArray(items)||fromIndex===toIndex||fromIndex<0||toIndex<0||fromIndex>=items.length||toIndex>=items.length)return false;
+    var movedItem=items.splice(fromIndex,1)[0];
+    items.splice(toIndex,0,movedItem);
+    return true;
+}
+function reorderRecordActions(dk,muscle,fromActionName,toActionName){
+    var exercises=data[dk]||[];
+    if(!exercises.length||!muscle||!fromActionName||!toActionName||fromActionName===toActionName)return false;
+    var groups=getExerciseGroups(exercises);
+    var targetGroup=null;
+    for(var gi=0;gi<groups.length;gi++){
+        if(groups[gi].muscle===muscle){
+            targetGroup=groups[gi];
+            break;
+        }
+    }
+    if(!targetGroup||!targetGroup.actions||targetGroup.actions.length<2)return false;
+    var fromIndex=-1;
+    var toIndex=-1;
+    for(var ai=0;ai<targetGroup.actions.length;ai++){
+        if(targetGroup.actions[ai].name===fromActionName)fromIndex=ai;
+        if(targetGroup.actions[ai].name===toActionName)toIndex=ai;
+    }
+    if(!moveArrayItem(targetGroup.actions,fromIndex,toIndex))return false;
+    data[dk]=reorderExercisesByGroups(groups);
+    recordMuscleTabs[getRecordMuscleTabKey(dk)]=muscle;
+    recordActionTabs[getRecordActionTabKey(dk,muscle)]=fromActionName;
+    save();
+    render();
+    showDetail(dk);
+    return true;
+}
+function escapeHtmlAttribute(value){
+    return String(value)
+        .replace(/&/g,'&amp;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;');
+}
 function getRecordActionTabKey(dk,muscle,segmentId){
     return dk+'__'+muscle;
 }
@@ -2539,7 +2586,7 @@ function renderSimpleRecordDetail(dk){
             var action=selectionState.group.actions[ai];
             var escapedActionName=escapeJsSingleQuotedString(action.name);
             var actionIndex=action.items&&action.items[0]?action.items[0].index:-1;
-            htm+='<button class="exercise-tab-btn'+(action.name===selectionState.activeActionName?' active':'')+'" onclick="handleRecordActionTabClick(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" onmousedown="startRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+')" onmouseup="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" onmouseleave="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchstart="startRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+')" ontouchend="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchcancel="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" title="点击切换动作，长按修改动作名称">'+escapeHtml(action.name)+'</button>';
+            htm+='<button class="exercise-tab-btn'+(action.name===selectionState.activeActionName?' active':'')+'" data-date-key="'+escapeHtmlAttribute(dk)+'" data-muscle="'+escapeHtmlAttribute(selectionState.group.muscle)+'" data-action-name="'+escapeHtmlAttribute(action.name)+'" ondblclick="handleRecordActionTabDoubleClick(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this)" onclick="handleRecordActionTabClick(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" onmousedown="startRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this,event)" onmouseup="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" onmouseleave="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchstart="startRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this,event)" ontouchend="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchcancel="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" title="点击切换动作，长按左右拖动排序，双击修改动作名称">'+escapeHtml(action.name)+'</button>';
         }
     }
     htm+='</div></div>';
@@ -2659,14 +2706,136 @@ function handleRecordActionTabDoubleClick(dk,muscle,segmentId,actionName,index,e
     cancelRecordActionLongPress(dk,muscle,segmentId,actionName);
     openRecordActionRenameModal(dk,muscle,actionName);
 }
-function startRecordActionLongPress(dk,muscle,segmentId,actionName,index,el){
+function getClientPointFromEvent(event){
+    var sourceEvent=event||window.event;
+    if(!sourceEvent)return null;
+    if(sourceEvent.touches&&sourceEvent.touches.length){
+        return {clientX:sourceEvent.touches[0].clientX,clientY:sourceEvent.touches[0].clientY};
+    }
+    if(sourceEvent.changedTouches&&sourceEvent.changedTouches.length){
+        return {clientX:sourceEvent.changedTouches[0].clientX,clientY:sourceEvent.changedTouches[0].clientY};
+    }
+    if(typeof sourceEvent.clientX==='number'&&typeof sourceEvent.clientY==='number'){
+        return {clientX:sourceEvent.clientX,clientY:sourceEvent.clientY};
+    }
+    return null;
+}
+function getRecordActionTabButtons(container){
+    return container?Array.prototype.slice.call(container.querySelectorAll('.exercise-tab-btn')):[];
+}
+function clearRecordActionDragTarget(container){
+    getRecordActionTabButtons(container).forEach(function(button){
+        button.classList.remove('drag-target');
+    });
+}
+function finishRecordActionDrag(shouldCommit){
+    var dragState=recordActionDragState;
+    if(!dragState)return;
+    document.removeEventListener('mousemove',handleRecordActionDragMove,true);
+    document.removeEventListener('mouseup',handleRecordActionDragEnd,true);
+    document.removeEventListener('touchmove',handleRecordActionDragMove,true);
+    document.removeEventListener('touchend',handleRecordActionDragEnd,true);
+    document.removeEventListener('touchcancel',handleRecordActionDragEnd,true);
+    document.body.classList.remove('record-action-dragging');
+    if(dragState.button){
+        dragState.button.classList.remove('drag-armed','is-dragging');
+        dragState.button.style.transform='';
+        dragState.button.style.zIndex='';
+    }
+    clearRecordActionDragTarget(dragState.container);
+    recordActionDragState=null;
+    if(!shouldCommit||dragState.targetActionName===dragState.actionName)return;
+    reorderRecordActions(dragState.dateKey,dragState.muscle,dragState.actionName,dragState.targetActionName);
+}
+function updateRecordActionDragTarget(point){
+    var dragState=recordActionDragState;
+    if(!dragState||!point)return;
+    var buttons=getRecordActionTabButtons(dragState.container);
+    if(!buttons.length)return;
+    var closestButton=null;
+    var pointTarget=document.elementFromPoint(point.clientX,point.clientY);
+    if(pointTarget&&typeof pointTarget.closest==='function'){
+        var hoveredButton=pointTarget.closest('.exercise-tab-btn');
+        if(hoveredButton&&hoveredButton.parentElement===dragState.container&&hoveredButton!==dragState.button){
+            closestButton=hoveredButton;
+        }
+    }
+    var closestDistance=Number.POSITIVE_INFINITY;
+    if(!closestButton){
+        var draggedRect=dragState.button.getBoundingClientRect();
+        var draggedCenterX=draggedRect.left+draggedRect.width/2;
+        var draggedCenterY=draggedRect.top+draggedRect.height/2;
+        buttons.forEach(function(button){
+            if(button===dragState.button)return;
+            var rect=button.getBoundingClientRect();
+            var centerX=rect.left+rect.width/2;
+            var centerY=rect.top+rect.height/2;
+            var distance=Math.abs(centerX-draggedCenterX)+(Math.abs(centerY-draggedCenterY)*0.35);
+            if(distance<closestDistance){
+                closestDistance=distance;
+                closestButton=button;
+            }
+        });
+    }
+    clearRecordActionDragTarget(dragState.container);
+    if(closestButton){
+        closestButton.classList.add('drag-target');
+        dragState.targetActionName=closestButton.dataset.actionName||dragState.actionName;
+    }else{
+        dragState.targetActionName=dragState.actionName;
+    }
+}
+function handleRecordActionDragMove(event){
+    var dragState=recordActionDragState;
+    if(!dragState)return;
+    var point=getClientPointFromEvent(event);
+    if(!point)return;
+    if(event&&event.cancelable)event.preventDefault();
+    dragState.lastPoint=point;
+    var offsetX=point.clientX-dragState.startPoint.clientX;
+    var offsetY=point.clientY-dragState.startPoint.clientY;
+    dragState.button.style.transform='translate('+offsetX+'px,'+Math.max(-8,Math.min(8,offsetY*0.18))+'px) scale(1.06)';
+    updateRecordActionDragTarget(point);
+}
+function handleRecordActionDragEnd(event){
+    var point=getClientPointFromEvent(event);
+    if(point)updateRecordActionDragTarget(point);
+    if(event&&event.cancelable)event.preventDefault();
+    finishRecordActionDrag(true);
+}
+function beginRecordActionDrag(dk,muscle,segmentId,actionName,el,startPoint){
+    if(!el)return;
+    finishRecordActionDrag(false);
+    recordActionDragState={
+        dateKey:dk,
+        muscle:muscle,
+        segmentId:segmentId,
+        actionName:actionName,
+        targetActionName:actionName,
+        button:el,
+        container:el.parentElement,
+        startPoint:startPoint||{clientX:0,clientY:0},
+        lastPoint:startPoint||{clientX:0,clientY:0}
+    };
+    document.body.classList.add('record-action-dragging');
+    el.classList.add('drag-armed','is-dragging');
+    el.style.zIndex='6';
+    document.addEventListener('mousemove',handleRecordActionDragMove,true);
+    document.addEventListener('mouseup',handleRecordActionDragEnd,true);
+    document.addEventListener('touchmove',handleRecordActionDragMove,true);
+    document.addEventListener('touchend',handleRecordActionDragEnd,true);
+    document.addEventListener('touchcancel',handleRecordActionDragEnd,true);
+    updateRecordActionDragTarget(startPoint||null);
+}
+function startRecordActionLongPress(dk,muscle,segmentId,actionName,index,el,event){
     var timerKey=getRecordActionClickKey(dk,muscle,segmentId,actionName);
+    var startPoint=getClientPointFromEvent(event);
     cancelRecordActionLongPress(dk,muscle,segmentId,actionName);
     recordActionLongPressTriggered[timerKey]=false;
     recordActionLongPressTimers[timerKey]=setTimeout(function(){
         delete recordActionLongPressTimers[timerKey];
         recordActionLongPressTriggered[timerKey]=true;
-        openRecordActionRenameModal(dk,muscle,actionName);
+        beginRecordActionDrag(dk,muscle,segmentId,actionName,el,startPoint);
     },450);
 }
 function cancelRecordActionLongPress(dk,muscle,segmentId,actionName){
@@ -2769,7 +2938,7 @@ function showDetail(dk){
             var action=segmentGroup.actions[ai];
             var escapedActionName=escapeJsSingleQuotedString(action.name);
             var actionIndex=action.items&&action.items[0]?action.items[0].index:-1;
-            htm+='<button class="exercise-tab-btn'+(action.name===activeActionName?' active':'')+'" onclick="handleRecordActionTabClick(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ondblclick="handleRecordActionTabDoubleClick(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this)" onmousedown="startRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this)" onmouseup="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" onmouseleave="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchstart="startRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this)" ontouchend="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchcancel="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" title="点击切换动作，长按修改动作名称">'+escapeHtml(action.name)+'</button>';
+            htm+='<button class="exercise-tab-btn'+(action.name===activeActionName?' active':'')+'" data-date-key="'+escapeHtmlAttribute(dk)+'" data-muscle="'+escapeHtmlAttribute(e.muscle)+'" data-action-name="'+escapeHtmlAttribute(action.name)+'" onclick="handleRecordActionTabClick(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ondblclick="handleRecordActionTabDoubleClick(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this)" onmousedown="startRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this,event)" onmouseup="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" onmouseleave="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchstart="startRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this,event)" ontouchend="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchcancel="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" title="点击切换动作，长按左右拖动排序，双击修改动作名称">'+escapeHtml(action.name)+'</button>';
         }
     }
     htm+='</div>';
