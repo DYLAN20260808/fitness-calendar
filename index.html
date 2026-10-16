@@ -363,6 +363,13 @@
         .tab-container { display: flex; align-items: stretch; gap: 6px; margin: 0 0 8px; padding: 8px; border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(240,244,249,0.62) 100%); border: 1px solid rgba(255,255,255,0.62); box-shadow: inset 0 1px 0 rgba(255,255,255,0.86); }
         .detail-action-bar { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: stretch; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(29,29,31,0.08); }
         .detail-footer-metrics { display: flex; flex-direction: column; gap: 0; margin-top: 10px; }
+        .detail-footer-summary { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; margin-top: 12px; align-items: center; }
+        .detail-footer-card { padding: 12px 14px; border-radius: 16px; background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(241,246,252,0.9) 100%); border: 1px solid rgba(0,113,227,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 8px 16px rgba(17,24,39,0.04); }
+        .detail-footer-label { color: var(--muted); font-size: 11px; font-weight: 600; line-height: 1.2; }
+        .detail-footer-value { margin-top: 6px; color: var(--accent-deep); font-size: 16px; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; }
+        .detail-footer-duration { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; min-width: 88px; min-height: 88px; padding: 10px 12px; border-radius: 999px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); border: 1px solid rgba(0,113,227,0.12); box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 8px 16px rgba(0,113,227,0.08); text-align: center; }
+        .detail-footer-duration-value { color: var(--accent-deep); font-size: 20px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+        .detail-footer-duration-label { margin-top: 4px; color: var(--muted); font-size: 10px; font-weight: 700; line-height: 1.1; }
         .detail-timer-slot,
         .detail-reset-slot { display: inline-flex; align-items: stretch; align-self: stretch; min-width: 0; }
         .detail-action-bar .tab-btn,
@@ -424,6 +431,8 @@
             .detail-action-bar .exercise-timer-meta,
             .detail-action-bar .exercise-timer-value { white-space: nowrap; }
             .detail-action-bar .exercise-timer-value { min-width: 0; }
+            .detail-footer-summary { grid-template-columns: 1fr; gap: 8px; }
+            .detail-footer-duration { min-width: 0; min-height: 0; width: 100%; border-radius: 16px; }
         }
         .muscle-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
         .legend-item { display: flex; align-items: center; gap: 4px; font-size: 12px; cursor: pointer; opacity: 0.5; transition: opacity 0.2s; }
@@ -1013,10 +1022,14 @@ function recalibrateRecordGroupTimer(dk,muscle){
     if(!dk||!muscle)return;
     var now=getNowTimestampForDateKey(dk);
     if(now===null)return;
-    var overrides=getOrCreateDayTimeOverrideBucket(dk,muscle);
-    overrides.firstAddedAt=now;
-    overrides.lastUpdatedAt=now;
-    delete overrides.refreshHistory;
+    var dayOverrides=getOrCreateDayTimeOverrideBucket(dk);
+    dayOverrides.firstAddedAt=now;
+    dayOverrides.lastUpdatedAt=now;
+    delete dayOverrides.refreshHistory;
+    var muscleOverrides=getOrCreateDayTimeOverrideBucket(dk,muscle);
+    muscleOverrides.firstAddedAt=now;
+    muscleOverrides.lastUpdatedAt=now;
+    delete muscleOverrides.refreshHistory;
     cleanupDayTimeOverridesForDate(dk);
     saveDayTimeOverrides();
     resetRecordGroupTimer(dk,muscle);
@@ -1503,14 +1516,20 @@ function getDayTimeMeta(dk,exercises,muscle,segmentId){
             if(groupedMeta.manualFirstAddedAt!==null&&(earliestManualStart===null||groupedMeta.manualFirstAddedAt<earliestManualStart))earliestManualStart=groupedMeta.manualFirstAddedAt;
             if(groupedMeta.manualLastUpdatedAt!==null&&(latestManualEnd===null||groupedMeta.manualLastUpdatedAt>latestManualEnd))latestManualEnd=groupedMeta.manualLastUpdatedAt;
         }
-        if(earliestStart!==null||latestEnd!==null){
+        var dayOverrides=getDayTimeOverrideBucket(dk);
+        var dayManualFirstAddedAt=normalizeTimestampValue(dayOverrides.firstAddedAt);
+        var dayManualLastUpdatedAt=normalizeTimestampValue(dayOverrides.lastUpdatedAt);
+        var resolvedDayFirstAddedAt=dayManualFirstAddedAt!==null?dayManualFirstAddedAt:earliestStart;
+        var resolvedDayLastUpdatedAt=dayManualLastUpdatedAt!==null?dayManualLastUpdatedAt:latestEnd;
+        resolvedDayLastUpdatedAt=clampEndTimestampToSameDayRange(resolvedDayFirstAddedAt,resolvedDayLastUpdatedAt);
+        if(resolvedDayFirstAddedAt!==null||resolvedDayLastUpdatedAt!==null){
             return {
-                firstAddedAt:earliestStart,
-                lastUpdatedAt:latestEnd,
+                firstAddedAt:resolvedDayFirstAddedAt,
+                lastUpdatedAt:resolvedDayLastUpdatedAt,
                 autoFirstAddedAt:earliestAutoStart,
                 autoLastUpdatedAt:latestAutoEnd,
-                manualFirstAddedAt:earliestManualStart,
-                manualLastUpdatedAt:latestManualEnd
+                manualFirstAddedAt:dayManualFirstAddedAt!==null?dayManualFirstAddedAt:earliestManualStart,
+                manualLastUpdatedAt:dayManualLastUpdatedAt!==null?dayManualLastUpdatedAt:latestManualEnd
             };
         }
     }
@@ -1686,9 +1705,32 @@ function refreshDayLatestTime(dk,muscle,segmentId){
     showDetail(dk);
     if(document.getElementById('volumeContent').classList.contains('active'))showVolumeChart();
 }
+function syncDayLatestTime(dk,timestamp){
+    var exercises=data[dk]||[];
+    if(!dk||!exercises.length)return false;
+    var nextTimestamp=timestamp==null?getNowTimestampForDateKey(dk):projectTimestampToDateKey(dk,timestamp);
+    if(nextTimestamp===null)nextTimestamp=getNowTimestampForDateKey(dk);
+    if(nextTimestamp===null)return false;
+    var dayMeta=getDayTimeMeta(dk,exercises);
+    var nextStartTimestamp=dayMeta.firstAddedAt;
+    var startSeconds=getClockSeconds(dayMeta.firstAddedAt);
+    var nowSeconds=getClockSeconds(nextTimestamp);
+    if(startSeconds!==null&&nowSeconds!==null&&startSeconds>nowSeconds){
+        nextStartTimestamp=nextTimestamp;
+    }else{
+        nextStartTimestamp=clampStartTimestampToSameDayRange(dayMeta.firstAddedAt,nextTimestamp);
+    }
+    var dayOverrides=getOrCreateDayTimeOverrideBucket(dk);
+    if(nextStartTimestamp!==null)dayOverrides.firstAddedAt=nextStartTimestamp;
+    dayOverrides.lastUpdatedAt=clampEndTimestampToSameDayRange(nextStartTimestamp,nextTimestamp);
+    cleanupDayTimeOverridesForDate(dk);
+    saveDayTimeOverrides();
+    return true;
+}
 function syncRecordGroupLatestTime(dk,muscle,timestamp,segmentId){
     if(!dk||!muscle)return;
     updateDayLatestTimeForMuscle(dk,muscle,timestamp,true,segmentId);
+    syncDayLatestTime(dk,timestamp);
 }
 function getExerciseNamesFromData(m){
     var latestByName={};
@@ -2900,6 +2942,23 @@ function syncAllDetailWeightInputFontSizes(){
     syncDetailWeightInputFontSizes(document.getElementById('exerciseList'));
     syncDetailWeightInputFontSizes(document.getElementById('simpleExerciseList'));
 }
+function renderRecordDayFooterMetrics(dk){
+    var footer=document.getElementById('detailFooterMetrics');
+    if(!footer)return;
+    var exercises=data[dk]||[];
+    if(!exercises.length){
+        footer.innerHTML='';
+        return;
+    }
+    var dayMeta=getDayTimeMeta(dk,exercises);
+    var durationMinutes=calcRefreshIntervalMinutes(dayMeta.lastUpdatedAt,dayMeta.firstAddedAt);
+    var durationLabel=durationMinutes===null?'--':String(Math.max(0,Math.round(durationMinutes)));
+    footer.innerHTML='<div class="detail-footer-summary">'+
+        '<div class="detail-footer-card"><div class="detail-footer-label">当天锻炼开始时间</div><div class="detail-footer-value">'+escapeHtml(formatClockTime(dayMeta.firstAddedAt))+'</div></div>'+
+        '<div class="detail-footer-duration"><div class="detail-footer-duration-value">'+escapeHtml(durationLabel)+'</div><div class="detail-footer-duration-label">间隔分钟</div></div>'+
+        '<div class="detail-footer-card"><div class="detail-footer-label">上一次修改数据时间</div><div class="detail-footer-value">'+escapeHtml(formatClockTime(dayMeta.lastUpdatedAt))+'</div></div>'+
+    '</div>';
+}
 function showDetail(dk){
     var lst=document.getElementById('exerciseList');
     var footer=document.getElementById('detailFooterMetrics');
@@ -2997,7 +3056,7 @@ function showDetail(dk){
         '</div><div class="exercise-capacity-hint" onclick="jumpToRecordFromCapacityHint()" title="点击返回记录页面"><div class="exercise-capacity-hint-text">'+(capacityHintText||'')+'</div></div>';
     htm+='</div></div>';
     lst.innerHTML=htm;
-    if(footer)footer.innerHTML='';
+    renderRecordDayFooterMetrics(dk);
     renderSimpleRecordDetail(dk);
     updateDetailFooterMetricsVisibility();
     updateDetailTimerButton();
