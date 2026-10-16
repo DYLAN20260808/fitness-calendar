@@ -510,7 +510,7 @@
         #simpleContent,
         #volumeContent,
         #statsContent { min-height: 280px; }
-        .page-date-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 14px 0 0; padding: 10px 12px; border-radius: 18px; background: var(--active-page-surface, var(--panel-surface)); border: var(--panel-border); box-shadow: var(--panel-shadow); flex-wrap: nowrap; }
+        .page-date-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 14px 0 0; padding: 10px 12px; border-radius: 18px; background: var(--active-page-surface, var(--panel-surface)); border: var(--panel-border); box-shadow: var(--panel-shadow); flex-wrap: nowrap; cursor: pointer; }
         .page-date-footer-meta { min-width: 0; flex: 1 1 auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
         .page-date-footer-text { min-width: 0; color: var(--accent-deep); font-size: 13px; font-weight: 700; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .page-date-footer-hint { color: var(--muted); font-size: 11px; font-weight: 600; white-space: nowrap; text-align: right; }
@@ -609,7 +609,7 @@
         <div id="detailFooterMetricsHome"></div>
         <div class="detail-footer-metrics" id="detailFooterMetrics" hidden></div>
     </div>
-    <div class="page-date-footer" id="pageDateFooter">
+    <div class="page-date-footer" id="pageDateFooter" onclick="handlePageDateFooterClick()">
         <div class="page-date-footer-meta">
             <div class="page-date-footer-text" id="pageDateFooterText">今天</div>
             <div class="page-date-footer-hint" id="pageDateFooterHint">当前页面日期提醒</div>
@@ -2213,11 +2213,15 @@ function updatePageDateFooter(){
     previousBtn.classList.toggle('active',pageDateFooterAction==='previous'&&!previousBtn.disabled);
     previousBtn.textContent=previousDateKey?'上一次':'无上次';
 }
+function handlePageDateFooterClick(){
+    switchPage('calendar');
+}
 function jumpToRelativeDate(offsetDays){
     var targetDateKey=getOffsetDateKey(offsetDays);
     pageDateFooterAction=offsetDays===0?'today':'';
     selDate=targetDateKey;
     syncSelectedDateView();
+    switchPage('calendar');
 }
 function jumpToPreviousMuscleDate(){
     var activeDateKey=selDate||getTodayKey();
@@ -2230,6 +2234,7 @@ function jumpToPreviousMuscleDate(){
         recordMuscleTabs[getRecordMuscleTabKey(previousDateKey)]=activeMuscle;
     }
     syncSelectedDateView();
+    switchPage('calendar');
 }
 function updateAddActionVisibility(){
     var addBtn=document.getElementById('addActionBtn');
