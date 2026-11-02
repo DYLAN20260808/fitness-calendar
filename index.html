@@ -66,6 +66,8 @@
             0% { filter: brightness(1.12) saturate(1.08); }
             100% { filter: brightness(1) saturate(1); }
         }
+        .timer-fireworks-overlay { position: fixed; inset: 0; z-index: 9999; display: block; visibility: hidden; pointer-events: none; }
+        .timer-fireworks-overlay.is-active { visibility: visible; pointer-events: auto; cursor: pointer; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: radial-gradient(circle at top left, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 30%), radial-gradient(circle at top right, rgba(90,181,255,0.14) 0%, rgba(90,181,255,0) 32%), radial-gradient(circle at center top, rgba(255,255,255,0.76) 0%, rgba(255,255,255,0) 44%), linear-gradient(180deg, #fbfbfd 0%, var(--bg) 22%, var(--bg-2) 58%, var(--bg-3) 100%); min-height: 100vh; color: var(--text); padding-bottom: 32px; position: relative; overflow-x: hidden; }
         body::before { content: ''; position: fixed; inset: -12% -10% auto; height: 38vh; background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.35) 28%, rgba(255,255,255,0) 72%); pointer-events: none; z-index: 0; }
         body::after { content: ''; position: fixed; right: -70px; bottom: 10vh; width: 220px; height: 220px; background: radial-gradient(circle, rgba(41,151,255,0.14) 0%, rgba(41,151,255,0.03) 44%, rgba(41,151,255,0) 76%); filter: blur(12px); pointer-events: none; z-index: 0; }
@@ -168,19 +170,28 @@
         .simple-record-actions.exercise-tabs { overflow-x: auto; }
         .simple-record-actions .exercise-tab-btn { padding: 4px 10px; font-size: 11px; }
         .simple-record-actions .exercise-tab-btn.active { transform: scale(1.08); }
-        .simple-record-card { padding: 14px; border-radius: 20px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,249,252,0.92) 45%, rgba(234,238,244,0.84) 100%); border: 1px solid rgba(255,255,255,0.76); box-shadow: var(--highlight), 0 14px 26px rgba(17,24,39,0.08), 0 2px 0 rgba(255,255,255,0.88); }
-        .simple-record-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-        .simple-record-metric { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 18px 12px; border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(241,246,252,0.88) 100%); border: 1px solid rgba(0,113,227,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92); }
-        .simple-record-metric-label { color: var(--muted); font-size: 18px; font-weight: 700; line-height: 1.1; }
-        .simple-record-stepper { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; }
-        .simple-record-stepper .adjust-btn { width: 56px; height: 56px; border-radius: 12px; font-size: 28px; }
-        .simple-record-stepper .adjust-value { min-width: 0; font-size: 40px; line-height: 1.2; }
-        .simple-record-stepper .simple-record-value-box { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 144px; height: 68px; padding: 0 10px; border: 1px solid rgba(0,113,227,0.14); border-radius: 7px; background: rgba(255,255,255,0.96); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92); }
+        .simple-record-card { display: grid; grid-template-columns: minmax(0, 1fr) 96px; align-items: stretch; gap: 10px; padding: 14px; border-radius: 20px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,249,252,0.92) 45%, rgba(234,238,244,0.84) 100%); border: 1px solid rgba(255,255,255,0.76); box-shadow: var(--highlight), 0 14px 26px rgba(17,24,39,0.08), 0 2px 0 rgba(255,255,255,0.88); }
+        .simple-record-metrics { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+        .simple-record-card-tools { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+        .simple-record-metric { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px; border-radius: 14px; background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(241,246,252,0.88) 100%); border: 1px solid rgba(0,113,227,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92); }
+        .simple-record-metric-label { flex: 0 0 76px; color: var(--muted); font-size: 16px; font-weight: 700; line-height: 1.1; }
+        .simple-record-stepper { display: flex; flex-direction: row; align-items: center; justify-content: flex-end; gap: 8px; width: 100%; min-width: 0; }
+        .simple-record-stepper .adjust-btn { flex: 0 0 36px; width: 36px; height: 36px; border-radius: 9px; font-size: 20px; }
+        .simple-record-stepper .adjust-value { min-width: 0; font-size: 22px; line-height: 1.2; }
+        .simple-record-stepper .simple-record-value-box { display: inline-flex; align-items: center; justify-content: center; flex: 1 1 0; width: 100%; max-width: 144px; min-width: 0; height: 38px; padding: 0 8px; border: 1px solid rgba(0,113,227,0.14); border-radius: 7px; background: rgba(255,255,255,0.96); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92); }
         .simple-record-stepper .simple-record-value-box.capacity-best-box,
         .simple-record-stepper .metric-input.capacity-best-box { background: linear-gradient(180deg, rgba(212,255,223,0.96) 0%, rgba(161,240,184,0.82) 100%); border-color: rgba(48,209,88,0.42); box-shadow: inset 0 1px 0 rgba(255,255,255,0.84), 0 0 0 1px rgba(48,209,88,0.12); }
-        .simple-record-stepper .metric-input { width: 100%; max-width: 144px; height: 68px; font-size: 36px; text-align: center; padding: 0 10px; }
-        .simple-record-card-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+        .simple-record-stepper .metric-input { flex: 1 1 0; width: 100%; max-width: 144px; min-width: 0; height: 38px; font-size: 21px; text-align: center; padding: 0 8px; }
+        .simple-record-card-actions { grid-column: 1 / -1; display: flex; justify-content: flex-start; gap: 8px; margin-top: 0; }
+        .simple-record-card-actions #addActionBtn { flex: 0 0 auto; width: 96px; height: 30px; min-height: 30px; margin-right: 0; margin-left: auto; padding: 0 10px; border-radius: 9px; font-size: 12px; }
+        .simple-record-card-actions .delete-btn,
+        .simple-record-card-actions .copy-btn { width: 30px; height: 30px; }
         .simple-record-footer-btn { width: 100%; }
+        .simple-record-card-tools .exercise-timer-btn { flex: 1 1 0; flex-direction: column; justify-content: center; gap: 4px; width: 100%; min-width: 0; min-height: 64px; height: auto; padding: 8px 5px; border-radius: 10px; }
+        .simple-record-card-tools .exercise-timer-value { min-width: 0; font-size: 24px; text-align: center; }
+        .simple-record-card-tools .detail-footer-duration { flex: 1 1 0; width: 100%; min-width: 0; min-height: 64px; padding: 8px 5px; border-radius: 10px; font-family: inherit; color: inherit; cursor: pointer; appearance: none; }
+        .simple-record-card-tools .detail-footer-duration-value { font-size: 36px; }
+        .simple-record-card-tools .detail-footer-duration-label { font-size: 9px; }
         .exercise-item { background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,249,252,0.92) 45%, rgba(234,238,244,0.84) 100%); -webkit-backdrop-filter: blur(18px) saturate(165%); backdrop-filter: blur(18px) saturate(165%); border: 1px solid rgba(255,255,255,0.76); border-radius: 20px; padding: 13px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--highlight), 0 14px 26px rgba(17,24,39,0.08), 0 2px 0 rgba(255,255,255,0.88); }
         .exercise-row1 { display: flex; align-items: center; gap: 6px; min-height: 28px; margin-bottom: 4px; }
         .group-order-controls { margin-left: auto; display: flex; gap: 4px; }
@@ -234,10 +245,14 @@
         .exercise-capacity-hint-text { min-width: 0; width: 100%; flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; }
         .exercise-capacity-hint-line { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; width: 100%; color: var(--muted); }
         .exercise-capacity-hint-item { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .exercise-capacity-hint-item:nth-child(2) { text-align: center; }
+        .exercise-capacity-hint-item:nth-child(3) { text-align: right; }
         .exercise-capacity-hint-line.is-current { color: var(--muted); }
-        .exercise-capacity-hint-line.is-current .exercise-capacity-hint-value { color: #16a34a; }
         .exercise-capacity-hint-value { color: inherit; font-weight: 700; }
-        .timer-modal-content { max-width: 320px; height: auto; max-height: 80vh; }
+        .exercise-capacity-hint-value.is-best { color: #16a34a; }
+        .exercise-capacity-hint-value.is-current { color: #111827; }
+        .timer-modal-content { position: relative; max-width: 320px; height: auto; max-height: 80vh; gap: 12px; }
+        .timer-modal-content > .close-btn { position: absolute; top: 14px; right: 14px; z-index: 2; }
         .timer-modal-header { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 32px; }
         .timer-modal-header h2 { margin: 0; text-align: left; }
         .timer-modal-header .timer-modal-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); align-self: center; }
@@ -276,6 +291,8 @@
             .exercise-timer-reset-btn { min-width: 60px; min-height: var(--detail-tab-height); padding: 0 10px; font-size: 11px; }
             .exercise-timer-meta { font-size: 10px; }
             .exercise-capacity-hint { align-items: flex-start; font-size: 10px; }
+            .exercise-capacity-hint-line { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr); gap: 4px; }
+            .exercise-capacity-hint-item { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
             .timer-modal-content { max-width: 100%; }
             .timer-modal-display { font-size: 76px; }
         }
@@ -361,7 +378,10 @@
         .add-btn-small { margin-left: 0; padding: 10px 14px; font-size: 13px; font-weight: 700; background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.32); border-radius: 12px; color: white; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.38), inset 0 -3px 0 rgba(0,88,176,0.2), 0 10px 18px rgba(0,113,227,0.18); }
         .add-btn-small:active { transform: translateY(2px) scale(0.985); box-shadow: inset 0 1px 0 rgba(255,255,255,0.32), inset 0 -2px 0 rgba(0,88,176,0.18), 0 5px 12px rgba(0,113,227,0.14); }
         .tab-container { display: flex; align-items: stretch; gap: 6px; margin: 0 0 8px; padding: 8px; border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(240,244,249,0.62) 100%); border: 1px solid rgba(255,255,255,0.62); box-shadow: inset 0 1px 0 rgba(255,255,255,0.86); }
-        .detail-action-bar { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: stretch; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(29,29,31,0.08); }
+        .detail-action-bar { display: flex; align-items: stretch; justify-content: space-between; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(29,29,31,0.08); }
+        .detail-action-bar > .tab-btn,
+        .detail-action-bar > .detail-timer-slot,
+        .detail-action-bar > .detail-reset-slot { flex: 1 1 0; }
         .detail-footer-metrics { display: flex; flex-direction: column; gap: 0; margin-top: 10px; }
         .detail-footer-summary { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; margin-top: 12px; align-items: center; }
         .detail-footer-card { padding: 12px 14px; border-radius: 16px; background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(241,246,252,0.9) 100%); border: 1px solid rgba(0,113,227,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 8px 16px rgba(17,24,39,0.04); }
@@ -377,17 +397,17 @@
         .detail-action-bar .exercise-timer-reset-btn,
         .detail-action-bar .add-btn-small { min-width: 0; width: 100%; justify-content: center; font-size: clamp(8px, 2vw, 10px); line-height: 1.15; text-align: center; }
         .detail-action-bar .exercise-timer-btn { flex-direction: row; align-items: center; justify-content: center; gap: 3px; padding: 3px 5px; box-sizing: border-box; overflow: hidden; white-space: nowrap; }
-        #simpleContent .detail-action-bar { gap: 10px; margin-top: 14px; padding-top: 12px; }
-        #simpleContent .detail-action-bar .tab-btn,
-        #simpleContent .detail-action-bar .exercise-timer-btn,
-        #simpleContent .detail-action-bar .exercise-timer-reset-btn,
-        #simpleContent .detail-action-bar .add-btn-small { min-height: calc(var(--detail-tab-height) * 0.84); font-size: 13px; }
-        #simpleContent .detail-action-bar .tab-btn,
-        #simpleContent .detail-action-bar .add-btn-small { padding: 6px 8px; }
-        #simpleContent .detail-action-bar .exercise-timer-btn,
-        #simpleContent .detail-action-bar .exercise-timer-reset-btn { padding: 4px 7px; }
-        #simpleContent .detail-action-bar .exercise-timer-meta { font-size: 11px; }
-        #simpleContent .detail-action-bar .exercise-timer-value { font-size: 13px; }
+        #detailActionBar { gap: 10px; margin-top: 14px; padding-top: 12px; }
+        #detailActionBar .tab-btn,
+        #detailActionBar .exercise-timer-btn,
+        #detailActionBar .exercise-timer-reset-btn,
+        #detailActionBar .add-btn-small { min-height: calc(var(--detail-tab-height) * 0.84); font-size: 13px; }
+        #detailActionBar .tab-btn,
+        #detailActionBar .add-btn-small { padding: 6px 8px; }
+        #detailActionBar .exercise-timer-btn,
+        #detailActionBar .exercise-timer-reset-btn { padding: 4px 7px; }
+        #detailActionBar .exercise-timer-meta { font-size: 11px; }
+        #detailActionBar .exercise-timer-value { font-size: 13px; }
         .detail-action-bar .exercise-timer-meta { flex: 0 0 auto; font-size: 8px; line-height: 1; }
         .detail-action-bar .exercise-timer-value { min-width: 0; flex: 0 1 auto; text-align: center; line-height: 1; }
         .tab-btn { flex: 1; min-height: var(--detail-tab-height); padding: 7px 8px; border: none; border-radius: 12px; background: var(--neutral-gradient); -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%); color: #3a3a3c; font-size: 12px; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; border: 1px solid rgba(255,255,255,0.78); box-shadow: inset 0 1px 0 rgba(255,255,255,0.88), 0 8px 16px rgba(17,24,39,0.06); }
@@ -422,7 +442,7 @@
             .chart-footer { justify-content: stretch; }
             .chart-mode-pill { display: flex; width: 100%; gap: 1px; }
             .chart-mode-toggle { flex: 1 1 0; min-width: 0; padding: 5px 2px; font-size: 9px; }
-            .detail-action-bar { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+            .detail-action-bar { gap: 8px; }
             .detail-action-bar .tab-btn,
             .detail-action-bar .exercise-timer-btn,
             .detail-action-bar .exercise-timer-reset-btn,
@@ -591,7 +611,7 @@
         </div>
         <div class="tab-content active" id="simpleContent">
             <div class="exercise-list" id="simpleExerciseList"><div class="no-data">点击日期添加/查看训练记录</div></div>
-            <div id="simpleDetailActionBarMount"></div>
+            <div class="detail-footer-metrics" id="detailFooterMetrics" hidden></div>
         </div>
         <div class="tab-content" id="volumeContent">
             <div class="chart-container" id="chartContainer"></div>
@@ -599,16 +619,15 @@
         <div class="tab-content" id="statsContent">
             <div class="stats-container" id="statsContainer"></div>
         </div>
-        <div id="detailActionBarHome"></div>
         <div class="detail-action-bar" id="detailActionBar" hidden>
             <button class="tab-btn active" id="tabRecord" onclick="switchTab('volume','interval')" hidden>每组间隔</button>
             <span class="detail-timer-slot" id="detailTimerSlot" hidden></span>
             <span class="detail-reset-slot" id="detailResetSlot" hidden></span>
-            <button class="add-btn-small" id="addActionBtn" onclick="openM()" hidden>+ 添加</button>
+            <button class="add-btn-small" id="addActionBtn" onclick="event.stopPropagation();openM()" title="添加动作" aria-label="添加动作" hidden>+ 添加</button>
         </div>
         <div id="detailFooterMetricsHome"></div>
-        <div class="detail-footer-metrics" id="detailFooterMetrics" hidden></div>
     </div>
+    <div id="detailActionBarHome"></div>
     <div class="page-date-footer" id="pageDateFooter" onclick="handlePageDateFooterClick()">
         <div class="page-date-footer-meta">
             <div class="page-date-footer-text" id="pageDateFooterText">今天</div>
@@ -619,6 +638,7 @@
             <button class="page-date-btn" id="pageDatePreviousBtn" type="button" onclick="jumpToPreviousMuscleDate()">上一次</button>
         </div>
     </div>
+    <canvas id="timerFireworksOverlay" class="timer-fireworks-overlay" aria-hidden="true"></canvas>
     <div class="modal" id="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -648,31 +668,17 @@
     </div>
     <div class="modal" id="timerModal">
         <div class="modal-content timer-modal-content">
-            <div class="modal-header timer-modal-header">
-                <h2 id="timerModalTitle">秒表提醒</h2>
-                <div class="timer-modal-badge" id="timerModalBadge">当前提醒 03:00</div>
-                <div class="timer-modal-header-right">
-                    <div class="timer-modal-display-label" id="timerModalDisplayLabel">当前秒表</div>
-                    <button class="modal-confirm-btn" type="button" id="saveTimerReminderBtn">保存提醒</button>
-                    <button class="close-btn" id="closeTimerModal">×</button>
-                </div>
+            <button class="close-btn" id="closeTimerModal" type="button" aria-label="关闭">×</button>
+            <div class="timer-modal-display-wrap">
+                <div class="timer-modal-display" id="timerModalDisplay">00:00</div>
             </div>
-            <div class="timer-modal-body">
-                <div class="timer-modal-display-wrap">
-                    <div class="timer-modal-display" id="timerModalDisplay">00:00</div>
-                </div>
-                <div class="timer-modal-hint" id="timerModalHint">点击底部秒表会重新计时，长按则会打开这个放大窗口。</div>
-                <div class="timer-modal-settings">
-                    <label for="timerReminderMinutes">提醒时间</label>
-                    <div class="timer-modal-setting-row">
-                        <input type="number" id="timerReminderMinutes" min="0" max="99" inputmode="numeric">
-                        <span>分</span>
-                        <input type="number" id="timerReminderSeconds" min="0" max="59" inputmode="numeric">
-                        <span>秒</span>
-                    </div>
-                </div>
-                <div class="timer-modal-actions">
-                    <button class="timer-modal-btn secondary" type="button" id="resetTimerFromModalBtn">重新计时</button>
+            <div class="timer-modal-settings">
+                <label for="timerReminderMinutes">提醒时间</label>
+                <div class="timer-modal-setting-row">
+                    <input type="number" id="timerReminderMinutes" min="0" max="99" inputmode="numeric">
+                    <span>分</span>
+                    <input type="number" id="timerReminderSeconds" min="0" max="59" inputmode="numeric">
+                    <span>秒</span>
                 </div>
             </div>
         </div>
@@ -827,6 +833,8 @@ var detailTimerClickTimers = {};
 var detailTimerLongPressTimers = {};
 var detailTimerLongPressTriggered = {};
 var recordGroupTimerReminderState = {};
+var timerFireworksFrameId = null;
+var timerFireworksTimeoutId = null;
 var timerModalContext = null;
 var timerModalAlertMode = false;
 var recordValueFlashState = {};
@@ -914,31 +922,17 @@ function getRecordGroupTimerLabel(dk,muscle,segmentId){
 }
 function syncTimerModalDisplay(){
     var display=document.getElementById('timerModalDisplay');
-    var title=document.getElementById('timerModalTitle');
-    var badge=document.getElementById('timerModalBadge');
-    var hint=document.getElementById('timerModalHint');
-    var label=document.getElementById('timerModalDisplayLabel');
-    if(!display||!title||!badge||!hint||!label)return;
+    if(!display)return;
     if(!timerModalContext){
         display.textContent='00:00';
         display.classList.remove('is-alert');
-        title.textContent='秒表提醒';
-        badge.textContent='当前提醒 '+formatReminderThreshold(timerReminderConfig.thresholdSeconds);
-        badge.classList.remove('is-alert');
-        label.textContent='当前秒表';
-        hint.textContent='单击底部秒表会重新计时，双击或长按会打开这个放大窗口。';
         return;
     }
     var elapsedMs=getRecordGroupTimerElapsedMs(timerModalContext.dateKey,timerModalContext.muscle,timerModalContext.segmentId);
     var thresholdSeconds=timerReminderConfig.thresholdSeconds;
     var isAlert=timerModalAlertMode&&elapsedMs>=thresholdSeconds*1000;
-    title.textContent=(muscleNames[timerModalContext.muscle]||timerModalContext.muscle)+' 秒表';
-    label.textContent=formatSelectedDateLabel(timerModalContext.dateKey);
     display.textContent=formatRecordGroupTimer(elapsedMs);
-    badge.textContent=isAlert?'已到提醒时间':'当前提醒 '+formatReminderThreshold(thresholdSeconds);
-    badge.classList.toggle('is-alert',isAlert);
     display.classList.toggle('is-alert',isAlert);
-    hint.textContent=isAlert?'当前秒表已超过提醒时长，你可以直接在这里调整下一次提醒时间。':'单击底部秒表会重新计时，双击或长按会打开这个放大窗口。';
 }
 function openTimerModal(dk,muscle,segmentId,forceAlert){
     var modal=document.getElementById('timerModal');
@@ -952,10 +946,12 @@ function openTimerModal(dk,muscle,segmentId,forceAlert){
     modal.classList.add('show');
 }
 function closeTimerModal(){
+    if(!saveTimerReminderSettings())return;
     var modal=document.getElementById('timerModal');
     if(modal)modal.classList.remove('show');
     timerModalContext=null;
     timerModalAlertMode=false;
+    syncTimerModalDisplay();
 }
 function saveTimerReminderSettings(){
     var minutesValue=parseInt(document.getElementById('timerReminderMinutes').value,10);
@@ -964,13 +960,14 @@ function saveTimerReminderSettings(){
     if(isNaN(secondsValue))secondsValue=0;
     if(minutesValue<0||secondsValue<0||secondsValue>59){
         alert('提醒时间请输入有效的分和秒');
-        return;
+        return false;
     }
     var nextThresholdSeconds=minutesValue*60+secondsValue;
     if(nextThresholdSeconds<10){
         alert('提醒时间至少需要 10 秒');
-        return;
+        return false;
     }
+    if(nextThresholdSeconds===timerReminderConfig.thresholdSeconds)return true;
     timerReminderConfig={thresholdSeconds:nextThresholdSeconds};
     saveTimerReminderConfig();
     if(timerModalContext){
@@ -978,12 +975,102 @@ function saveTimerReminderSettings(){
     }
     timerModalAlertMode=false;
     syncTimerModalDisplay();
+    return true;
 }
-function resetTimerFromModal(){
-    if(!timerModalContext)return;
-    resetRecordGroupTimer(timerModalContext.dateKey,timerModalContext.muscle,timerModalContext.segmentId);
-    timerModalAlertMode=false;
-    syncTimerModalDisplay();
+function dismissTimerFireworks(){
+    var canvas=document.getElementById('timerFireworksOverlay');
+    if(timerFireworksFrameId!==null)cancelAnimationFrame(timerFireworksFrameId);
+    if(timerFireworksTimeoutId!==null)window.clearTimeout(timerFireworksTimeoutId);
+    if(canvas){
+        var context=canvas.getContext('2d');
+        if(context){
+            context.setTransform(1,0,0,1,0,0);
+            context.clearRect(0,0,canvas.width,canvas.height);
+        }
+        canvas.classList.remove('is-active');
+    }
+    timerFireworksFrameId=null;
+    timerFireworksTimeoutId=null;
+}
+function showTimerFireworks(){
+    var canvas=document.getElementById('timerFireworksOverlay');
+    if(!canvas)return;
+    var context=canvas.getContext('2d');
+    if(!context)return;
+    dismissTimerFireworks();
+    canvas.onclick=dismissTimerFireworks;
+    var width=Math.max(1,window.innerWidth);
+    var height=Math.max(1,window.innerHeight);
+    var pixelRatio=Math.min(window.devicePixelRatio||1,2);
+    canvas.width=Math.round(width*pixelRatio);
+    canvas.height=Math.round(height*pixelRatio);
+    canvas.style.width=width+'px';
+    canvas.style.height=height+'px';
+    context.setTransform(pixelRatio,0,0,pixelRatio,0,0);
+    canvas.classList.add('is-active');
+    var startTime=performance.now();
+    var lastFrameTime=startTime;
+    var nextBurstAt=0;
+    var particles=[];
+    var hues=[8,42,120,178,205,285,330];
+    timerFireworksTimeoutId=window.setTimeout(dismissTimerFireworks,30000);
+    function addBurst(){
+        var burstX=width*(0.08+Math.random()*0.84);
+        var burstY=height*(0.12+Math.random()*0.68);
+        var hue=hues[Math.floor(Math.random()*hues.length)];
+        for(var i=0;i<38;i++){
+            var angle=Math.random()*Math.PI*2;
+            var speed=1.5+Math.random()*4.2;
+            particles.push({
+                x:burstX,
+                y:burstY,
+                vx:Math.cos(angle)*speed,
+                vy:Math.sin(angle)*speed,
+                age:0,
+                life:850+Math.random()*600,
+                hue:hue,
+                size:1+Math.random()*2
+            });
+        }
+    }
+    function renderFireworks(now){
+        var elapsed=now-startTime;
+        var frameScale=Math.min(2,(now-lastFrameTime)/16.67);
+        lastFrameTime=now;
+        context.clearRect(0,0,width,height);
+        if(elapsed>=30000){
+            dismissTimerFireworks();
+            return;
+        }
+        if(elapsed>=nextBurstAt){
+            addBurst();
+            nextBurstAt=elapsed+380+Math.random()*180;
+        }
+        context.globalCompositeOperation='lighter';
+        var activeParticles=[];
+        for(var pi=0;pi<particles.length;pi++){
+            var particle=particles[pi];
+            particle.age+=frameScale*16.67;
+            if(particle.age>=particle.life)continue;
+            activeParticles.push(particle);
+            particle.vy+=0.055*frameScale;
+            particle.x+=particle.vx*frameScale;
+            particle.y+=particle.vy*frameScale;
+            var alpha=1-particle.age/particle.life;
+            context.strokeStyle='hsla('+particle.hue+',100%,68%,'+alpha+')';
+            context.lineWidth=particle.size;
+            context.beginPath();
+            context.moveTo(particle.x,particle.y);
+            context.lineTo(particle.x-particle.vx*2.5,particle.y-particle.vy*2.5);
+            context.stroke();
+            context.fillStyle='hsla('+particle.hue+',100%,78%,'+alpha+')';
+            context.fillRect(particle.x-particle.size/2,particle.y-particle.size/2,particle.size,particle.size);
+        }
+        particles=activeParticles;
+        context.globalCompositeOperation='source-over';
+        timerFireworksFrameId=requestAnimationFrame(renderFireworks);
+    }
+    timerFireworksFrameId=requestAnimationFrame(renderFireworks);
 }
 function maybeTriggerRecordGroupTimerReminder(dk,muscle,segmentId,elapsedMs){
     if(!dk||!muscle)return;
@@ -991,6 +1078,7 @@ function maybeTriggerRecordGroupTimerReminder(dk,muscle,segmentId,elapsedMs){
     if(recordGroupTimerReminderState[timerKey])return;
     if(elapsedMs<timerReminderConfig.thresholdSeconds*1000)return;
     recordGroupTimerReminderState[timerKey]=true;
+    showTimerFireworks();
     if(timerModalContext&&timerModalContext.dateKey===dk&&timerModalContext.muscle===muscle&&timerModalContext.segmentId===normalizeSegmentIdValue(segmentId)){
         timerModalAlertMode=true;
         syncTimerModalDisplay();
@@ -1704,11 +1792,28 @@ function updateDayLatestTimeForMuscle(dk,muscle,timestamp,shouldRecordRefreshHis
     saveDayTimeOverrides();
     return true;
 }
-function refreshDayLatestTime(dk,muscle,segmentId){
+function refreshDayLatestTime(dk,muscle,segmentId,shouldResetTimer){
     if(!updateDayLatestTimeForMuscle(dk,muscle,null,true,segmentId))return;
-    resetRecordGroupTimer(dk,muscle,segmentId);
+    syncDayLatestTime(dk);
+    if(shouldResetTimer!==false)resetRecordGroupTimer(dk,muscle,segmentId);
     showDetail(dk);
     if(document.getElementById('volumeContent').classList.contains('active'))showVolumeChart();
+}
+function updateRecordTrainingDurationOnClick(){
+    if(currentPage!=='record'||!selDate)return;
+    var exercises=data[selDate]||[];
+    var activeMuscle=getActiveRecordMuscle(selDate);
+    if(!exercises.length||!activeMuscle)return;
+    if(!updateDayLatestTimeForMuscle(selDate,activeMuscle,null,false,getDefaultSegmentId()))return;
+    syncDayLatestTime(selDate);
+    var dayMeta=getDayTimeMeta(selDate,exercises);
+    var durationMinutes=calcRefreshIntervalMinutes(dayMeta.lastUpdatedAt,dayMeta.firstAddedAt);
+    var durationLabel=durationMinutes===null?'--':String(Math.max(0,Math.round(durationMinutes)));
+    document.querySelectorAll('#simpleExerciseList .detail-footer-duration-value, #detailFooterMetrics .detail-footer-duration-value').forEach(function(value){
+        value.textContent=durationLabel;
+    });
+    var footerValues=document.querySelectorAll('#detailFooterMetrics .detail-footer-card .detail-footer-value');
+    if(footerValues.length)footerValues[footerValues.length-1].textContent=formatClockTime(dayMeta.lastUpdatedAt);
 }
 function syncDayLatestTime(dk,timestamp){
     var exercises=data[dk]||[];
@@ -1867,14 +1972,9 @@ function getCapacityHintText(dk,items,bestRecord){
         neededSetsText=String(currentSets);
     }
     return '<div class="exercise-capacity-hint-line">'+
-            '<span class="exercise-capacity-hint-item">最大组数：<span class="exercise-capacity-hint-value">'+formatMetricNumber(maxSets)+'组</span></span>'+
-            '<span class="exercise-capacity-hint-item">最大重量：<span class="exercise-capacity-hint-value">'+formatMetricNumber(maxWeight)+'kg</span></span>'+
-            '<span class="exercise-capacity-hint-item">最大容量：<span class="exercise-capacity-hint-value">'+formatMetricNumber(bestVolume)+'</span></span>'+
-        '</div>'+
-        '<div class="exercise-capacity-hint-line is-current">'+
-            '<span class="exercise-capacity-hint-item">达标组数：<span class="exercise-capacity-hint-value">'+neededSetsText+'组</span></span>'+
-            '<span class="exercise-capacity-hint-item">当前重量：<span class="exercise-capacity-hint-value">'+formatMetricNumber(weightValue)+'kg</span></span>'+
-            '<span class="exercise-capacity-hint-item">当前容量：<span class="exercise-capacity-hint-value">'+formatMetricNumber(currentActionVolume)+'</span></span>'+
+            '<span class="exercise-capacity-hint-item">最大/达标：<span class="exercise-capacity-hint-value is-best">'+formatMetricNumber(maxSets)+'组</span>/<span class="exercise-capacity-hint-value is-best">'+neededSetsText+'组</span></span>'+
+            '<span class="exercise-capacity-hint-item">目前/最大：<span class="exercise-capacity-hint-value is-current">'+formatMetricNumber(weightValue)+'kg</span>/<span class="exercise-capacity-hint-value is-best">'+formatMetricNumber(maxWeight)+'kg</span></span>'+
+            '<span class="exercise-capacity-hint-item">容量：<span class="exercise-capacity-hint-value is-current">'+formatMetricNumber(currentActionVolume)+'</span>/<span class="exercise-capacity-hint-value is-best">'+formatMetricNumber(bestVolume)+'</span></span>'+
         '</div>';
 }
 function getExerciseBestRecord(m,name){
@@ -2242,6 +2342,17 @@ function updateAddActionVisibility(){
     addBtn.hidden=!selDate||currentPage!=='record';
     updateDetailActionBarVisibility();
 }
+function prepareCapacityHintAddButtonForRender(){
+    var addBtn=document.getElementById('addActionBtn');
+    var actionBar=document.getElementById('detailActionBar');
+    if(addBtn&&actionBar&&addBtn.parentNode!==actionBar)actionBar.appendChild(addBtn);
+}
+function placeAddActionButtonInSimpleRecordActions(){
+    if(currentPage!=='record')return;
+    var addBtn=document.getElementById('addActionBtn');
+    var activeActions=document.querySelector('#simpleContent.active .simple-record-card-actions');
+    if(addBtn&&activeActions)activeActions.appendChild(addBtn);
+}
 function updateDetailTimerButton(){
     var slot=document.getElementById('detailTimerSlot');
     var resetSlot=document.getElementById('detailResetSlot');
@@ -2325,13 +2436,8 @@ function relocateDetailAuxiliarySections(){
     var footerHome=document.getElementById('detailFooterMetricsHome');
     var actionBar=document.getElementById('detailActionBar');
     var actionHome=document.getElementById('detailActionBarHome');
-    var actionMount=document.getElementById('simpleDetailActionBarMount');
-    if(!footer||!footerHome||!actionBar||!actionHome||!actionMount)return;
-    if(currentPage==='record'){
-        actionMount.appendChild(actionBar);
-        return;
-    }
-    footerHome.parentNode.insertBefore(footer,footerHome.nextSibling);
+    if(!footer||!footerHome||!actionBar||!actionHome)return;
+    if(currentPage!=='record')footerHome.parentNode.insertBefore(footer,footerHome.nextSibling);
     actionHome.parentNode.insertBefore(actionBar,actionHome.nextSibling);
 }
 function jumpToRecordFromCapacityHint(){
@@ -2618,11 +2724,16 @@ function buildActiveRecordSelectionState(dk){
 function renderSimpleRecordDetail(dk){
     var lst=document.getElementById('simpleExerciseList');
     if(!lst)return;
+    prepareCapacityHintAddButtonForRender();
     var selectionState=buildActiveRecordSelectionState(dk);
     var bestRecord=selectionState&&selectionState.activeAction?getExerciseBestRecord(selectionState.group.muscle,selectionState.activeActionName):null;
     var capacityHintText=selectionState&&selectionState.activeAction?getCapacityHintText(dk,selectionState.activeAction.items,bestRecord):'';
+    var dayMeta=getDayTimeMeta(dk,data[dk]||[]);
+    var durationMinutes=calcRefreshIntervalMinutes(dayMeta.lastUpdatedAt,dayMeta.firstAddedAt);
+    var durationLabel=durationMinutes===null?'--':String(Math.max(0,Math.round(durationMinutes)));
     if(!selectionState){
         lst.innerHTML='<div class="no-data">暂无训练记录，返回记录页后先添加动作</div>';
+        placeAddActionButtonInSimpleRecordActions();
         return;
     }
     var htm='<div class="simple-record-wrap">';
@@ -2650,12 +2761,15 @@ function renderSimpleRecordDetail(dk){
             var setsFlashClass=getRecordValueFlashClass(dk,item.index,'sets');
             var repsFlashClass=getRecordValueFlashClass(dk,item.index,'reps');
             var weightFlashClass=getRecordValueFlashClass(dk,item.index,'weight');
+            var cardMuscle=selectionState.group.muscle;
+            var cardSegmentId=getDefaultSegmentId();
             htm+='<div class="simple-record-card">'+
                 '<div class="simple-record-metrics">'+
-                    '<div class="simple-record-metric"><span class="simple-record-metric-label">组数</span><div class="simple-record-stepper"><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button><span class="simple-record-value-box'+bestBoxClass+'"><span class="adjust-value'+setsFlashClass+'">'+item.exercise.sets+'</span></span><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',-1)">−</button></div></div>'+
-                    '<div class="simple-record-metric"><span class="simple-record-metric-label">次数</span><div class="simple-record-stepper"><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button><span class="simple-record-value-box'+bestBoxClass+'"><span class="adjust-value'+repsFlashClass+'">'+item.exercise.reps+'</span></span><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',-1)">−</button></div></div>'+
-                    '<div class="simple-record-metric"><span class="simple-record-metric-label">重量 kg</span><div class="simple-record-stepper"><button class="adjust-btn" onclick="adjWeight(\''+dk+'\','+item.index+',1)">+</button><input type="number" class="metric-input'+weightFlashClass+bestBoxClass+'" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="1" min="0" oninput="syncDetailWeightInputFontSize(this)" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><button class="adjust-btn" onclick="adjWeight(\''+dk+'\','+item.index+',-1)">−</button></div></div>'+
+                    '<div class="simple-record-metric"><span class="simple-record-metric-label">次数</span><div class="simple-record-stepper"><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',-1)">−</button><span class="simple-record-value-box'+bestBoxClass+'"><span class="adjust-value'+repsFlashClass+'">'+item.exercise.reps+'</span></span><button class="adjust-btn" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button></div></div>'+
+                    '<div class="simple-record-metric"><span class="simple-record-metric-label">重量 kg</span><div class="simple-record-stepper"><button class="adjust-btn" onclick="adjWeight(\''+dk+'\','+item.index+',-1)">−</button><input type="number" class="metric-input'+weightFlashClass+bestBoxClass+'" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="1" min="0" oninput="syncDetailWeightInputFontSize(this)" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><button class="adjust-btn" onclick="adjWeight(\''+dk+'\','+item.index+',1)">+</button></div></div>'+
+                    '<div class="simple-record-metric"><span class="simple-record-metric-label">组数</span><div class="simple-record-stepper"><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',-1)">−</button><span class="simple-record-value-box'+bestBoxClass+'"><span class="adjust-value'+setsFlashClass+'">'+item.exercise.sets+'</span></span><button class="adjust-btn" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button></div></div>'+
                 '</div>'+
+                '<div class="simple-record-card-tools"><button class="exercise-timer-btn" data-date-key="'+dk+'" data-muscle="'+cardMuscle+'" data-segment-id="'+cardSegmentId+'" onclick="handleDetailTimerClick(\''+dk+'\',\''+cardMuscle+'\',\''+cardSegmentId+'\')" ondblclick="handleDetailTimerDoubleClick(\''+dk+'\',\''+cardMuscle+'\',\''+cardSegmentId+'\')" onmousedown="startDetailTimerLongPress(\''+dk+'\',\''+cardMuscle+'\',\''+cardSegmentId+'\')" onmouseup="cancelDetailTimerLongPress(\''+dk+'\',\''+cardMuscle+'\',\''+cardSegmentId+'\')" onmouseleave="cancelDetailTimerLongPress(\''+dk+'\',\''+cardMuscle+'\',\''+cardSegmentId+'\')" ontouchstart="startDetailTimerLongPress(\''+dk+'\',\''+cardMuscle+'\',\''+cardSegmentId+'\')" ontouchend="cancelDetailTimerLongPress(\''+dk+'\',\''+cardMuscle+'\',\''+cardSegmentId+'\')" ontouchcancel="cancelDetailTimerLongPress(\''+dk+'\',\''+cardMuscle+'\',\''+cardSegmentId+'\')" title="单击重新计时，双击或长按打开放大秒表"><span class="exercise-timer-meta">⏱</span><span class="exercise-timer-value">'+getRecordGroupTimerLabel(dk,cardMuscle,cardSegmentId)+'</span></button><button type="button" class="detail-footer-duration" onclick="refreshDayLatestTime(\''+dk+'\',\''+cardMuscle+'\',\''+cardSegmentId+'\',false)" title="点击刷新训练时长"><span class="detail-footer-duration-value">'+escapeHtml(durationLabel)+'</span><span class="detail-footer-duration-label">训练时长</span></button></div>'+
                 '<div class="simple-record-card-actions"><button class="delete-btn" onclick="del(\''+dk+'\','+item.index+')" title="删除" aria-label="删除">-</button><button class="copy-btn" onclick="dup(\''+dk+'\','+item.index+')" title="复制" aria-label="复制">+</button></div>'+
             '</div>';
         }
@@ -2668,6 +2782,7 @@ function renderSimpleRecordDetail(dk){
     htm+='</div>';
     lst.innerHTML=htm;
     syncDetailWeightInputFontSizes(lst);
+    placeAddActionButtonInSimpleRecordActions();
 }
 function getRecordActionClickKey(dk,muscle,segmentId,actionName){
     return dk+'__'+muscle+'__'+actionName;
@@ -2972,6 +3087,7 @@ function renderRecordDayFooterMetrics(dk){
 function showDetail(dk){
     var lst=document.getElementById('exerciseList');
     var footer=document.getElementById('detailFooterMetrics');
+    prepareCapacityHintAddButtonForRender();
     var ex=data[dk]||[];
     if(!ex.length){
         lst.innerHTML='<div class="no-data">暂无训练记录，点击上方添加</div>';
@@ -3301,8 +3417,6 @@ document.getElementById('closeModal').onclick=closeM;
 document.getElementById('modal').onclick=function(e){if(e.target===this)closeM();};
 document.getElementById('closeTimerModal').onclick=closeTimerModal;
 document.getElementById('timerModal').onclick=function(e){if(e.target===this)closeTimerModal();};
-document.getElementById('saveTimerReminderBtn').onclick=saveTimerReminderSettings;
-document.getElementById('resetTimerFromModalBtn').onclick=resetTimerFromModal;
 document.querySelectorAll('.muscle-btn').forEach(function(b){b.onclick=function(){selM(this.dataset.muscle);};});
 document.getElementById('addExercise').onclick=addEx;
 bindExerciseNameDropdown();
@@ -3322,6 +3436,12 @@ document.addEventListener('click',function(e){
     var btn=e.target&&e.target.closest?e.target.closest('button'):null;
     if(!btn)return;
     triggerButtonTapFeedback(btn);
+},true);
+var appContent=document.querySelector('.app-content');
+if(appContent)appContent.addEventListener('click',function(e){
+    if(currentPage!=='record'||!e.target||!e.target.closest)return;
+    if(e.target.closest('.detail-footer-duration, .exercise-time-duration'))return;
+    updateRecordTrainingDurationOnClick();
 },true);
 function switchTab(tab,metricMode){
     if(currentPage!=='calendar')currentPage=tab;
