@@ -1793,6 +1793,7 @@ function updateDayLatestTimeForMuscle(dk,muscle,timestamp,shouldRecordRefreshHis
     return true;
 }
 function refreshDayLatestTime(dk,muscle,segmentId,shouldResetTimer){
+    if(dk!==getTodayKey())return;
     if(!updateDayLatestTimeForMuscle(dk,muscle,null,true,segmentId))return;
     syncDayLatestTime(dk);
     if(shouldResetTimer!==false)resetRecordGroupTimer(dk,muscle,segmentId);
@@ -1800,7 +1801,7 @@ function refreshDayLatestTime(dk,muscle,segmentId,shouldResetTimer){
     if(document.getElementById('volumeContent').classList.contains('active'))showVolumeChart();
 }
 function updateRecordTrainingDurationOnClick(){
-    if(currentPage!=='record'||!selDate)return;
+    if(currentPage!=='record'||!selDate||selDate!==getTodayKey())return;
     var exercises=data[selDate]||[];
     var activeMuscle=getActiveRecordMuscle(selDate);
     if(!exercises.length||!activeMuscle)return;
