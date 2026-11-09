@@ -176,7 +176,7 @@
         .simple-record-metric { display: flex; align-items: center; justify-content: flex-start; gap: 1em; padding: 8px 12px; border-radius: 14px; background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(241,246,252,0.88) 100%); border: 1px solid rgba(0,113,227,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92); }
         .simple-record-metric-label { flex: 0 0 auto; color: var(--muted); font-size: 16px; font-weight: 700; line-height: 1.1; }
         .simple-record-stepper { display: flex; flex: 1 1 0; flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px; width: auto; min-width: 0; }
-        .simple-record-stepper .adjust-btn { flex: 0 0 36px; width: 36px; height: 36px; border-radius: 9px; font-size: 20px; }
+        .simple-record-stepper .adjust-btn { flex: 0 0 43.2px; width: 43.2px; height: 43.2px; border-radius: 9px; font-size: 20px; }
         .simple-record-stepper .adjust-value { min-width: 0; font-size: 22px; line-height: 1.2; }
         .simple-record-stepper .simple-record-value-box { display: inline-flex; align-items: center; justify-content: center; flex: 1 1 0; width: 100%; max-width: 144px; min-width: 0; height: 38px; padding: 0 8px; border: 1px solid rgba(0,113,227,0.14); border-radius: 7px; background: rgba(255,255,255,0.96); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92); }
         .simple-record-stepper .simple-record-value-box.capacity-best-box,
@@ -839,6 +839,7 @@ var detailTimerLongPressTriggered = {};
 var recordGroupTimerReminderState = {};
 var timerFireworksFrameId = null;
 var timerFireworksTimeoutId = null;
+var timerFireworksContext = null;
 var timerModalContext = null;
 var timerModalAlertMode = false;
 var recordValueFlashState = {};
@@ -995,14 +996,21 @@ function dismissTimerFireworks(){
     }
     timerFireworksFrameId=null;
     timerFireworksTimeoutId=null;
+    timerFireworksContext=null;
 }
-function showTimerFireworks(){
+function dismissTimerFireworksAndResetTimer(){
+    var timerContext=timerFireworksContext;
+    dismissTimerFireworks();
+    if(timerContext)resetRecordGroupTimer(timerContext.dateKey,timerContext.muscle,timerContext.segmentId);
+}
+function showTimerFireworks(dk,muscle,segmentId){
     var canvas=document.getElementById('timerFireworksOverlay');
     if(!canvas)return;
     var context=canvas.getContext('2d');
     if(!context)return;
     dismissTimerFireworks();
-    canvas.onclick=dismissTimerFireworks;
+    timerFireworksContext={dateKey:dk,muscle:muscle,segmentId:normalizeSegmentIdValue(segmentId)};
+    canvas.onclick=dismissTimerFireworksAndResetTimer;
     var width=Math.max(1,window.innerWidth);
     var height=Math.max(1,window.innerHeight);
     var pixelRatio=Math.min(window.devicePixelRatio||1,2);
@@ -1082,7 +1090,7 @@ function maybeTriggerRecordGroupTimerReminder(dk,muscle,segmentId,elapsedMs){
     if(recordGroupTimerReminderState[timerKey])return;
     if(elapsedMs<timerReminderConfig.thresholdSeconds*1000)return;
     recordGroupTimerReminderState[timerKey]=true;
-    showTimerFireworks();
+    showTimerFireworks(dk,muscle,segmentId);
     if(timerModalContext&&timerModalContext.dateKey===dk&&timerModalContext.muscle===muscle&&timerModalContext.segmentId===normalizeSegmentIdValue(segmentId)){
         timerModalAlertMode=true;
         syncTimerModalDisplay();
