@@ -610,7 +610,7 @@
         </div>
         <div class="calendar" id="calendar"></div>
         <div class="calendar-add-wrap">
-            <button class="add-exercise-btn calendar-add-btn" onclick="openM()">+ 添加训练</button>
+            <button class="add-exercise-btn calendar-add-btn" onclick="addCalendarTraining()">+ 添加训练</button>
         </div>
         <div class="calendar-edit-timestamp" id="calendarEditTimestamp">最后改动：--</div>
     </div>
@@ -2073,6 +2073,38 @@ function getBestMuscleCopyExercises(targetDate,muscle){
     }).map(function(name){
         return bestByName[name];
     });
+}
+function getNextChestBackMuscle(targetDate){
+    var dateKeys=Object.keys(data).filter(function(dateKey){return dateKey<=targetDate;}).sort().reverse();
+    for(var di=0;di<dateKeys.length;di++){
+        var exercises=data[dateKeys[di]]||[];
+        for(var ei=exercises.length-1;ei>=0;ei--){
+            var muscle=exercises[ei]&&exercises[ei].muscle;
+            if(muscle==='chest')return 'back';
+            if(muscle==='back')return 'chest';
+        }
+    }
+    return null;
+}
+function addCalendarTraining(){
+    if(!selDate){
+        var today=new Date();
+        selDate=getTodayKey();
+        curDate=new Date(today.getFullYear(),today.getMonth(),1);
+    }
+    if(isFutureDateKey(selDate))return;
+    var targetMuscle=getNextChestBackMuscle(selDate);
+    if(!targetMuscle){
+        openM();
+        return;
+    }
+    if(!getBestMuscleCopyExercises(selDate,targetMuscle).length){
+        openM();
+        selM(targetMuscle);
+        return;
+    }
+    selMuscle=targetMuscle;
+    copyLastMuscleExercises();
 }
 function copyLastMuscleExercises(){
     if(editIdx>=0||!selDate||!selMuscle)return;
