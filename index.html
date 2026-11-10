@@ -182,10 +182,12 @@
         .simple-record-stepper .simple-record-value-box.capacity-best-box,
         .simple-record-stepper .metric-input.capacity-best-box { background: linear-gradient(180deg, rgba(212,255,223,0.96) 0%, rgba(161,240,184,0.82) 100%); border-color: rgba(48,209,88,0.42); box-shadow: inset 0 1px 0 rgba(255,255,255,0.84), 0 0 0 1px rgba(48,209,88,0.12); }
         .simple-record-stepper .metric-input { flex: 1 1 0; width: 100%; max-width: 144px; min-width: 0; height: 38px; font-size: 21px; text-align: center; padding: 0 8px; }
-        .simple-record-card-actions { grid-column: 1 / -1; grid-row: 2; display: flex; justify-content: flex-start; gap: 4px; margin-top: 0; }
-        .simple-record-card-actions #addActionBtn { flex: 0 0 auto; width: calc(100% - 180px); height: 30px; min-height: 30px; margin-right: 0; margin-left: 67px; padding: 0 10px; border-radius: 9px; font-size: 12px; }
+        .simple-record-card-actions { display: grid; grid-template-columns: repeat(2, 46px); align-content: start; gap: 4px; margin-top: 0; }
+        .simple-record-card-tools #addActionBtn { flex: 0 0 auto; width: 100%; height: 36px; min-height: 36px; margin: 0; padding: 0 10px; border-radius: 9px; font-size: 12px; }
         .simple-record-card-actions .delete-btn,
-        .simple-record-card-actions .copy-btn { width: 46px; height: 30px; }
+        .simple-record-card-actions .copy-btn { width: 46px; height: 21px; min-height: 21px; }
+        .simple-record-card-actions .delete-btn,
+        .simple-record-card-actions .copy-btn { font-size: clamp(13.2px, 3.696vw, 14.52px); }
         .simple-record-card-actions .delete-btn { margin-left: 0; }
         .simple-record-card-actions .copy-btn { margin-left: 0; }
         .simple-record-footer-btn { width: 100%; }
@@ -1025,7 +1027,7 @@ function showTimerFireworks(dk,muscle,segmentId){
     var nextBurstAt=0;
     var particles=[];
     var hues=[8,42,120,178,205,285,330];
-    timerFireworksTimeoutId=window.setTimeout(dismissTimerFireworks,30000);
+    timerFireworksTimeoutId=window.setTimeout(dismissTimerFireworks,10000);
     function addBurst(){
         var burstX=width*(0.08+Math.random()*0.84);
         var burstY=height*(0.12+Math.random()*0.68);
@@ -1050,7 +1052,7 @@ function showTimerFireworks(dk,muscle,segmentId){
         var frameScale=Math.min(2,(now-lastFrameTime)/16.67);
         lastFrameTime=now;
         context.clearRect(0,0,width,height);
-        if(elapsed>=30000){
+        if(elapsed>=10000){
             dismissTimerFireworks();
             return;
         }
@@ -2364,7 +2366,12 @@ function placeAddActionButtonInSimpleRecordActions(){
     if(currentPage!=='record')return;
     var addBtn=document.getElementById('addActionBtn');
     var activeActions=document.querySelector('#simpleContent.active .simple-record-card-actions');
-    if(addBtn&&activeActions)activeActions.appendChild(addBtn);
+    if(!addBtn||!activeActions)return;
+    var activeTools=activeActions.parentNode.querySelector('.simple-record-card-tools');
+    var durationBtn=activeTools&&activeTools.querySelector('.detail-footer-duration');
+    if(!activeTools||!durationBtn)return;
+    if(activeActions.parentNode!==activeTools)activeTools.insertBefore(activeActions,durationBtn);
+    activeTools.insertBefore(addBtn,durationBtn.nextSibling);
 }
 function updateDetailTimerButton(){
     var slot=document.getElementById('detailTimerSlot');
