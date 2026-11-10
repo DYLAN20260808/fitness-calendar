@@ -2309,6 +2309,9 @@ function getTodayKey(){
     var today=new Date();
     return today.getFullYear()+'-'+pad(today.getMonth()+1)+'-'+pad(today.getDate());
 }
+function isFutureDateKey(dateKey){
+    return !!dateKey&&dateKey>getTodayKey();
+}
 function formatSelectedDateLabel(dk){
     if(!dk)return '未选择日期';
     var parts=String(dk).split('-');
@@ -2451,7 +2454,7 @@ function jumpToPreviousMuscleDate(){
 function updateAddActionVisibility(){
     var addBtn=document.getElementById('addActionBtn');
     if(!addBtn)return;
-    addBtn.hidden=!selDate||currentPage!=='record';
+    addBtn.hidden=!selDate||isFutureDateKey(selDate)||currentPage!=='record';
     updateDetailActionBarVisibility();
 }
 function prepareCapacityHintAddButtonForRender(){
@@ -2641,12 +2644,13 @@ function render(){
     updatePageDateFooter();
 }
 function sel(dk){
+    if(isFutureDateKey(dk))dk=getTodayKey();
     selDate=dk;
     var hasRecords=!!((data[dk]||[]).length);
     render();
     showDetail(dk);
     switchPage('record');
-    if(!hasRecords)openM();
+    if(!hasRecords&&!isFutureDateKey(dk))openM();
 }
 function calcVolume(ex){
     var vol=0;
@@ -3458,9 +3462,10 @@ function adjReps(dk,i,d){
     save();
     showDetail(dk);
 }
-function openM(){if(!selDate){var today=new Date();selDate=getTodayKey();curDate=new Date(today.getFullYear(),today.getMonth(),1);}resetModalState();document.getElementById('modal').classList.add('show');document.getElementById('addForm').classList.remove('show');updateAddExerciseButtonVisibility();selMuscle=null;document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});document.getElementById('exerciseName').value='';document.getElementById('exerciseSets').value='';document.getElementById('exerciseReps').value='';document.getElementById('exerciseWeight').value='';closeExerciseNameDropdown();renderAddFormSegmentPicker();render();showDetail(selDate);setTimeout(function(){scrollToDateCell(selDate);var el=document.getElementById('modal');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);}
+function openM(){if(isFutureDateKey(selDate))return;if(!selDate){var today=new Date();selDate=getTodayKey();curDate=new Date(today.getFullYear(),today.getMonth(),1);}resetModalState();document.getElementById('modal').classList.add('show');document.getElementById('addForm').classList.remove('show');updateAddExerciseButtonVisibility();selMuscle=null;document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});document.getElementById('exerciseName').value='';document.getElementById('exerciseSets').value='';document.getElementById('exerciseReps').value='';document.getElementById('exerciseWeight').value='';closeExerciseNameDropdown();renderAddFormSegmentPicker();render();showDetail(selDate);setTimeout(function(){scrollToDateCell(selDate);var el=document.getElementById('modal');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);}
 function closeM(){document.getElementById('modal').classList.remove('show');document.getElementById('addForm').classList.remove('show');updateAddExerciseButtonVisibility();selMuscle=null;closeExerciseNameDropdown();resetModalState();renderAddFormSegmentPicker();}
 function selM(m){
+    if(isFutureDateKey(selDate))return;
     selMuscle=m;
     selectedExerciseNames=[];
     renderSelectedExerciseNames();
@@ -3504,6 +3509,10 @@ function editEx(dk,i){
 function addEx(){
     if(modalMode==='renameAction'){
         confirmRecordActionRename();
+        return;
+    }
+    if(isFutureDateKey(selDate)){
+        alert('不能在未来日期添加动作');
         return;
     }
     var actionNames=getModalExerciseNames();
