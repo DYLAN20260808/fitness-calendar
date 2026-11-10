@@ -170,7 +170,7 @@
         .simple-record-actions.exercise-tabs { overflow-x: auto; }
         .simple-record-actions .exercise-tab-btn { padding: 4px 10px; font-size: 11px; }
         .simple-record-actions .exercise-tab-btn.active { transform: scale(1.08); }
-        .simple-record-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: stretch; gap: 10px; padding: 14px; border-radius: 20px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,249,252,0.92) 45%, rgba(234,238,244,0.84) 100%); border: 1px solid rgba(255,255,255,0.76); box-shadow: var(--highlight), 0 14px 26px rgba(17,24,39,0.08), 0 2px 0 rgba(255,255,255,0.88); }
+        .simple-record-card { display: grid; grid-template-columns: 77.76px minmax(0, 1fr); align-items: stretch; gap: 10px; padding: 14px 6.6px; border-radius: 20px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,249,252,0.92) 45%, rgba(234,238,244,0.84) 100%); border: 1px solid rgba(255,255,255,0.76); box-shadow: var(--highlight), 0 14px 26px rgba(17,24,39,0.08), 0 2px 0 rgba(255,255,255,0.88); }
         .simple-record-metrics { grid-column: 2; grid-row: 1; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
         .simple-record-card-tools { grid-column: 1; grid-row: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
         .simple-record-metric { display: flex; align-items: center; justify-content: flex-start; gap: 1em; padding: 8px 12px; border-radius: 14px; background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(241,246,252,0.88) 100%); border: 1px solid rgba(0,113,227,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92); }
@@ -182,10 +182,10 @@
         .simple-record-stepper .simple-record-value-box.capacity-best-box,
         .simple-record-stepper .metric-input.capacity-best-box { background: linear-gradient(180deg, rgba(212,255,223,0.96) 0%, rgba(161,240,184,0.82) 100%); border-color: rgba(48,209,88,0.42); box-shadow: inset 0 1px 0 rgba(255,255,255,0.84), 0 0 0 1px rgba(48,209,88,0.12); }
         .simple-record-stepper .metric-input { flex: 1 1 0; width: 100%; max-width: 144px; min-width: 0; height: 38px; font-size: 21px; text-align: center; padding: 0 8px; }
-        .simple-record-card-actions { display: grid; grid-template-columns: repeat(2, 46px); align-content: start; gap: 4px; margin-top: 0; }
+        .simple-record-card-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; gap: 4px; margin-top: 0; }
         .simple-record-card-tools #addActionBtn { flex: 0 0 auto; width: 100%; height: 36px; min-height: 36px; margin: 0; padding: 0 10px; border-radius: 9px; font-size: 12px; }
         .simple-record-card-actions .delete-btn,
-        .simple-record-card-actions .copy-btn { width: 46px; height: 21px; min-height: 21px; }
+        .simple-record-card-actions .copy-btn { width: auto; height: 21px; min-height: 21px; }
         .simple-record-card-actions .delete-btn,
         .simple-record-card-actions .copy-btn { font-size: clamp(13.2px, 3.696vw, 14.52px); }
         .simple-record-card-actions .delete-btn { margin-left: 0; }
@@ -246,11 +246,9 @@
         .exercise-timer-value { min-width: 42px; text-align: right; color: var(--accent-deep); }
         .exercise-timer-value.is-alert { color: #dc2626; }
         .exercise-capacity-hint { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; padding: 8px 10px; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(240,245,252,0.88) 100%); border: 1px solid rgba(0,113,227,0.08); color: var(--muted); font-size: 11px; line-height: 1.45; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9); cursor: pointer; overflow: hidden; }
-        .exercise-capacity-hint-text { min-width: 0; width: 100%; flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; }
-        .exercise-capacity-hint-line { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; width: 100%; color: var(--muted); }
-        .exercise-capacity-hint-item { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .exercise-capacity-hint-item:nth-child(2) { text-align: center; }
-        .exercise-capacity-hint-item:nth-child(3) { text-align: right; }
+        .exercise-capacity-hint-text { min-width: 0; width: 100%; flex: 1 1 auto; }
+        .exercise-capacity-hint-line { display: block; width: 100%; color: var(--muted); }
+        .exercise-capacity-hint-item { display: inline; }
         .exercise-capacity-hint-line.is-current { color: var(--muted); }
         .exercise-capacity-hint-value { color: inherit; font-weight: 700; }
         .exercise-capacity-hint-value.is-best { color: #16a34a; }
@@ -295,8 +293,6 @@
             .exercise-timer-reset-btn { min-width: 60px; min-height: var(--detail-tab-height); padding: 0 10px; font-size: 11px; }
             .exercise-timer-meta { font-size: 10px; }
             .exercise-capacity-hint { align-items: flex-start; font-size: 10px; }
-            .exercise-capacity-hint-line { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr); gap: 4px; }
-            .exercise-capacity-hint-item { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
             .timer-modal-content { max-width: 100%; }
             .timer-modal-display { font-size: 76px; }
         }
@@ -1995,8 +1991,8 @@ function getCapacityHintText(dk,items,bestRecord){
         neededSetsText=String(currentSets);
     }
     return '<div class="exercise-capacity-hint-line">'+
-            '<span class="exercise-capacity-hint-item">最大/达标：<span class="exercise-capacity-hint-value is-best">'+formatMetricNumber(maxSets)+'组</span>/<span class="exercise-capacity-hint-value is-best">'+neededSetsText+'组</span></span>'+
-            '<span class="exercise-capacity-hint-item">目前/最大：<span class="exercise-capacity-hint-value is-current">'+formatMetricNumber(weightValue)+'kg</span>/<span class="exercise-capacity-hint-value is-best">'+formatMetricNumber(maxWeight)+'kg</span></span>'+
+            '<span class="exercise-capacity-hint-item">最大/达标：<span class="exercise-capacity-hint-value is-best">'+formatMetricNumber(maxSets)+'组</span>/<span class="exercise-capacity-hint-value is-best">'+neededSetsText+'组</span></span>；'+
+            '<span class="exercise-capacity-hint-item">目前/最大：<span class="exercise-capacity-hint-value is-current">'+formatMetricNumber(weightValue)+'kg</span>/<span class="exercise-capacity-hint-value is-best">'+formatMetricNumber(maxWeight)+'kg</span></span>；'+
             '<span class="exercise-capacity-hint-item">容量：<span class="exercise-capacity-hint-value is-current">'+formatMetricNumber(currentActionVolume)+'</span>/<span class="exercise-capacity-hint-value is-best">'+formatMetricNumber(bestVolume)+'</span></span>'+
         '</div>';
 }
