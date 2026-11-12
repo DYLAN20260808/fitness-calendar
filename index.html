@@ -2130,11 +2130,9 @@ function getNextChestBackMuscle(targetDate){
     return null;
 }
 function addCalendarTraining(){
-    if(!selDate){
-        var today=new Date();
-        selDate=getTodayKey();
-        curDate=new Date(today.getFullYear(),today.getMonth(),1);
-    }
+    var today=new Date();
+    selDate=getTodayKey();
+    curDate=new Date(today.getFullYear(),today.getMonth(),1);
     if(!canAddRecordToDateKey(selDate))return;
     var targetMuscle=getNextChestBackMuscle(selDate);
     if(!targetMuscle){
@@ -2717,7 +2715,7 @@ function render(){
     updateTrainingDateHeader();
     updateAddActionVisibility();
     var calendarAddButton=document.querySelector('.calendar-add-btn');
-    if(calendarAddButton)calendarAddButton.disabled=!!selDate&&!canAddRecordToDateKey(selDate);
+    if(calendarAddButton)calendarAddButton.disabled=!canAddRecordToDateKey(getTodayKey());
     updatePageDateFooter();
 }
 function sel(dk){
