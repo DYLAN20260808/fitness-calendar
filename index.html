@@ -355,12 +355,6 @@
         .no-data { text-align: center; color: var(--muted); padding: 28px 18px; border-radius: 18px; border: 1px dashed rgba(0,113,227,0.18); background: linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(242,246,252,0.56) 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.86); }
         .add-form { display: none; background: linear-gradient(180deg, rgba(255,255,255,0.93) 0%, rgba(246,247,250,0.82) 100%); -webkit-backdrop-filter: blur(18px) saturate(165%); backdrop-filter: blur(18px) saturate(165%); border: 1px solid rgba(255,255,255,0.72); border-radius: 16px; padding: 15px; margin-top: 15px; box-shadow: var(--highlight), 0 10px 18px rgba(17,24,39,0.06); min-height: 0; overflow-y: auto; }
         .add-form.show { display: flex; flex: 1 1 auto; flex-direction: column; }
-        .add-form.rename-action-mode #exerciseSetsGroup,
-        .add-form.rename-action-mode #exerciseRepsGroup,
-        .add-form.rename-action-mode #exerciseWeightGroup { display: none; }
-        .add-form.cardio-mode #exerciseSetsGroup,
-        .add-form.cardio-mode #exerciseRepsGroup,
-        .add-form.cardio-mode #exerciseWeightGroup { display: none; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-size: 13px; color: var(--text); }
         .form-group.inline-field { display: flex; align-items: center; gap: 10px; }
@@ -678,9 +672,6 @@
             </div>
             <div class="add-form" id="addForm">
                 <div class="form-group" id="exerciseNameGroup"><label>动作名称</label><div class="dropdown-field"><div class="dropdown-control"><input type="text" id="exerciseName" class="dropdown-input" placeholder="可选择或手动输入" autocomplete="off"><button type="button" class="dropdown-toggle-btn" id="exerciseNameToggle" aria-label="展开动作名称下拉" aria-expanded="false">▾</button></div><div class="dropdown-list" id="exerciseNameOptions"></div></div><div class="selected-exercise-list" id="selectedExerciseNames" aria-live="polite" hidden></div></div>
-                <div class="form-group inline-field" id="exerciseSetsGroup"><label>组数</label><input type="number" id="exerciseSets" placeholder="如：4" min="1"></div>
-                <div class="form-group inline-field" id="exerciseRepsGroup"><label>次数/组</label><input type="text" id="exerciseReps" placeholder="如：12 或 8-12"></div>
-                <div class="form-group inline-field" id="exerciseWeightGroup"><label>重量(kg)</label><input type="number" id="exerciseWeight" placeholder="如：60" step="1"></div>
             </div>
         </div>
     </div>
@@ -1919,32 +1910,11 @@ function getExerciseHistoryDefaults(m,name){
             var weight=exercise.weight==null?null:Number(exercise.weight);
             if(weight===null||isNaN(weight))weight=null;
             if(!bestMatch||((weight||0)>(bestMatch.weight||0))){
-                bestMatch={reps:exercise.reps||'',weight:weight};
+                bestMatch={sets:Math.max(1,parseInt(exercise.sets,10)||1),reps:exercise.reps||'',weight:weight};
             }
         }
     }
     return bestMatch;
-}
-function getMuscleMaxWeight(m){
-    var maxWeight=null;
-    var dateKeys=Object.keys(data);
-    for(var di=0;di<dateKeys.length;di++){
-        var exercises=data[dateKeys[di]]||[];
-        for(var ei=0;ei<exercises.length;ei++){
-            var exercise=exercises[ei];
-            if(!exercise||exercise.muscle!==m)continue;
-            var weight=exercise.weight==null?null:Number(exercise.weight);
-            if(weight===null||isNaN(weight))continue;
-            if(maxWeight===null||weight>maxWeight)maxWeight=weight;
-        }
-    }
-    return maxWeight;
-}
-function applyNewExerciseDefaults(m){
-    document.getElementById('exerciseSets').value='1';
-    document.getElementById('exerciseReps').value=m==='shoulder'?'16':'10';
-    var defaultWeight=getMuscleMaxWeight(m);
-    document.getElementById('exerciseWeight').value=defaultWeight==null?'':defaultWeight;
 }
 function extractMaxRepsValue(repsText){
     var matches=String(repsText||'').match(/\d+(?:\.\d+)?/g);
@@ -2222,13 +2192,6 @@ function selectExerciseNameOption(name){
         if(selectedIndex>=0){
             selectedExerciseNames.splice(selectedIndex,1);
         }else{
-            if(!selectedExerciseNames.length){
-                var defaults=getExerciseHistoryDefaults(selMuscle,name);
-                if(defaults){
-                    document.getElementById('exerciseReps').value=defaults.reps||'';
-                    document.getElementById('exerciseWeight').value=defaults.weight==null?'':defaults.weight;
-                }
-            }
             selectedExerciseNames.push(name);
         }
         document.getElementById('exerciseName').value='';
@@ -2238,13 +2201,6 @@ function selectExerciseNameOption(name){
         return;
     }
     document.getElementById('exerciseName').value=name;
-    if(modalMode!=='renameAction'){
-        var defaults=getExerciseHistoryDefaults(selMuscle,name);
-        if(defaults){
-            document.getElementById('exerciseReps').value=defaults.reps||'';
-            document.getElementById('exerciseWeight').value=defaults.weight==null?'':defaults.weight;
-        }
-    }
     closeExerciseNameDropdown();
 }
 function renderSelectedExerciseNames(){
@@ -2331,16 +2287,6 @@ function bindExerciseNameDropdown(){
         closeExerciseNameDropdown();
     };
     input.oninput=function(){
-        if(modalMode!=='renameAction'&&selMuscle&&!(modalMode==='add'&&editIdx<0&&selectedExerciseNames.length)){
-            var typedName=input.value.trim();
-            var defaults=typedName?getExerciseHistoryDefaults(selMuscle,typedName):null;
-            if(defaults){
-                document.getElementById('exerciseReps').value=defaults.reps||'';
-                document.getElementById('exerciseWeight').value=defaults.weight==null?'':defaults.weight;
-            }else{
-                applyNewExerciseDefaults(selMuscle);
-            }
-        }
         closeExerciseNameDropdown();
         updateAddExerciseButtonVisibility();
     };
@@ -3578,7 +3524,7 @@ function adjReps(dk,i,d){
     save();
     showDetail(dk);
 }
-function openM(){if(selDate&&!canAddRecordToDateKey(selDate))return;if(!selDate){var today=new Date();selDate=getTodayKey();curDate=new Date(today.getFullYear(),today.getMonth(),1);}resetModalState();document.getElementById('modal').classList.add('show');document.getElementById('addForm').classList.remove('show');updateAddExerciseButtonVisibility();selMuscle=null;document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});document.getElementById('exerciseName').value='';document.getElementById('exerciseSets').value='';document.getElementById('exerciseReps').value='';document.getElementById('exerciseWeight').value='';closeExerciseNameDropdown();renderAddFormSegmentPicker();render();showDetail(selDate);setTimeout(function(){scrollToDateCell(selDate);var el=document.getElementById('modal');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);}
+function openM(){if(selDate&&!canAddRecordToDateKey(selDate))return;if(!selDate){var today=new Date();selDate=getTodayKey();curDate=new Date(today.getFullYear(),today.getMonth(),1);}resetModalState();document.getElementById('modal').classList.add('show');document.getElementById('addForm').classList.remove('show');updateAddExerciseButtonVisibility();selMuscle=null;document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});document.getElementById('exerciseName').value='';closeExerciseNameDropdown();renderAddFormSegmentPicker();render();showDetail(selDate);setTimeout(function(){scrollToDateCell(selDate);var el=document.getElementById('modal');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);}
 function closeM(){document.getElementById('modal').classList.remove('show');document.getElementById('addForm').classList.remove('show');updateAddExerciseButtonVisibility();selMuscle=null;closeExerciseNameDropdown();resetModalState();renderAddFormSegmentPicker();}
 function selM(m){
     if(!canAddRecordToDateKey(selDate))return;
@@ -3597,7 +3543,6 @@ function selM(m){
     setTimeout(function(){
         openExerciseNameDropdown();
     },0);
-    applyNewExerciseDefaults(m);
 }
 function editEx(dk,i){
     if(!isEditableDateKey(dk)||!data[dk]||!data[dk][i])return;
@@ -3619,9 +3564,6 @@ function editEx(dk,i){
     setAddFormMode('add');
     fillExerciseNameOptions(e.muscle);
     document.getElementById('exerciseName').value=e.name;
-    document.getElementById('exerciseSets').value=e.sets;
-    document.getElementById('exerciseReps').value=e.reps;
-    document.getElementById('exerciseWeight').value=e.weight||'';
     renderAddFormSegmentPicker();
 }
 function addEx(){
@@ -3636,24 +3578,23 @@ function addEx(){
     }
     var actionNames=getModalExerciseNames();
     var isCardio=selMuscle==='cardio';
-    var s=document.getElementById('exerciseSets').value,r=document.getElementById('exerciseReps').value.trim(),w=document.getElementById('exerciseWeight').value;
-    if(!actionNames.length||(!isCardio&&(!s||!r))||!selMuscle||!selDate){alert('请填写完整信息');return;}
+    if(!actionNames.length||!selMuscle||!selDate){alert('请填写完整信息');return;}
     var targetDate=selDate;
     var now=getNowTimestampForDateKey(targetDate);
     if(editIdx>=0){
         var existing=data[targetDate][editIdx]||{};
-        data[targetDate][editIdx]={muscle:selMuscle,name:actionNames[0],sets:isCardio?0:parseInt(s),reps:isCardio?'':r,weight:isCardio?null:(w?parseFloat(w):null),createdAt:normalizeTimestampValue(existing.createdAt)||now,updatedAt:now};
+        data[targetDate][editIdx]={muscle:selMuscle,name:actionNames[0],sets:isCardio?0:(Number(existing.sets)||1),reps:isCardio?'':existing.reps,weight:isCardio?null:existing.weight,createdAt:normalizeTimestampValue(existing.createdAt)||now,updatedAt:now};
         rememberCustomExerciseName(selMuscle,actionNames[0]);
         editIdx=-1;
     }else{
         if(!data[targetDate])data[targetDate]=[];
-        var isBatchAdd=actionNames.length>1;
         for(var actionIndex=0;actionIndex<actionNames.length;actionIndex++){
             var actionName=actionNames[actionIndex];
-            var previousDefaults=isBatchAdd?getExerciseHistoryDefaults(selMuscle,actionName):null;
-            var actionReps=previousDefaults?(previousDefaults.reps||r):r;
-            var actionWeight=previousDefaults?(previousDefaults.weight==null?null:previousDefaults.weight):(w?parseFloat(w):null);
-            data[targetDate].push({muscle:selMuscle,name:actionName,sets:isCardio?0:(isBatchAdd?1:parseInt(s)),reps:isCardio?'':actionReps,weight:isCardio?null:actionWeight,createdAt:now,updatedAt:now});
+            var previousDefaults=getExerciseHistoryDefaults(selMuscle,actionName);
+            var actionSets=previousDefaults?previousDefaults.sets:1;
+            var actionReps=previousDefaults&&previousDefaults.reps?previousDefaults.reps:'1';
+            var actionWeight=previousDefaults&&previousDefaults.weight!==null?previousDefaults.weight:1;
+            data[targetDate].push({muscle:selMuscle,name:actionName,sets:isCardio?0:actionSets,reps:isCardio?'':actionReps,weight:isCardio?null:actionWeight,createdAt:now,updatedAt:now});
             rememberCustomExerciseName(selMuscle,actionName);
         }
     }
@@ -3663,14 +3604,21 @@ function addEx(){
     selDate=targetDate;
     resetRecordGroupTimer(targetDate,selMuscle);
     save();closeM();render();showDetail(selDate);switchPage('record');setTimeout(scrollToPageBottom,50);
-    document.getElementById('exerciseName').value='';document.getElementById('exerciseSets').value='';document.getElementById('exerciseReps').value='';document.getElementById('exerciseWeight').value='';
+    document.getElementById('exerciseName').value='';
     document.querySelector('.modal-header h2').textContent='添加训练';
     document.getElementById('addExercise').textContent='添加动作';
 }
 document.getElementById('prevMonth').onclick=function(){curDate.setMonth(curDate.getMonth()-1);render();};
 document.getElementById('nextMonth').onclick=function(){curDate.setMonth(curDate.getMonth()+1);render();};
 document.getElementById('closeModal').onclick=closeM;
-document.getElementById('modal').onclick=function(e){if(e.target===this)closeM();};
+document.getElementById('modal').onclick=function(e){
+    if(e.target!==this)return;
+    if(modalMode==='add'&&editIdx<0&&selMuscle&&getModalExerciseNames().length){
+        addEx();
+        return;
+    }
+    closeM();
+};
 document.getElementById('closeTimerModal').onclick=closeTimerModal;
 document.getElementById('timerModal').onclick=function(e){if(e.target===this)closeTimerModal();};
 document.querySelectorAll('.muscle-btn').forEach(function(b){b.onclick=function(){selM(this.dataset.muscle);};});
