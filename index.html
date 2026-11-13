@@ -2212,6 +2212,12 @@ function fillExerciseNameOptions(m){
         option.className='dropdown-item'+(isMultiSelect?' multi-select-option':'');
         option.dataset.exerciseName=names[i];
         option.textContent=names[i];
+        option.onpointerup=function(event){
+            if(modalMode==='renameAction'){
+                event.preventDefault();
+                selectExerciseNameOption(this.dataset.exerciseName);
+            }
+        };
         option.onclick=function(){selectExerciseNameOption(this.dataset.exerciseName);};
         if(isMultiSelect){
             var isSelected=isExerciseNameOptionSelected(names[i]);
@@ -2292,7 +2298,9 @@ function selectExerciseNameOption(name){
         updateAddExerciseButtonVisibility();
         return;
     }
-    document.getElementById('exerciseName').value=name;
+    var input=document.getElementById('exerciseName');
+    input.value=name;
+    input.dispatchEvent(new Event('input',{bubbles:true}));
     closeExerciseNameDropdown();
 }
 function renderSelectedExerciseNames(){
