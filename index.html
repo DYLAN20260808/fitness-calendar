@@ -976,6 +976,7 @@ function formatRecordGroupTimer(elapsedMs){
     return pad(minutes)+':'+pad(seconds);
 }
 function getRecordGroupTimerElapsedMs(dk,muscle,segmentId){
+    if(dk!==getTodayKey())return 0;
     var startedAt=recordGroupTimerStarts[getRecordGroupTimerKey(dk,muscle,segmentId)];
     if(!startedAt)return 0;
     return Math.max(0,Date.now()-startedAt);
@@ -984,9 +985,7 @@ function formatReminderThreshold(seconds){
     return formatRecordGroupTimer(Math.max(0,seconds||0)*1000);
 }
 function getRecordGroupTimerLabel(dk,muscle,segmentId){
-    var startedAt=recordGroupTimerStarts[getRecordGroupTimerKey(dk,muscle,segmentId)];
-    if(!startedAt)return '00:00';
-    return formatRecordGroupTimer(Date.now()-startedAt);
+    return formatRecordGroupTimer(getRecordGroupTimerElapsedMs(dk,muscle,segmentId));
 }
 function syncTimerModalDisplay(){
     var display=document.getElementById('timerModalDisplay');
