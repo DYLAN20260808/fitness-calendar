@@ -665,7 +665,7 @@
             <span class="detail-timer-slot" id="detailTimerSlot" hidden></span>
             <span class="detail-reset-slot" id="detailResetSlot" hidden></span>
             <button class="add-btn-small" id="addActionBtn" onclick="event.stopPropagation();openM()" title="添加动作" aria-label="添加动作" hidden>+ 添加</button>
-            <button class="add-btn-small random-action-btn" id="randomActionBtn" onclick="event.stopPropagation();handleRandomActionButtonClick()" onmousedown="startRandomActionLongPress()" onmouseup="cancelRandomActionLongPress()" onmouseleave="cancelRandomActionLongPress()" ontouchstart="startRandomActionLongPress()" ontouchend="cancelRandomActionLongPress()" ontouchcancel="cancelRandomActionLongPress()" oncontextmenu="return false" title="点击添加随便动作，长按修改最近添加的随便动作" aria-label="随便添加动作" hidden>随便</button>
+            <button class="add-btn-small random-action-btn" id="randomActionBtn" onclick="event.stopPropagation();handleRandomActionButtonClick()" onpointerdown="startRandomActionLongPress(event)" onpointerup="finishRandomActionLongPress()" onpointerleave="cancelRandomActionLongPress()" onpointercancel="cancelRandomActionLongPress()" oncontextmenu="return false" title="点击添加随便动作，长按修改最近添加的随便动作" aria-label="随便添加动作" hidden>随便</button>
         </div>
         <div id="detailFooterMetricsHome"></div>
     </div>
@@ -2452,7 +2452,6 @@ function focusCalendarDate(dk){
     if(parts.length!==3)return;
     curDate=new Date(Number(parts[0]),Number(parts[1])-1,1);
     render();
-    setTimeout(function(){scrollToDateCell(dk);},50);
 }
 function getOffsetDateKey(offsetDays){
     var baseDate=new Date();
@@ -2600,23 +2599,31 @@ function addPlaceholderRecordAction(){
     showDetail(dk);
     switchPage('record');
 }
-function startRandomActionLongPress(){
+function startRandomActionLongPress(event){
     if(!isEditableDateKey(selDate))return;
+    if(event&&(event.isPrimary===false||(event.button!==undefined&&event.button!==0)))return;
     cancelRandomActionLongPress();
     randomActionLongPressTriggered=false;
     randomActionLongPressTimerId=window.setTimeout(function(){
         randomActionLongPressTimerId=null;
         randomActionLongPressTriggered=true;
-        var muscle=getActiveRecordMuscle(selDate);
-        var actionName=getLatestPlaceholderActionName(selDate,muscle);
-        if(actionName)openRecordActionRenameModal(selDate,muscle,actionName);
     },450);
+}
+function finishRandomActionLongPress(){
+    var wasLongPress=randomActionLongPressTriggered;
+    cancelRandomActionLongPress();
+    if(!wasLongPress)return;
+    randomActionLongPressTriggered=true;
+    var muscle=getActiveRecordMuscle(selDate);
+    var actionName=getLatestPlaceholderActionName(selDate,muscle);
+    if(actionName)openRecordActionRenameModal(selDate,muscle,actionName);
 }
 function cancelRandomActionLongPress(){
     if(randomActionLongPressTimerId!==null){
         window.clearTimeout(randomActionLongPressTimerId);
         randomActionLongPressTimerId=null;
     }
+    randomActionLongPressTriggered=false;
 }
 function handleRandomActionButtonClick(){
     if(randomActionLongPressTriggered){
@@ -2741,10 +2748,6 @@ function jumpToRecordFromCapacityHint(){
     if(currentPage==='record')return;
     switchPage('record');
 }
-function scrollToDateCell(dk){
-    var cell=document.querySelector('.day[data-date="'+dk+'"]');
-    if(cell)cell.scrollIntoView({behavior:'smooth',block:'center'});
-}
 function updateBottomNavState(){
     document.getElementById('bottomNavCalendar').classList.toggle('active',currentPage==='calendar');
     document.getElementById('bottomNavRecord').classList.toggle('active',currentPage==='record');
@@ -2784,14 +2787,6 @@ function switchPage(page){
     if(currentPage==='record')switchTab('record');
     if(currentPage==='volume')switchTab('volume');
     if(currentPage==='stats')switchTab('stats');
-    if(!isCalendarPage){
-        setTimeout(function(){
-            var el=document.getElementById('detailSection');
-            if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
-        },50);
-    }else{
-        window.scrollTo({top:0,behavior:'smooth'});
-    }
 }
 function render(){
     var c=document.getElementById('calendar');c.innerHTML='';
@@ -3151,14 +3146,12 @@ function openRecordActionRenameModal(dk,muscle,actionName){
     fillExerciseNameOptions(muscle);
     document.getElementById('exerciseName').value=actionName;
     closeExerciseNameDropdown();
-    setTimeout(function(){
-        openExerciseNameDropdown();
-        var input=document.getElementById('exerciseName');
-        if(input){
-            input.focus();
-            input.select();
-        }
-    },0);
+    openExerciseNameDropdown();
+    var input=document.getElementById('exerciseName');
+    if(input){
+        input.focus({preventScroll:true});
+        input.select();
+    }
 }
 function confirmRecordActionRename(){
     if(!renameActionState||!renameActionState.dateKey||!renameActionState.muscle){
@@ -3713,7 +3706,6 @@ function openM(){
     render();
     showDetail(selDate);
     if(defaultMuscle)selM(defaultMuscle);
-    setTimeout(function(){scrollToDateCell(selDate);var el=document.getElementById('modal');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);
 }
 function closeM(){document.getElementById('modal').classList.remove('show');document.getElementById('addForm').classList.remove('show');updateAddExerciseButtonVisibility();selMuscle=null;closeExerciseNameDropdown();resetModalState();renderAddFormSegmentPicker();}
 function selM(m){
@@ -3855,10 +3847,6 @@ function switchTab(tab,metricMode){
     document.getElementById('statsContent').classList.toggle('active',tab==='stats');
     if(tab==='record'){
         renderSimpleRecordDetail(selDate);
-        setTimeout(function(){
-            var el=document.getElementById('detailSection');
-            if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
-        },50);
     }
     if(tab==='volume'){
         volumeMetricMode=metricMode||'maxReps';
@@ -3867,24 +3855,16 @@ function switchTab(tab,metricMode){
         if(topVolumeExerciseInfo&&topVolumeExerciseInfo.muscle&&topVolumeExerciseInfo.name){
             volumeExerciseSelection[topVolumeExerciseInfo.muscle]=topVolumeExerciseInfo.name;
         }
-        showVolumeChart();setTimeout(function(){
-        var el=document.getElementById('detailSection');
-        if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
-    },50);}
+        showVolumeChart();
+    }
     if(tab==='stats'){
         var topExerciseInfo=getTopSelectedRecordInfo(selDate)||getTopExerciseInfo(selDate);
         statsSection=topExerciseInfo?topExerciseInfo.muscle:null;
         if(topExerciseInfo&&topExerciseInfo.muscle&&topExerciseInfo.name){
             statsExerciseSelection[topExerciseInfo.muscle]=topExerciseInfo.name;
         }
-        showStats();setTimeout(function(){
-        var el=document.getElementById('detailSection');
-        if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
-    },50);}
-    if(tab==='record')setTimeout(function(){
-        var el=document.getElementById('detailSection');
-        if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
-    },50);
+        showStats();
+    }
 }
 function showVolumeChart(){
     var container=document.getElementById('chartContainer');
@@ -4310,10 +4290,6 @@ function bindChartPointTooltips(){
 function setVolumeMuscle(mu){
     volumeMuscle=mu;
     showVolumeChart();
-    setTimeout(function(){
-        var el=document.getElementById('detailSection');
-        if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
-    },50);
 }
 function setVolumeExercise(mu,exerciseName){
     volumeExerciseSelection[mu]=exerciseName;
@@ -4557,9 +4533,6 @@ function copySummaryMarkdown(){
 function setStatsExercise(mu, exerciseName){
     statsExerciseSelection[mu]=exerciseName;
     showStats();
-    setTimeout(function(){
-        window.scrollTo({top:document.documentElement.scrollHeight,behavior:'auto'});
-    },50);
 }
 function getStatsActionKey(mu,exerciseName){
     return mu+'__'+exerciseName;
@@ -4753,10 +4726,6 @@ function editStatsExerciseName(mu, exerciseName, el){
             save();
         }
         showStats();
-        setTimeout(function(){
-            var statsEl=document.getElementById('statsContainer');
-            if(statsEl)statsEl.scrollIntoView({behavior:'auto',block:'start'});
-        },0);
     };
     input.onkeydown=function(e){
         if(e.key==='Enter')this.blur();
@@ -4764,7 +4733,7 @@ function editStatsExerciseName(mu, exerciseName, el){
     };
     el.innerHTML='';
     el.appendChild(input);
-    input.focus();
+    input.focus({preventScroll:true});
     input.select();
 }
 function jumpToStatsDate(dk,muscle,exerciseName,segmentId){
@@ -5006,11 +4975,6 @@ function showStats(){
 function setStats(btn){
     statsSection=(statsSection===btn)?null:btn;
     showStats();
-    // 点击后自动滚动到页面底部查看卡片内容
-    setTimeout(function(){
-        var el=document.getElementById('statsContainer');
-        if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
-    },50);
 }
 function exportData(){
     var exportPayload=buildExportPayload();
