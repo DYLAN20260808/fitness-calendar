@@ -152,9 +152,9 @@
         .modal-confirm-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 30px; padding: 0 12px; border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; background: var(--primary-gradient); color: white; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.36), 0 8px 14px rgba(147,197,253,0.18); white-space: nowrap; }
         .modal-confirm-btn:active { transform: translateY(1px) scale(0.98); }
         .muscle-select { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 10px; }
-        .muscle-btn { padding: 8px 6px; border: 1px solid rgba(255,255,255,0.32); border-radius: 10px; color: white; font-size: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.26), inset 0 -4px 10px rgba(0,0,0,0.08), 0 8px 16px rgba(15,23,42,0.12); transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease; }
+        .muscle-btn { padding: 8px 6px; border: 1px solid rgba(147,197,253,0.18); border-radius: 10px; background: var(--neutral-gradient); color: #334155; font-size: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.26), inset 0 -4px 10px rgba(0,0,0,0.08), 0 8px 16px rgba(15,23,42,0.12); transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease; }
         .muscle-btn:active { transform: translateY(2px) scale(0.97); }
-        .muscle-btn.selected { opacity: 0.92; box-shadow: 0 0 0 2px var(--accent), inset 0 1px 0 rgba(255,255,255,0.3), 0 12px 20px rgba(147,197,253,0.18); transform: translateY(-1px); }
+        .muscle-btn.selected { opacity: 1; box-shadow: 0 0 0 2px var(--accent), inset 0 1px 0 rgba(255,255,255,0.3), 0 12px 20px rgba(147,197,253,0.18); transform: translateY(-1px); }
         .muscle-btn span { font-size: 16px; }
         .muscle-btn.core span,
         .record-muscle-btn.core .record-muscle-icon,
@@ -386,13 +386,14 @@
         .dropdown-input { flex: 1; min-width: 0; }
         .dropdown-toggle-btn { width: 38px; height: 38px; border: 1px solid rgba(255,255,255,0.78); border-radius: 10px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 6px 12px rgba(147,197,253,0.08); flex-shrink: 0; }
         .dropdown-toggle-btn:active { transform: translateY(1px); }
-        .dropdown-list { position: absolute; top: calc(100% + 6px); left: 0; right: 0; display: none; max-height: 180px; overflow-y: auto; background: linear-gradient(180deg, rgba(233,242,252,0.98) 0%, rgba(221,233,247,0.96) 100%); border: 1px solid rgba(147,197,253,0.18); border-radius: 12px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.86), 0 14px 28px rgba(147,197,253,0.12), 0 8px 18px rgba(17,24,39,0.1); z-index: 20; }
-        .dropdown-list.show { display: block; }
-        .dropdown-item { width: 100%; padding: 9px 12px; border: none; background: transparent; color: var(--text); text-align: left; font-size: 13px; cursor: pointer; }
-        .dropdown-item + .dropdown-item { border-top: 1px solid var(--line); }
-        .dropdown-item:hover { background: rgba(255,255,255,0.42); }
+        .dropdown-toggle-btn { display: none; }
+        .dropdown-list { position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; max-height: 180px; overflow-y: auto; padding: 8px; background: linear-gradient(180deg, rgba(233,242,252,0.98) 0%, rgba(221,233,247,0.96) 100%); border: 1px solid rgba(147,197,253,0.18); border-radius: 12px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.86), 0 8px 18px rgba(17,24,39,0.08); }
+        .dropdown-list.show { display: grid; }
+        .dropdown-item { display: flex; align-items: center; width: 100%; min-width: 0; padding: 7px 8px; border: 1px solid rgba(147,197,253,0.18); border-radius: 9px; background: rgba(255,255,255,0.68); color: var(--text); text-align: left; font-size: 10.4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+        .dropdown-item + .dropdown-item { border-top: 1px solid rgba(147,197,253,0.18); }
+        .dropdown-item:hover { background: rgba(255,255,255,0.9); }
         .dropdown-item:active { background: rgba(147,197,253,0.12); transform: scale(0.99); }
-        .dropdown-item.multi-select-option::before { content: ''; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; margin-right: 8px; border: 1px solid rgba(147,197,253,0.28); border-radius: 4px; vertical-align: middle; color: white; font-size: 11px; font-weight: 700; }
+        .dropdown-item.multi-select-option::before { content: ''; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 13px; width: 13px; height: 13px; margin-right: 6px; border: 1px solid rgba(147,197,253,0.28); border-radius: 3px; color: white; font-size: 9px; font-weight: 700; }
         .dropdown-item.multi-select-option.is-selected::before { content: '\2713'; background: var(--accent); border-color: var(--accent); }
         .selected-exercise-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
         .selected-exercise-list[hidden] { display: none; }
@@ -664,6 +665,7 @@
             <span class="detail-timer-slot" id="detailTimerSlot" hidden></span>
             <span class="detail-reset-slot" id="detailResetSlot" hidden></span>
             <button class="add-btn-small" id="addActionBtn" onclick="event.stopPropagation();openM()" title="添加动作" aria-label="添加动作" hidden>+ 添加</button>
+            <button class="add-btn-small random-action-btn" id="randomActionBtn" onclick="event.stopPropagation();handleRandomActionButtonClick()" onmousedown="startRandomActionLongPress()" onmouseup="cancelRandomActionLongPress()" onmouseleave="cancelRandomActionLongPress()" ontouchstart="startRandomActionLongPress()" ontouchend="cancelRandomActionLongPress()" ontouchcancel="cancelRandomActionLongPress()" oncontextmenu="return false" title="点击添加随便动作，长按修改最近添加的随便动作" aria-label="随便添加动作" hidden>随便</button>
         </div>
         <div id="detailFooterMetricsHome"></div>
     </div>
@@ -898,6 +900,8 @@ var recordActionDragState = null;
 var detailTimerClickTimers = {};
 var detailTimerLongPressTimers = {};
 var detailTimerLongPressTriggered = {};
+var randomActionLongPressTimerId=null;
+var randomActionLongPressTriggered=false;
 var recordGroupTimerReminderState = {};
 var timerFireworksFrameId = null;
 var timerFireworksTimeoutId = null;
@@ -2184,22 +2188,25 @@ function copyLastMuscleExercises(){
     switchPage('record');
     setTimeout(scrollToPageBottom,50);
 }
+function getExerciseNamesUsedOnDate(dk,muscle){
+    var usedNames={};
+    var exercises=data[dk]||[];
+    for(var i=0;i<exercises.length;i++){
+        if(exercises[i].muscle===muscle)usedNames[exercises[i].name]=true;
+    }
+    return usedNames;
+}
 function fillExerciseNameOptions(m){
     var options=document.getElementById('exerciseNameOptions');
     options.innerHTML='';
-    if(editIdx<0&&modalMode!=='renameAction'){
-        var copySource=getBestMuscleCopyExercises(selDate,m);
-        if(copySource&&copySource.length){
-            var copyButton=document.createElement('button');
-            copyButton.type='button';
-            copyButton.className='dropdown-item';
-            copyButton.textContent='复制上次';
-            copyButton.onclick=copyLastMuscleExercises;
-            options.appendChild(copyButton);
-        }
-    }
     var names=getExerciseNamesFromData(m);
     var isMultiSelect=modalMode==='add'&&editIdx<0;
+    if(isMultiSelect||modalMode==='renameAction'){
+        var usedTodayNames=getExerciseNamesUsedOnDate(selDate,m);
+        names=names.filter(function(name){
+            return !usedTodayNames[name]&&!(isMultiSelect&&/^随便\d+$/.test(name));
+        });
+    }
     for(var i=0;i<names.length;i++){
         var option=document.createElement('button');
         option.type='button';
@@ -2208,7 +2215,7 @@ function fillExerciseNameOptions(m){
         option.textContent=names[i];
         option.onclick=function(){selectExerciseNameOption(this.dataset.exerciseName);};
         if(isMultiSelect){
-            var isSelected=selectedExerciseNames.indexOf(names[i])>=0;
+            var isSelected=isExerciseNameOptionSelected(names[i]);
             option.classList.toggle('is-selected',isSelected);
             option.setAttribute('aria-pressed',isSelected?'true':'false');
         }
@@ -2219,10 +2226,37 @@ function fillExerciseNameOptions(m){
 function hasExerciseNameOptions(){
     return !!document.querySelector('#exerciseNameOptions .dropdown-item');
 }
+function isExerciseNameOptionSelected(name){
+    return selectedExerciseNames.indexOf(name)>=0;
+}
+function getNextPlaceholderExerciseName(muscle){
+    var usedNumbers={};
+    var customNames=getCustomExerciseNames(muscle);
+    for(var ci=0;ci<customNames.length;ci++){
+        var customMatch=/^随便(\d+)$/.exec(customNames[ci]);
+        if(customMatch)usedNumbers[Number(customMatch[1])]=true;
+    }
+    for(var dateKey in data){
+        var exercises=data[dateKey]||[];
+        for(var ei=0;ei<exercises.length;ei++){
+            var exercise=exercises[ei];
+            if(exercise.muscle!==muscle)continue;
+            var nameMatch=/^随便(\d+)$/.exec((exercise.name||'').trim());
+            if(nameMatch)usedNumbers[Number(nameMatch[1])]=true;
+        }
+    }
+    for(var si=0;si<selectedExerciseNames.length;si++){
+        var selectedMatch=/^随便(\d+)$/.exec(selectedExerciseNames[si]);
+        if(selectedMatch)usedNumbers[Number(selectedMatch[1])]=true;
+    }
+    var nextNumber=1;
+    while(usedNumbers[nextNumber])nextNumber++;
+    return '随便'+nextNumber;
+}
 function updateExerciseNameOptionSelection(){
     var options=document.querySelectorAll('#exerciseNameOptions .multi-select-option');
     for(var i=0;i<options.length;i++){
-        var isSelected=selectedExerciseNames.indexOf(options[i].dataset.exerciseName)>=0;
+        var isSelected=isExerciseNameOptionSelected(options[i].dataset.exerciseName);
         options[i].classList.toggle('is-selected',isSelected);
         options[i].setAttribute('aria-pressed',isSelected?'true':'false');
     }
@@ -2523,9 +2557,75 @@ function jumpToPreviousMuscleDate(){
 }
 function updateAddActionVisibility(){
     var addBtn=document.getElementById('addActionBtn');
-    if(!addBtn)return;
+    var randomBtn=document.getElementById('randomActionBtn');
+    if(!addBtn||!randomBtn)return;
     addBtn.hidden=!canAddRecordToDateKey(selDate)||currentPage!=='record';
+    randomBtn.hidden=!canAddRecordToDateKey(selDate)||currentPage!=='record'||!getActiveRecordMuscle(selDate);
     updateDetailActionBarVisibility();
+}
+function getLatestPlaceholderActionName(dk,muscle){
+    if(!dk||!muscle)return null;
+    var exercises=data[dk]||[];
+    for(var i=exercises.length-1;i>=0;i--){
+        var exercise=exercises[i];
+        if(exercise.muscle===muscle&&/^随便\d+$/.test((exercise.name||'').trim()))return exercise.name;
+    }
+    return null;
+}
+function addPlaceholderRecordAction(){
+    var dk=selDate;
+    var muscle=getActiveRecordMuscle(dk);
+    if(!canAddRecordToDateKey(dk)||!muscle)return;
+    var name=getNextPlaceholderExerciseName(muscle);
+    var now=getNowTimestampForDateKey(dk);
+    if(now===null)return;
+    var previousDefaults=getExerciseHistoryDefaults(muscle,name);
+    var isCardio=muscle==='cardio';
+    if(!data[dk])data[dk]=[];
+    data[dk].push({
+        muscle:muscle,
+        name:name,
+        sets:isCardio?0:(previousDefaults?previousDefaults.sets:1),
+        reps:isCardio?'':(previousDefaults&&previousDefaults.reps?previousDefaults.reps:'1'),
+        weight:isCardio?null:(previousDefaults&&previousDefaults.weight!==null?previousDefaults.weight:1),
+        createdAt:now,
+        updatedAt:now
+    });
+    rememberCustomExerciseName(muscle,name);
+    syncRecordGroupLatestTime(dk,muscle,now);
+    recordMuscleTabs[getRecordMuscleTabKey(dk)]=muscle;
+    recordActionTabs[getRecordActionTabKey(dk,muscle)]=name;
+    resetRecordGroupTimer(dk,muscle);
+    save();
+    render();
+    showDetail(dk);
+    switchPage('record');
+    setTimeout(scrollToPageBottom,50);
+}
+function startRandomActionLongPress(){
+    if(!isEditableDateKey(selDate))return;
+    cancelRandomActionLongPress();
+    randomActionLongPressTriggered=false;
+    randomActionLongPressTimerId=window.setTimeout(function(){
+        randomActionLongPressTimerId=null;
+        randomActionLongPressTriggered=true;
+        var muscle=getActiveRecordMuscle(selDate);
+        var actionName=getLatestPlaceholderActionName(selDate,muscle);
+        if(actionName)openRecordActionRenameModal(selDate,muscle,actionName);
+    },450);
+}
+function cancelRandomActionLongPress(){
+    if(randomActionLongPressTimerId!==null){
+        window.clearTimeout(randomActionLongPressTimerId);
+        randomActionLongPressTimerId=null;
+    }
+}
+function handleRandomActionButtonClick(){
+    if(randomActionLongPressTriggered){
+        randomActionLongPressTriggered=false;
+        return;
+    }
+    addPlaceholderRecordAction();
 }
 function prepareCapacityHintAddButtonForRender(){
     var addBtn=document.getElementById('addActionBtn');
@@ -2613,10 +2713,11 @@ function updateDetailActionBarVisibility(){
     var actionBar=document.getElementById('detailActionBar');
     var recordTab=document.getElementById('tabRecord');
     var addBtn=document.getElementById('addActionBtn');
+    var randomBtn=document.getElementById('randomActionBtn');
     var timerSlot=document.getElementById('detailTimerSlot');
     var resetSlot=document.getElementById('detailResetSlot');
-    if(!actionBar||!recordTab||!addBtn||!timerSlot||!resetSlot)return;
-    actionBar.hidden=recordTab.hidden&&addBtn.hidden&&timerSlot.hidden&&resetSlot.hidden;
+    if(!actionBar||!recordTab||!addBtn||!randomBtn||!timerSlot||!resetSlot)return;
+    actionBar.hidden=recordTab.hidden&&addBtn.hidden&&randomBtn.hidden&&timerSlot.hidden&&resetSlot.hidden;
     updateDetailFooterMetricsVisibility();
 }
 function updateDetailFooterMetricsVisibility(){
@@ -3075,6 +3176,12 @@ function confirmRecordActionRename(){
         return;
     }
     if(newName!==oldName){
+        if((data[dk]||[]).some(function(exercise){
+            return exercise.muscle===muscle&&exercise.name===newName;
+        })){
+            alert('今天已添加该动作名称，请选择其他名称');
+            return;
+        }
         var renamed=false;
         for(var idx=0;idx<(data[dk]||[]).length;idx++){
             if(data[dk][idx].muscle===muscle&&data[dk][idx].name===oldName){
@@ -3233,6 +3340,10 @@ function startRecordActionLongPress(dk,muscle,segmentId,actionName,index,el,even
     recordActionLongPressTimers[timerKey]=setTimeout(function(){
         delete recordActionLongPressTimers[timerKey];
         recordActionLongPressTriggered[timerKey]=true;
+        if(actionName==='随便'||/^随便\d+$/.test(actionName)){
+            openRecordActionRenameModal(dk,muscle,actionName);
+            return;
+        }
         beginRecordActionDrag(dk,muscle,segmentId,actionName,el,startPoint);
     },450);
 }
@@ -3583,7 +3694,28 @@ function adjReps(dk,i,d){
     save();
     showDetail(dk);
 }
-function openM(){if(selDate&&!canAddRecordToDateKey(selDate))return;if(!selDate){var today=new Date();selDate=getTodayKey();curDate=new Date(today.getFullYear(),today.getMonth(),1);}resetModalState();document.getElementById('modal').classList.add('show');document.getElementById('addForm').classList.remove('show');updateAddExerciseButtonVisibility();selMuscle=null;document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});document.getElementById('exerciseName').value='';closeExerciseNameDropdown();renderAddFormSegmentPicker();render();showDetail(selDate);setTimeout(function(){scrollToDateCell(selDate);var el=document.getElementById('modal');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);}
+function openM(){
+    if(selDate&&!canAddRecordToDateKey(selDate))return;
+    if(!selDate){
+        var today=new Date();
+        selDate=getTodayKey();
+        curDate=new Date(today.getFullYear(),today.getMonth(),1);
+    }
+    var defaultMuscle=getActiveRecordMuscle(selDate);
+    resetModalState();
+    document.getElementById('modal').classList.add('show');
+    document.getElementById('addForm').classList.remove('show');
+    updateAddExerciseButtonVisibility();
+    selMuscle=null;
+    document.querySelectorAll('.muscle-btn').forEach(function(b){b.classList.remove('selected');});
+    document.getElementById('exerciseName').value='';
+    closeExerciseNameDropdown();
+    renderAddFormSegmentPicker();
+    render();
+    showDetail(selDate);
+    if(defaultMuscle)selM(defaultMuscle);
+    setTimeout(function(){scrollToDateCell(selDate);var el=document.getElementById('modal');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);
+}
 function closeM(){document.getElementById('modal').classList.remove('show');document.getElementById('addForm').classList.remove('show');updateAddExerciseButtonVisibility();selMuscle=null;closeExerciseNameDropdown();resetModalState();renderAddFormSegmentPicker();}
 function selM(m){
     if(!canAddRecordToDateKey(selDate))return;
@@ -3672,7 +3804,7 @@ document.getElementById('nextMonth').onclick=function(){curDate.setMonth(curDate
 document.getElementById('closeModal').onclick=closeM;
 document.getElementById('modal').onclick=function(e){
     if(e.target!==this)return;
-    if(modalMode==='add'&&editIdx<0&&selMuscle&&getModalExerciseNames().length){
+    if(modalMode==='renameAction'||editIdx>=0||(modalMode==='add'&&selMuscle&&getModalExerciseNames().length)){
         addEx();
         return;
     }
