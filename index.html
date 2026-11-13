@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#93c5fd">
-    <title>肌计</title>
+    <title>肌力自己</title>
     <style>
         :root {
             --accent: #93c5fd;
@@ -612,7 +612,7 @@
     </style>
 </head>
 <body>
-    <div class="header"><h1>💪 肌计</h1><button class="header-action left" onclick="exportData()">导出</button><button class="header-action left-secondary" onclick="document.getElementById('importFile').click()">导入</button><button class="header-action right nav-dropdown-btn" id="navDropdownBtn" type="button" onclick="toggleBottomNav()" aria-label="切换导航菜单" aria-expanded="false"><span class="nav-dropdown-icon">▾</span></button><input type="file" id="importFile" accept=".json" onchange="importData(this)"></div>
+    <div class="header"><h1>💪 肌力自己</h1><button class="header-action left" onclick="exportData()">导出</button><button class="header-action left-secondary" onclick="document.getElementById('importFile').click()">导入</button><button class="header-action right nav-dropdown-btn" id="navDropdownBtn" type="button" onclick="toggleBottomNav()" aria-label="切换导航菜单" aria-expanded="false"><span class="nav-dropdown-icon">▾</span></button><input type="file" id="importFile" accept=".json" onchange="importData(this)"></div>
     <div class="app-content">
     <div class="bottom-nav" id="bottomNav" aria-label="顶部导航" hidden>
         <div class="bottom-nav-items" id="bottomNavItems">
@@ -2186,7 +2186,6 @@ function copyLastMuscleExercises(){
     render();
     showDetail(selDate);
     switchPage('record');
-    setTimeout(scrollToPageBottom,50);
 }
 function getExerciseNamesUsedOnDate(dk,muscle){
     var usedNames={};
@@ -2600,7 +2599,6 @@ function addPlaceholderRecordAction(){
     render();
     showDetail(dk);
     switchPage('record');
-    setTimeout(scrollToPageBottom,50);
 }
 function startRandomActionLongPress(){
     if(!isEditableDateKey(selDate))return;
@@ -2746,9 +2744,6 @@ function jumpToRecordFromCapacityHint(){
 function scrollToDateCell(dk){
     var cell=document.querySelector('.day[data-date="'+dk+'"]');
     if(cell)cell.scrollIntoView({behavior:'smooth',block:'center'});
-}
-function scrollToPageBottom(){
-    window.scrollTo({top:document.documentElement.scrollHeight,behavior:'smooth'});
 }
 function updateBottomNavState(){
     document.getElementById('bottomNavCalendar').classList.toggle('active',currentPage==='calendar');
@@ -3798,7 +3793,7 @@ function addEx(){
     recordActionTabs[getRecordActionTabKey(targetDate,selMuscle)]=actionNames[actionNames.length-1];
     selDate=targetDate;
     resetRecordGroupTimer(targetDate,selMuscle);
-    save();closeM();render();showDetail(selDate);switchPage('record');setTimeout(scrollToPageBottom,50);
+    save();closeM();render();showDetail(selDate);switchPage('record');
     document.getElementById('exerciseName').value='';
     document.querySelector('.modal-header h2').textContent='添加训练';
     document.getElementById('addExercise').textContent='添加动作';
