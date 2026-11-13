@@ -2586,7 +2586,7 @@ function addPlaceholderRecordAction(){
         muscle:muscle,
         name:name,
         sets:isCardio?0:(previousDefaults?previousDefaults.sets:1),
-        reps:isCardio?'':(previousDefaults&&previousDefaults.reps?previousDefaults.reps:'1'),
+        reps:isCardio?'':'10',
         weight:isCardio?null:(previousDefaults&&previousDefaults.weight!==null?previousDefaults.weight:1),
         createdAt:now,
         updatedAt:now
@@ -2732,7 +2732,11 @@ function relocateDetailAuxiliarySections(){
     var actionBar=document.getElementById('detailActionBar');
     var actionHome=document.getElementById('detailActionBarHome');
     if(!footer||!footerHome||!actionBar||!actionHome)return;
-    if(currentPage!=='record')footerHome.parentNode.insertBefore(footer,footerHome.nextSibling);
+    if(currentPage==='record'){
+        footer.parentNode.insertBefore(actionBar,footer);
+        return;
+    }
+    footerHome.parentNode.insertBefore(footer,footerHome.nextSibling);
     actionHome.parentNode.insertBefore(actionBar,actionHome.nextSibling);
 }
 function jumpToRecordFromCapacityHint(){
