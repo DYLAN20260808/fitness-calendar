@@ -112,6 +112,7 @@
         .day-icons.count-7 { gap: 1px; padding-top: 1px; }
         .day-volume { font-size: 8px; color: var(--accent); margin-top: 1px; font-weight: 700; line-height: 1; flex-shrink: 0; }
         .muscle-icon { width: 13px; height: 13px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 9px; margin: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.24), 0 3px 6px rgba(15,23,42,0.12); }
+        .back-shield { display: inline-block; width: 0.9em; height: 1em; vertical-align: -0.1em; background: linear-gradient(135deg, #86efac 0%, #16a34a 100%); clip-path: polygon(50% 0%, 96% 16%, 92% 61%, 78% 79%, 50% 100%, 22% 79%, 8% 61%, 4% 16%); }
         .day-icons.count-3 .muscle-icon,
         .day-icons.count-4 .muscle-icon,
         .day-icons.count-5 .muscle-icon,
@@ -693,7 +694,7 @@
             </div>
             <div class="muscle-select" id="muscleSelect">
                 <button class="muscle-btn chest" data-muscle="chest"><span>❤️</span>胸肌</button>
-                <button class="muscle-btn back" data-muscle="back"><span>🛡️</span>背部</button>
+                <button class="muscle-btn back" data-muscle="back"><span><span class="back-shield" aria-hidden="true"></span></span>背部</button>
                 <button class="muscle-btn shoulder" data-muscle="shoulder"><span>🏋️</span>肩部</button>
                 <button class="muscle-btn leg" data-muscle="leg"><span>🦵</span>腿部</button>
                 <button class="muscle-btn biceps" data-muscle="biceps"><span>💪</span>二头</button>
@@ -1864,6 +1865,9 @@ function getExerciseNamesFromData(m){
 function getMuscleIconText(mu){
     return icons[mu]||'💪';
 }
+function getMuscleIconHtml(mu){
+    return mu==='back'?'<span class="back-shield" aria-hidden="true"></span>':getMuscleIconText(mu);
+}
 function getExerciseHistoryDefaults(m,name){
     var bestMatch=null;
     var dateKeys=Object.keys(data).sort().reverse();
@@ -2713,7 +2717,7 @@ function render(){
         if(data[dk]){
             var ms=new Set(data[dk].map(function(e){return e.muscle;}));
             iconCount=ms.size;
-            ms.forEach(function(mu){ic+='<div class="muscle-icon '+mu+'">'+getMuscleIconText(mu)+'</div>';});
+            ms.forEach(function(mu){ic+='<div class="muscle-icon '+mu+'">'+getMuscleIconHtml(mu)+'</div>';});
         }
         c.innerHTML+='<div class="'+cls+'" data-date="'+dk+'" onclick="sel(\''+dk+'\')" title="'+(m+1)+'月'+d+'日"><div class="day-number">'+d+'</div><div class="day-icons count-'+iconCount+'">'+ic+'</div></div>';
     }
@@ -2981,7 +2985,7 @@ function renderSimpleRecordDetail(dk){
     htm+='<div class="simple-record-toolbar"><div class="simple-record-muscles">';
     for(var gi=0;gi<selectionState.groups.length;gi++){
         var muscleGroup=selectionState.groups[gi];
-        htm+='<button class="record-muscle-btn '+muscleGroup.muscle+(muscleGroup.muscle===selectionState.activeMuscle?' active':'')+'" onclick="setRecordMuscleTab(\''+dk+'\',\''+muscleGroup.muscle+'\')"><span class="record-muscle-icon">'+getMuscleIconText(muscleGroup.muscle)+'</span><span class="record-muscle-label">'+(muscleNames[muscleGroup.muscle]||muscleGroup.muscle)+'</span></button>';
+        htm+='<button class="record-muscle-btn '+muscleGroup.muscle+(muscleGroup.muscle===selectionState.activeMuscle?' active':'')+'" onclick="setRecordMuscleTab(\''+dk+'\',\''+muscleGroup.muscle+'\')"><span class="record-muscle-icon">'+getMuscleIconHtml(muscleGroup.muscle)+'</span><span class="record-muscle-label">'+(muscleNames[muscleGroup.muscle]||muscleGroup.muscle)+'</span></button>';
     }
     var simpleActionTabsClass='exercise-tabs simple-record-actions'+(selectionState.group&&selectionState.group.actions.length>4?' multi-row':'');
     htm+='</div><div class="'+simpleActionTabsClass+'">';
@@ -3379,7 +3383,7 @@ function showDetail(dk){
     htm+='<div class="record-muscle-tabs">';
     for(var gi=0;gi<groups.length;gi++){
         var muscleGroup=groups[gi];
-        htm+='<button class="record-muscle-btn '+muscleGroup.muscle+(muscleGroup.muscle===activeMuscle?' active':'')+'" onclick="setRecordMuscleTab(\''+dk+'\',\''+muscleGroup.muscle+'\')"><span class="record-muscle-icon">'+getMuscleIconText(muscleGroup.muscle)+'</span><span class="record-muscle-label">'+(muscleNames[muscleGroup.muscle]||muscleGroup.muscle)+'</span></button>';
+        htm+='<button class="record-muscle-btn '+muscleGroup.muscle+(muscleGroup.muscle===activeMuscle?' active':'')+'" onclick="setRecordMuscleTab(\''+dk+'\',\''+muscleGroup.muscle+'\')"><span class="record-muscle-icon">'+getMuscleIconHtml(muscleGroup.muscle)+'</span><span class="record-muscle-label">'+(muscleNames[muscleGroup.muscle]||muscleGroup.muscle)+'</span></button>';
     }
     htm+='</div>';
     var group=selectionState.group;
@@ -3979,7 +3983,7 @@ function showVolumeChart(){
             if(hasData&&!firstAvailableMuscle)firstAvailableMuscle=muBtn;
             var btnActive=(volumeMuscle===muBtn)?' active':'';
             var btnEmpty=!hasData?' is-empty':'';
-            htm+='<button class="stats-btn muscle-filter-btn '+muBtn+btnActive+btnEmpty+'" onclick="setVolumeMuscle(\''+muBtn+'\')"><span class="stats-btn-icon">'+getMuscleIconText(muBtn)+'</span><span class="stats-btn-label">'+muscleNames[muBtn]+'</span></button>';
+            htm+='<button class="stats-btn muscle-filter-btn '+muBtn+btnActive+btnEmpty+'" onclick="setVolumeMuscle(\''+muBtn+'\')"><span class="stats-btn-icon">'+getMuscleIconHtml(muBtn)+'</span><span class="stats-btn-label">'+muscleNames[muBtn]+'</span></button>';
         }
         if(volumeMetricMode!=='interval'){
             var allActive=(volumeMuscle==='all')?' active':'';
@@ -4825,7 +4829,7 @@ function showStats(){
         var mu=muscles[i];
         var stats=calcMuscleStats(mu);
         if(stats.maxWeight>0||stats.maxDailyVol>0){
-            htm+='<button class="stats-btn muscle-filter-btn '+mu+(isActive(mu)?' active':'')+'" onclick="setStats(\''+mu+'\')"><span class="stats-btn-icon">'+getMuscleIconText(mu)+'</span><span class="stats-btn-label">'+muscleNames[mu]+'</span></button>';
+            htm+='<button class="stats-btn muscle-filter-btn '+mu+(isActive(mu)?' active':'')+'" onclick="setStats(\''+mu+'\')"><span class="stats-btn-icon">'+getMuscleIconHtml(mu)+'</span><span class="stats-btn-label">'+muscleNames[mu]+'</span></button>';
         }
     }
     htm+='<button class="stats-btn'+(isActive('month')?' active':'')+'" onclick="setStats(\'month\')"><span class="stats-btn-icon">📅</span><span class="stats-btn-label">月总</span></button>';
@@ -4917,7 +4921,7 @@ function showStats(){
             }
             if(hasData){
                 hasAnyMuscle=true;
-                htm+='<div class="stats-card-item"><div class="stats-label"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:'+muscleColors[mu]+';margin-right:6px;vertical-align:middle;"></span>'+getMuscleIconText(mu)+' '+muscleNames[mu]+'</div><div class="stats-value"><span class="highlight">'+days+'</span> 天</div></div>';
+                htm+='<div class="stats-card-item"><div class="stats-label"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:'+muscleColors[mu]+';margin-right:6px;vertical-align:middle;"></span>'+getMuscleIconHtml(mu)+' '+muscleNames[mu]+'</div><div class="stats-value"><span class="highlight">'+days+'</span> 天</div></div>';
             }
         }
         if(!hasAnyMuscle)htm+='<div class="stats-empty">本月暂无部位数据</div>';
