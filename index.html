@@ -66,8 +66,6 @@
             0% { filter: brightness(1.12) saturate(1.08); }
             100% { filter: brightness(1) saturate(1); }
         }
-        .timer-fireworks-overlay { position: fixed; inset: 0; z-index: 9999; display: block; visibility: hidden; pointer-events: none; }
-        .timer-fireworks-overlay.is-active { visibility: visible; pointer-events: auto; cursor: pointer; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: radial-gradient(circle at top left, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 30%), radial-gradient(circle at top right, rgba(174,213,250,0.14) 0%, rgba(174,213,250,0) 32%), radial-gradient(circle at center top, rgba(255,255,255,0.76) 0%, rgba(255,255,255,0) 44%), linear-gradient(180deg, #fbfbfd 0%, var(--bg) 22%, var(--bg-2) 58%, var(--bg-3) 100%); min-height: 100vh; color: var(--text); padding-bottom: 32px; position: relative; overflow-x: hidden; }
         body::before { content: ''; position: fixed; inset: -12% -10% auto; height: 38vh; background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.35) 28%, rgba(255,255,255,0) 72%); pointer-events: none; z-index: 0; }
         body::after { content: ''; position: fixed; right: -70px; bottom: 10vh; width: 220px; height: 220px; background: radial-gradient(circle, rgba(147,197,253,0.14) 0%, rgba(147,197,253,0.03) 44%, rgba(147,197,253,0) 76%); filter: blur(12px); pointer-events: none; z-index: 0; }
@@ -257,9 +255,12 @@
         .exercise-time-arrow::after { content: ''; position: absolute; top: 50%; right: 0; width: 8px; height: 8px; border-top: 2px solid rgba(147,197,253,0.9); border-right: 2px solid rgba(147,197,253,0.9); transform: translateY(-50%) rotate(45deg); }
         .exercise-timer-wrap { display: inline-flex; align-items: center; min-width: 0; flex: 0 0 auto; }
         .exercise-timer-btn { display: inline-flex; align-items: center; gap: 8px; flex: 0 0 auto; min-width: 132px; min-height: var(--detail-tab-height); height: 100%; padding: 0 12px; border: 1px solid rgba(147,197,253,0.14); border-radius: 10px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(147,197,253,0.08); }
-        .exercise-timer-btn.is-alert { background: linear-gradient(180deg, #ff6b63 0%, #dc2626 100%); border-color: rgba(185,28,28,0.5); color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 5px 12px rgba(220,38,38,0.24); }
+        .exercise-timer-btn.is-alert,
+        .simple-record-card-tools .detail-footer-duration.is-alert { background: linear-gradient(180deg, #ff6b63 0%, #dc2626 100%); border-color: rgba(185,28,28,0.5); color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 5px 12px rgba(220,38,38,0.24); }
         .exercise-timer-btn.is-alert .exercise-timer-meta,
         .exercise-timer-btn.is-alert .exercise-timer-value { color: #fff; }
+        .simple-record-card-tools .detail-footer-duration.is-alert .detail-footer-duration-value,
+        .simple-record-card-tools .detail-footer-duration.is-alert .detail-footer-duration-label { color: #fff !important; }
         .exercise-timer-btn:active { transform: translateY(1px) scale(0.98); }
         .exercise-timer-reset-btn { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; min-width: 68px; min-height: var(--detail-tab-height); height: 100%; padding: 0 12px; border: 1px solid rgba(203,213,225,0.7); border-radius: 10px; background: linear-gradient(180deg, rgba(248,250,252,0.98) 0%, rgba(226,232,240,0.92) 100%); color: #475569; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(148,163,184,0.12); }
         .exercise-timer-reset-btn:active { transform: translateY(1px) scale(0.98); }
@@ -681,7 +682,6 @@
             <button class="page-date-btn" id="pageDatePreviousBtn" type="button" onclick="jumpToPreviousMuscleDate()">上一次</button>
         </div>
     </div>
-    <canvas id="timerFireworksOverlay" class="timer-fireworks-overlay" aria-hidden="true"></canvas>
     <div class="modal" id="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -733,7 +733,8 @@ var STORAGE_KEYS = {
     bottomNavCollapsed:'fd_bottom_nav_collapsed',
     importBackup:'fd_import_backup',
     timerReminderConfig:'fd_timer_reminder_config',
-    recordGroupTimerStarts:'fd_record_group_timer_starts'
+    recordGroupTimerStarts:'fd_record_group_timer_starts',
+    recordSelection:'fd_record_selection'
 };
 var EXPORT_SCHEMA_VERSION = 2;
 function isPlainObject(value){
@@ -896,6 +897,7 @@ var bottomNavCollapsed = readStoredJson(STORAGE_KEYS.bottomNavCollapsed,true);
 var timerReminderConfig = normalizeTimerReminderConfig(readStoredJson(STORAGE_KEYS.timerReminderConfig,{}));
 var exerciseDropdownOpen = false;
 var selectedExerciseNames = [];
+var recordActionClickTimer = null;
 var recordActionLongPressTimers = {};
 var recordActionLongPressTriggered = {};
 var recordActionDragState = null;
@@ -905,9 +907,6 @@ var detailTimerLongPressTriggered = {};
 var randomActionLongPressTimerId=null;
 var randomActionLongPressTriggered=false;
 var recordGroupTimerReminderState = {};
-var timerFireworksFrameId = null;
-var timerFireworksTimeoutId = null;
-var timerFireworksContext = null;
 var timerModalContext = null;
 var timerModalAlertMode = false;
 var recordValueFlashState = {};
@@ -917,6 +916,7 @@ var statsActionLongPressTriggered = {};
 var statsActionDragState = null;
 var recordActionTabs = {};
 var recordMuscleTabs = {};
+var recordSelection = readStoredJson(STORAGE_KEYS.recordSelection,{});
 var recordGroupTimerStarts = normalizeRecordGroupTimerStarts(readStoredJson(STORAGE_KEYS.recordGroupTimerStarts,{}));
 var recordGroupTimerIntervalId = null;
 var icons = {chest:'❤️',back:'🛡️',shoulder:'🏋️',leg:'🦵',biceps:'💪',triceps:'🔱',core:'♎',cardio:'🏃'};
@@ -1052,116 +1052,12 @@ function saveTimerReminderSettings(){
     syncTimerModalDisplay();
     return true;
 }
-function dismissTimerFireworks(){
-    var canvas=document.getElementById('timerFireworksOverlay');
-    if(timerFireworksFrameId!==null)cancelAnimationFrame(timerFireworksFrameId);
-    if(timerFireworksTimeoutId!==null)window.clearTimeout(timerFireworksTimeoutId);
-    if(canvas){
-        var context=canvas.getContext('2d');
-        if(context){
-            context.setTransform(1,0,0,1,0,0);
-            context.clearRect(0,0,canvas.width,canvas.height);
-        }
-        canvas.classList.remove('is-active');
-    }
-    timerFireworksFrameId=null;
-    timerFireworksTimeoutId=null;
-    timerFireworksContext=null;
-}
-window.addEventListener('pagehide',dismissTimerFireworks);
-function dismissTimerFireworksAndResetTimer(){
-    var timerContext=timerFireworksContext;
-    dismissTimerFireworks();
-    if(timerContext)resetRecordGroupTimer(timerContext.dateKey,timerContext.muscle,timerContext.segmentId);
-}
-function showTimerFireworks(dk,muscle,segmentId){
-    var canvas=document.getElementById('timerFireworksOverlay');
-    if(!canvas)return;
-    var context=canvas.getContext('2d');
-    if(!context)return;
-    dismissTimerFireworks();
-    timerFireworksContext={dateKey:dk,muscle:muscle,segmentId:normalizeSegmentIdValue(segmentId)};
-    canvas.onclick=dismissTimerFireworksAndResetTimer;
-    var width=Math.max(1,window.innerWidth);
-    var height=Math.max(1,window.innerHeight);
-    var pixelRatio=Math.min(window.devicePixelRatio||1,2);
-    canvas.width=Math.round(width*pixelRatio);
-    canvas.height=Math.round(height*pixelRatio);
-    canvas.style.width=width+'px';
-    canvas.style.height=height+'px';
-    context.setTransform(pixelRatio,0,0,pixelRatio,0,0);
-    canvas.classList.add('is-active');
-    var startTime=performance.now();
-    var lastFrameTime=startTime;
-    var nextBurstAt=0;
-    var particles=[];
-    var hues=[205,210,215,220,225,230,235];
-    timerFireworksTimeoutId=window.setTimeout(dismissTimerFireworks,10000);
-    function addBurst(){
-        var burstX=width*(0.08+Math.random()*0.84);
-        var burstY=height*(0.12+Math.random()*0.68);
-        var hue=hues[Math.floor(Math.random()*hues.length)];
-        for(var i=0;i<38;i++){
-            var angle=Math.random()*Math.PI*2;
-            var speed=1.5+Math.random()*4.2;
-            particles.push({
-                x:burstX,
-                y:burstY,
-                vx:Math.cos(angle)*speed,
-                vy:Math.sin(angle)*speed,
-                age:0,
-                life:850+Math.random()*600,
-                hue:hue,
-                size:1+Math.random()*2
-            });
-        }
-    }
-    function renderFireworks(now){
-        var elapsed=now-startTime;
-        var frameScale=Math.min(2,(now-lastFrameTime)/16.67);
-        lastFrameTime=now;
-        context.clearRect(0,0,width,height);
-        if(elapsed>=10000){
-            dismissTimerFireworks();
-            return;
-        }
-        if(elapsed>=nextBurstAt){
-            addBurst();
-            nextBurstAt=elapsed+380+Math.random()*180;
-        }
-        context.globalCompositeOperation='lighter';
-        var activeParticles=[];
-        for(var pi=0;pi<particles.length;pi++){
-            var particle=particles[pi];
-            particle.age+=frameScale*16.67;
-            if(particle.age>=particle.life)continue;
-            activeParticles.push(particle);
-            particle.vy+=0.055*frameScale;
-            particle.x+=particle.vx*frameScale;
-            particle.y+=particle.vy*frameScale;
-            var alpha=1-particle.age/particle.life;
-            context.strokeStyle='hsla('+particle.hue+',100%,68%,'+alpha+')';
-            context.lineWidth=particle.size;
-            context.beginPath();
-            context.moveTo(particle.x,particle.y);
-            context.lineTo(particle.x-particle.vx*2.5,particle.y-particle.vy*2.5);
-            context.stroke();
-            context.fillStyle='hsla('+particle.hue+',100%,78%,'+alpha+')';
-            context.fillRect(particle.x-particle.size/2,particle.y-particle.size/2,particle.size,particle.size);
-        }
-        particles=activeParticles;
-        context.globalCompositeOperation='source-over';
-        timerFireworksFrameId=requestAnimationFrame(renderFireworks);
-    }
-    timerFireworksFrameId=requestAnimationFrame(renderFireworks);
-}
 function maybeTriggerRecordGroupTimerReminder(dk,muscle,segmentId,elapsedMs){
     if(!isEditableDateKey(dk)||!muscle)return;
     var timerKey=getRecordGroupTimerKey(dk,muscle,segmentId);
     if(recordGroupTimerReminderState[timerKey])return;
     if(elapsedMs<timerReminderConfig.thresholdSeconds*1000)return;
     recordGroupTimerReminderState[timerKey]=true;
-    showTimerFireworks(dk,muscle,segmentId);
     if(timerModalContext&&timerModalContext.dateKey===dk&&timerModalContext.muscle===muscle&&timerModalContext.segmentId===normalizeSegmentIdValue(segmentId)){
         timerModalAlertMode=true;
         syncTimerModalDisplay();
@@ -1176,6 +1072,9 @@ function renderRecordGroupTimerButtons(){
         if(valueEl)valueEl.textContent=nextLabel;
         else button.textContent=nextLabel;
         button.classList.toggle('is-alert',isAlert);
+        var cardTools=button.closest('.simple-record-card-tools');
+        var durationButton=cardTools&&cardTools.querySelector('.detail-footer-duration');
+        if(durationButton)durationButton.classList.toggle('is-alert',isAlert);
         maybeTriggerRecordGroupTimerReminder(button.dataset.dateKey,button.dataset.muscle,button.dataset.segmentId,elapsedMs);
     });
     syncTimerModalDisplay();
@@ -1885,7 +1784,7 @@ function refreshDayLatestTime(dk,muscle,segmentId,shouldResetTimer){
     if(!updateDayLatestTimeForMuscle(dk,muscle,null,true,segmentId))return;
     syncDayLatestTime(dk);
     if(shouldResetTimer!==false)resetRecordGroupTimer(dk,muscle,segmentId);
-    showDetail(dk);
+    if(selDate===dk)showDetail(dk);
     if(document.getElementById('volumeContent').classList.contains('active'))showVolumeChart();
 }
 function updateRecordTrainingDurationOnClick(){
@@ -2180,9 +2079,10 @@ function copyLastMuscleExercises(){
     }
     syncRecordGroupLatestTime(selDate,selMuscle,now);
     recordMuscleTabs[getRecordMuscleTabKey(selDate)]=selMuscle;
-    recordActionTabs[getRecordActionTabKey(selDate,selMuscle)]=(sourceExercises[sourceExercises.length-1].name||'').trim();
+    var selectedName=(sourceExercises[sourceExercises.length-1].name||'').trim();
+    recordActionTabs[getRecordActionTabKey(selDate,selMuscle)]=selectedName;
     resetRecordGroupTimer(selDate,selMuscle);
-    save();
+    if(save())saveRecordSelection(selDate,selMuscle,selectedName);
     closeExerciseNameDropdown();
     closeM();
     render();
@@ -2604,7 +2504,7 @@ function addPlaceholderRecordAction(){
     recordMuscleTabs[getRecordMuscleTabKey(dk)]=muscle;
     recordActionTabs[getRecordActionTabKey(dk,muscle)]=name;
     resetRecordGroupTimer(dk,muscle);
-    save();
+    if(save())saveRecordSelection(dk,muscle,name);
     render();
     showDetail(dk);
     switchPage('record');
@@ -2953,6 +2853,7 @@ function reorderRecordActions(dk,muscle,fromActionName,toActionName){
     data[dk]=reorderExercisesByGroups(groups);
     recordMuscleTabs[getRecordMuscleTabKey(dk)]=muscle;
     recordActionTabs[getRecordActionTabKey(dk,muscle)]=fromActionName;
+    saveRecordSelection(dk,muscle,fromActionName);
     save();
     render();
     showDetail(dk);
@@ -2974,11 +2875,21 @@ function getRecordMuscleTabKey(dk){
 }
 function setRecordMuscleTab(dk,muscle){
     recordMuscleTabs[getRecordMuscleTabKey(dk)]=muscle;
+    var selection=buildActiveRecordSelectionState(dk);
+    if(selection&&selection.activeActionName)saveRecordSelection(dk,muscle,selection.activeActionName);
     showDetail(dk);
 }
 function setRecordActionTab(dk,muscle,segmentId,actionName){
+    recordMuscleTabs[getRecordMuscleTabKey(dk)]=muscle;
     recordActionTabs[getRecordActionTabKey(dk,muscle,segmentId)]=actionName;
+    saveRecordSelection(dk,muscle,actionName);
     showDetail(dk);
+}
+function saveRecordSelection(dk,muscle,actionName){
+    if(recordActionClickTimer)clearTimeout(recordActionClickTimer);
+    recordActionClickTimer=null;
+    var selection={dateKey:dk,muscle:muscle,actionName:actionName};
+    if(writeStoredJson(STORAGE_KEYS.recordSelection,selection))recordSelection=selection;
 }
 function buildActiveRecordSelectionState(dk){
     var ex=data[dk]||[];
@@ -3005,6 +2916,9 @@ function buildActiveRecordSelectionState(dk){
         recordActionTabs[tabKey]=activeActionName;
     }
     var activeAction=group&&activeActionName?group.actionMap[activeActionName]:null;
+    if(activeAction){
+        group.actions=[activeAction].concat(group.actions.filter(function(action){return action!==activeAction;}));
+    }
     var displayItems=activeAction&&activeAction.items.length>1
         ? activeAction.items.slice().sort(function(a,b){
             var weightA=a&&a.exercise&&a.exercise.weight!=null?Number(a.exercise.weight):0;
@@ -3116,6 +3030,7 @@ function renderSimpleRecordDetail(dk){
     setRecordControlsReadOnly(lst,dk);
     syncDetailWeightInputFontSizes(lst);
     placeAddActionButtonInSimpleRecordActions();
+    renderRecordGroupTimerButtons();
 }
 function getRecordActionClickKey(dk,muscle,segmentId,actionName){
     return dk+'__'+muscle+'__'+actionName;
@@ -3138,9 +3053,20 @@ function handleRecordActionTabClick(dk,muscle,segmentId,actionName){
         delete recordActionLongPressTriggered[timerKey];
         return;
     }
+    resetRecordGroupTimer(dk,muscle,segmentId);
+    if(recordActionClickTimer)clearTimeout(recordActionClickTimer);
+    recordActionClickTimer=null;
     var activeActionName=recordActionTabs[getRecordActionTabKey(dk,muscle)];
-    if(activeActionName===actionName)return;
-    setRecordActionTab(dk,muscle,segmentId,actionName);
+    saveRecordSelection(dk,muscle,actionName);
+    if(activeActionName===actionName){
+        return;
+    }
+    recordActionClickTimer=setTimeout(function(){
+        recordActionClickTimer=null;
+        if(selDate===dk&&recordMuscleTabs[getRecordMuscleTabKey(dk)]===muscle&&currentPage==='record'){
+            setRecordActionTab(dk,muscle,segmentId,actionName);
+        }
+    },220);
 }
 function openRecordActionRenameModal(dk,muscle,actionName){
     if(!isEditableDateKey(dk)||!muscle||!actionName)return;
@@ -3194,6 +3120,9 @@ function confirmRecordActionRename(){
         if(renamed){
             rememberCustomExerciseName(muscle,newName);
             recordActionTabs[getRecordActionTabKey(dk,muscle)]=newName;
+            if(recordSelection.dateKey===dk&&recordSelection.muscle===muscle&&recordSelection.actionName===oldName){
+                saveRecordSelection(dk,muscle,newName);
+            }
             if(selDate===dk&&selMuscle===muscle){
                 fillExerciseNameOptions(muscle);
                 var exerciseNameInput=document.getElementById('exerciseName');
@@ -3208,6 +3137,8 @@ function confirmRecordActionRename(){
     switchPage('record');
 }
 function handleRecordActionTabDoubleClick(dk,muscle,segmentId,actionName,index,el){
+    if(recordActionClickTimer)clearTimeout(recordActionClickTimer);
+    recordActionClickTimer=null;
     cancelRecordActionLongPress(dk,muscle,segmentId,actionName);
     if(!isEditableDateKey(dk))return;
     openRecordActionRenameModal(dk,muscle,actionName);
@@ -3600,6 +3531,9 @@ function renameExerciseAcrossData(targetMuscle,oldName,newName){
             recordActionTabs[tabKey]=newName;
         }
     }
+    if(recordSelection.dateKey===getTodayKey()&&recordSelection.muscle===targetMuscle&&recordSelection.actionName===oldName){
+        saveRecordSelection(recordSelection.dateKey,targetMuscle,newName);
+    }
     if(statsExerciseSelection[targetMuscle]===oldName){
         statsExerciseSelection[targetMuscle]=newName;
     }
@@ -3673,6 +3607,9 @@ function handleRecordMinusClick(button,dk,i,field){
     }
     adjustRecordMinus(dk,i,field,false);
 }
+function resetSetsForMetricChange(exercise){
+    if(!/^随便\d*$/.test((exercise.name||'').trim()))exercise.sets=1;
+}
 function setWeightValue(dk,i,val){
     if(!isEditableDateKey(dk)||!data[dk]||!data[dk][i])return;
     var prevValue=data[dk][i].weight==null?null:Number(data[dk][i].weight);
@@ -3684,13 +3621,26 @@ function setWeightValue(dk,i,val){
     var finalValue=data[dk][i].weight==null?null:Number(data[dk][i].weight);
     if(finalValue!==prevValue)markRecordValueFlash(dk,i,'weight',finalValue!==null&&prevValue!==null&&finalValue<prevValue?'down':'up');
     if(finalValue!==prevValue){
+        resetSetsForMetricChange(data[dk][i]);
         syncRecordGroupLatestTime(dk,data[dk][i].muscle,updatedAt);
         resetRecordGroupTimer(dk,data[dk][i].muscle);
     }
     save();
     showDetail(dk);
 }
-function adjWeight(dk,i,d){if(!isEditableDateKey(dk)||!data[dk]||!data[dk][i])return;var updatedAt=getNowTimestampForDateKey(dk);data[dk][i].weight=Math.max(0,(data[dk][i].weight||0)+d);data[dk][i].updatedAt=updatedAt;syncRecordGroupLatestTime(dk,data[dk][i].muscle,updatedAt);resetRecordGroupTimer(dk,data[dk][i].muscle);save();showDetail(dk);}
+function adjWeight(dk,i,d){
+    if(!isEditableDateKey(dk)||!data[dk]||!data[dk][i])return;
+    var exercise=data[dk][i];
+    var prevWeight=exercise.weight==null?null:Number(exercise.weight);
+    var updatedAt=getNowTimestampForDateKey(dk);
+    exercise.weight=Math.max(0,(exercise.weight||0)+d);
+    if(exercise.weight!==prevWeight)resetSetsForMetricChange(exercise);
+    exercise.updatedAt=updatedAt;
+    syncRecordGroupLatestTime(dk,exercise.muscle,updatedAt);
+    resetRecordGroupTimer(dk,exercise.muscle);
+    save();
+    showDetail(dk);
+}
 function dup(dk,i){
     if(!isEditableDateKey(dk)||!data[dk]||!data[dk][i])return;
     var source=data[dk][i];
@@ -3729,6 +3679,7 @@ function adjReps(dk,i,d){
     data[dk][i].updatedAt=updatedAt;
     if(r!==prev)markRecordValueFlash(dk,i,'reps',r<prev?'down':'up');
     if(r!==prev){
+        resetSetsForMetricChange(data[dk][i]);
         syncRecordGroupLatestTime(dk,data[dk][i].muscle,updatedAt);
         resetRecordGroupTimer(dk,data[dk][i].muscle);
     }
@@ -3833,7 +3784,8 @@ function addEx(){
     recordActionTabs[getRecordActionTabKey(targetDate,selMuscle)]=actionNames[actionNames.length-1];
     selDate=targetDate;
     resetRecordGroupTimer(targetDate,selMuscle);
-    save();closeM();render();showDetail(selDate);switchPage('record');
+    if(save())saveRecordSelection(targetDate,selMuscle,actionNames[actionNames.length-1]);
+    closeM();render();showDetail(selDate);switchPage('record');
     document.getElementById('exerciseName').value='';
     document.querySelector('.modal-header h2').textContent='添加训练';
     document.getElementById('addExercise').textContent='添加动作';
@@ -5073,7 +5025,6 @@ function refreshTodayTrainingDurationOnLoad(){
     refreshDayLatestTime(dk,muscle,getDefaultSegmentId(),false);
 }
 function init(){
-    dismissTimerFireworks();
     var reminderThresholdMs=timerReminderConfig.thresholdSeconds*1000;
     Object.keys(recordGroupTimerStarts).forEach(function(timerKey){
         if(Date.now()-recordGroupTimerStarts[timerKey]>=reminderThresholdMs){
@@ -5082,16 +5033,27 @@ function init(){
     });
     hydrateCustomExerciseNamesFromData();
     render();
-    var dk = getTodayKey();
-    var hasTodayRecords = !!((data[dk] || []).length);
+    var todayKey = getTodayKey();
+    var hasTodayRecords = !!((data[todayKey] || []).length);
+    var savedExercises=Array.isArray(data[recordSelection.dateKey])?data[recordSelection.dateKey]:[];
+    var hasSavedSelection=savedExercises.some(function(exercise){
+        return exercise.muscle===recordSelection.muscle&&exercise.name===recordSelection.actionName;
+    });
+    var dk=hasSavedSelection?recordSelection.dateKey:todayKey;
+    if(hasSavedSelection){
+        recordMuscleTabs[getRecordMuscleTabKey(dk)]=recordSelection.muscle;
+        recordActionTabs[getRecordActionTabKey(dk,recordSelection.muscle)]=recordSelection.actionName;
+        var dateParts=dk.split('-');
+        curDate=new Date(Number(dateParts[0]),Number(dateParts[1])-1,1);
+    }
     selDate = dk;
-    currentPage = hasTodayRecords ? 'record' : 'calendar';
+    currentPage = (hasSavedSelection||hasTodayRecords) ? 'record' : 'calendar';
     render();
     showDetail(dk);
     updateBottomNavCollapseState();
     switchPage(currentPage);
-    var activeTimerMuscle=hasTodayRecords?getActiveRecordMuscle(dk):null;
-    if(activeTimerMuscle)startRecordGroupTimer(dk,activeTimerMuscle,getDefaultSegmentId());
+    var activeTimerMuscle=hasTodayRecords?getActiveRecordMuscle(todayKey):null;
+    if(activeTimerMuscle)startRecordGroupTimer(todayKey,activeTimerMuscle,getDefaultSegmentId());
     refreshTodayTrainingDurationOnLoad();
 }
 init();
