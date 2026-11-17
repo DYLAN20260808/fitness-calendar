@@ -346,6 +346,7 @@
         .adjust-btn:active { background: linear-gradient(180deg, rgba(240,245,252,0.98) 0%, rgba(221,233,247,0.92) 100%); transform: translateY(1px); }
         .adjust-btn.adjust-btn-plus { background: var(--primary-gradient); border-color: rgba(255,255,255,0.3); color: white; box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(147,197,253,0.18); }
         .adjust-btn.adjust-btn-minus { background: linear-gradient(180deg, var(--danger-top) 0%, var(--danger-mid) 58%, var(--danger-bottom) 100%); border-color: rgba(203,213,225,0.8); color: #475569; box-shadow: inset 0 1px 0 rgba(255,255,255,0.72), 0 8px 14px rgba(148,163,184,0.16); }
+        .record-minus-btn { -webkit-touch-callout: none; user-select: none; }
         .adjust-value { display: inline-block; min-width: 20px; text-align: center; font-size: clamp(13px, 3.4vw, 16px); font-weight: 600; line-height: clamp(22px, 6vw, 24px); }
         .adjust-value.count-slot { width: clamp(28px, 9vw, 36px); min-width: 0; }
         .adjust-value.value-flash-up,
@@ -778,7 +779,8 @@ function normalizeImportedExercise(exercise){
     var muscle=String(exercise.muscle||'').trim();
     var name=String(exercise.name||'').trim();
     if(!muscle||!name)return null;
-    var sets=Math.max(1,parseInt(exercise.sets,10)||1);
+    var parsedSets=parseInt(exercise.sets,10);
+    var sets=isNaN(parsedSets)?1:Math.max(0,parsedSets);
     var reps=String(exercise.reps==null?'':exercise.reps).trim()||'1';
     var weightValue=exercise.weight==null||exercise.weight===''?null:Number(exercise.weight);
     var weight=weightValue===null||isNaN(weightValue)?null:Math.max(0,weightValue);
@@ -1975,7 +1977,7 @@ function getExerciseHistoryDefaults(m,name){
             var weight=exercise.weight==null?null:Number(exercise.weight);
             if(weight===null||isNaN(weight))weight=null;
             if(!bestMatch||((weight||0)>(bestMatch.weight||0))){
-                bestMatch={sets:Math.max(1,parseInt(exercise.sets,10)||1),reps:exercise.reps||'',weight:weight};
+                bestMatch={reps:exercise.reps||'',weight:weight};
             }
         }
     }
@@ -2026,7 +2028,7 @@ function getCapacityHintText(dk,items,bestRecord){
     for(var i=0;i<items.length;i++){
         currentActionVolume+=calcEntryVolume(items[i].exercise);
     }
-    var currentSets=Math.max(1,Number(latestExercise.sets)||1);
+    var currentSets=Math.max(0,Number(latestExercise.sets)||0);
     var neededSetsText='--';
     var maxWeight=bestRecord&&bestRecord.weight?bestRecord.weight:0;
     var maxSets=bestRecord&&bestRecord.sets?bestRecord.sets:0;
@@ -2167,7 +2169,7 @@ function copyLastMuscleExercises(){
         var copiedExercise={
             muscle:selMuscle,
             name:copiedName,
-            sets:1,
+            sets:0,
             reps:sourceExercise.reps||'',
             weight:sourceExercise.weight==null||isNaN(Number(sourceExercise.weight))?null:Number(sourceExercise.weight),
             createdAt:now===null?null:(now+i),
@@ -2591,7 +2593,7 @@ function addPlaceholderRecordAction(){
     data[dk].push({
         muscle:muscle,
         name:name,
-        sets:isCardio?0:(previousDefaults?previousDefaults.sets:1),
+        sets:0,
         reps:isCardio?'':'10',
         weight:isCardio?null:(previousDefaults&&previousDefaults.weight!==null?previousDefaults.weight:1),
         createdAt:now,
@@ -3095,9 +3097,9 @@ function renderSimpleRecordDetail(dk){
                 '</div>';
             }else htm+='<div class="simple-record-card">'+
                 '<div class="simple-record-metrics">'+
-                    '<div class="simple-record-metric"><span class="simple-record-metric-label">次数</span><div class="simple-record-stepper"><button class="adjust-btn adjust-btn-minus" onclick="adjReps(\''+dk+'\','+item.index+',-1)">−</button><span class="simple-record-value-box'+bestBoxClass+'"><span class="adjust-value'+repsFlashClass+'">'+item.exercise.reps+'</span></span><button class="adjust-btn adjust-btn-plus" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button></div></div>'+
-                    '<div class="simple-record-metric"><span class="simple-record-metric-label">重量</span><div class="simple-record-stepper"><button class="adjust-btn adjust-btn-minus" onclick="adjWeight(\''+dk+'\','+item.index+',-1)">−</button><input type="number" class="metric-input'+weightFlashClass+bestBoxClass+'" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="1" min="0" oninput="syncDetailWeightInputFontSize(this)" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><button class="adjust-btn adjust-btn-plus" onclick="adjWeight(\''+dk+'\','+item.index+',1)">+</button></div></div>'+
-                    '<div class="simple-record-metric"><span class="simple-record-metric-label">组数</span><div class="simple-record-stepper"><button class="adjust-btn adjust-btn-minus" onclick="adjSets(\''+dk+'\','+item.index+',-1)">−</button><span class="simple-record-value-box'+bestBoxClass+'"><span class="adjust-value'+setsFlashClass+'">'+item.exercise.sets+'</span></span><button class="adjust-btn adjust-btn-plus" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button></div></div>'+
+                    '<div class="simple-record-metric"><span class="simple-record-metric-label">次数</span><div class="simple-record-stepper">'+buildRecordMinusButton(dk,item.index,'reps','−')+'<span class="simple-record-value-box'+bestBoxClass+'"><span class="adjust-value'+repsFlashClass+'">'+item.exercise.reps+'</span></span><button class="adjust-btn adjust-btn-plus" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button></div></div>'+
+                    '<div class="simple-record-metric"><span class="simple-record-metric-label">重量</span><div class="simple-record-stepper">'+buildRecordMinusButton(dk,item.index,'weight','−')+'<input type="number" class="metric-input'+weightFlashClass+bestBoxClass+'" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="1" min="0" oninput="syncDetailWeightInputFontSize(this)" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><button class="adjust-btn adjust-btn-plus" onclick="adjWeight(\''+dk+'\','+item.index+',1)">+</button></div></div>'+
+                    '<div class="simple-record-metric"><span class="simple-record-metric-label">组数</span><div class="simple-record-stepper">'+buildRecordMinusButton(dk,item.index,'sets','−')+'<span class="simple-record-value-box'+bestBoxClass+'"><span class="adjust-value'+setsFlashClass+'">'+item.exercise.sets+'</span></span><button class="adjust-btn adjust-btn-plus" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button></div></div>'+
                 '</div>'+
                 '<div class="simple-record-card-tools"><button class="exercise-timer-btn" data-date-key="'+dk+'" data-muscle="'+cardMuscle+'" data-segment-id="'+cardSegmentId+'" onclick="handleDetailTimerClick(\''+dk+'\',\''+cardMuscle+'\',\''+cardSegmentId+'\')" ondblclick="handleDetailTimerDoubleClick(\''+dk+'\',\''+cardMuscle+'\',\''+cardSegmentId+'\')" onmousedown="startDetailTimerLongPress(\''+dk+'\',\''+cardMuscle+'\',\''+cardSegmentId+'\')" onmouseup="cancelDetailTimerLongPress(\''+dk+'\',\''+cardMuscle+'\',\''+cardSegmentId+'\')" onmouseleave="cancelDetailTimerLongPress(\''+dk+'\',\''+cardMuscle+'\',\''+cardSegmentId+'\')" ontouchstart="startDetailTimerLongPress(\''+dk+'\',\''+cardMuscle+'\',\''+cardSegmentId+'\')" ontouchend="cancelDetailTimerLongPress(\''+dk+'\',\''+cardMuscle+'\',\''+cardSegmentId+'\')" ontouchcancel="cancelDetailTimerLongPress(\''+dk+'\',\''+cardMuscle+'\',\''+cardSegmentId+'\')" title="单击重新计时，双击或长按打开放大秒表"><span class="exercise-timer-meta">⏱</span><span class="exercise-timer-value">'+getRecordGroupTimerLabel(dk,cardMuscle,cardSegmentId)+'</span></button><button type="button" class="detail-footer-duration" onclick="refreshDayLatestTime(\''+dk+'\',\''+cardMuscle+'\',\''+cardSegmentId+'\',false)" title="点击刷新训练时长"><span class="detail-footer-duration-value">'+escapeHtml(durationLabel)+'</span><span class="detail-footer-duration-label">训练时长</span></button></div>'+
                 '<div class="simple-record-card-actions"><button class="delete-btn" onclick="del(\''+dk+'\','+item.index+')" title="删除" aria-label="删除">-</button><button class="copy-btn" onclick="dup(\''+dk+'\','+item.index+')" title="复制" aria-label="复制">+</button></div>'+
@@ -3493,8 +3495,8 @@ function showDetail(dk){
             var repsFlashClass=getRecordValueFlashClass(dk,item.index,'reps');
             var weightFlashClass=getRecordValueFlashClass(dk,item.index,'weight');
             htm+='<div class="exercise-subitem'+rowBestClass+'">'+
-                '<div class="param-group"><button class="adjust-btn adjust-btn-minus" onclick="adjSets(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value count-slot'+setsFlashClass+'">'+item.exercise.sets+'</span><button class="adjust-btn adjust-btn-plus" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">组</span></div>'+
-                '<div class="param-group"><button class="adjust-btn adjust-btn-minus" onclick="adjReps(\''+dk+'\','+item.index+',-1)">-</button><span class="adjust-value count-slot'+repsFlashClass+'">'+item.exercise.reps+'</span><button class="adjust-btn adjust-btn-plus" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">次</span></div>'+
+                '<div class="param-group">'+buildRecordMinusButton(dk,item.index,'sets','-')+'<span class="adjust-value count-slot'+setsFlashClass+'">'+item.exercise.sets+'</span><button class="adjust-btn adjust-btn-plus" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">组</span></div>'+
+                '<div class="param-group">'+buildRecordMinusButton(dk,item.index,'reps','-')+'<span class="adjust-value count-slot'+repsFlashClass+'">'+item.exercise.reps+'</span><button class="adjust-btn adjust-btn-plus" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">次</span></div>'+
                 '<div class="param-group"><input type="number" class="metric-input'+weightFlashClass+'" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="1" min="0" oninput="syncDetailWeightInputFontSize(this)" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><span class="param-label">kg</span></div>'+
                 '<button class="delete-btn" onclick="del(\''+dk+'\','+item.index+')" title="删除" aria-label="删除">-</button>'+
                 '<button class="copy-btn" onclick="dup(\''+dk+'\','+item.index+')" title="复制" aria-label="复制">+</button>'+
@@ -3625,11 +3627,51 @@ function renameExerciseAcrossData(targetMuscle,oldName,newName){
 function escapeJsSingleQuotedString(str){
     return String(str).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
 }
-function resetExerciseSetsOnWeightChange(exercise){
-    if(!exercise)return false;
-    if(Number(exercise.sets)===1)return false;
-    exercise.sets=1;
-    return true;
+function buildRecordMinusButton(dk,i,field,label){
+    var args="'"+dk+"',"+i+",'"+field+"'";
+    return '<button class="adjust-btn adjust-btn-minus record-minus-btn" title="点击减一，长按归1" '+
+        'onpointerdown="startRecordMinusPress(event,this,'+args+')" '+
+        'onpointermove="moveRecordMinusPress(event,this)" onpointerup="cancelRecordMinusPress(this)" '+
+        'onpointercancel="cancelRecordMinusPress(this)" onpointerleave="cancelRecordMinusPress(this)" '+
+        'oncontextmenu="return false" onclick="handleRecordMinusClick(this,'+args+')">'+label+'</button>';
+}
+function adjustRecordMinus(dk,i,field,reset){
+    if(!isEditableDateKey(dk)||!data[dk]||!data[dk][i])return;
+    var exercise=data[dk][i];
+    if(field==='sets')adjSets(dk,i,reset?1-exercise.sets:-1);
+    else if(field==='reps')adjReps(dk,i,reset?1-(parseInt(exercise.reps,10)||1):-1);
+    else if(field==='weight'){
+        if(reset)setWeightValue(dk,i,'1');
+        else adjWeight(dk,i,-1);
+    }
+}
+function startRecordMinusPress(event,button,dk,i,field){
+    if(event.button!==0||event.isPrimary===false)return;
+    cancelRecordMinusPress(button);
+    button.recordMinusTriggered=false;
+    button.recordMinusStart={x:event.clientX,y:event.clientY};
+    button.recordMinusTimer=setTimeout(function(){
+        button.recordMinusTimer=null;
+        button.recordMinusTriggered=true;
+        adjustRecordMinus(dk,i,field,true);
+    },450);
+}
+function moveRecordMinusPress(event,button){
+    var start=button.recordMinusStart;
+    if(start&&(Math.abs(event.clientX-start.x)>10||Math.abs(event.clientY-start.y)>10))cancelRecordMinusPress(button);
+}
+function cancelRecordMinusPress(button){
+    if(button.recordMinusTimer)clearTimeout(button.recordMinusTimer);
+    button.recordMinusTimer=null;
+    button.recordMinusStart=null;
+}
+function handleRecordMinusClick(button,dk,i,field){
+    cancelRecordMinusPress(button);
+    if(button.recordMinusTriggered){
+        button.recordMinusTriggered=false;
+        return;
+    }
+    adjustRecordMinus(dk,i,field,false);
 }
 function setWeightValue(dk,i,val){
     if(!isEditableDateKey(dk)||!data[dk]||!data[dk][i])return;
@@ -3640,16 +3682,15 @@ function setWeightValue(dk,i,val){
     var updatedAt=getNowTimestampForDateKey(dk);
     data[dk][i].updatedAt=updatedAt;
     var finalValue=data[dk][i].weight==null?null:Number(data[dk][i].weight);
-    var setsPatched=finalValue!==prevValue?resetExerciseSetsOnWeightChange(data[dk][i]):false;
     if(finalValue!==prevValue)markRecordValueFlash(dk,i,'weight',finalValue!==null&&prevValue!==null&&finalValue<prevValue?'down':'up');
-    if(finalValue!==prevValue||setsPatched){
+    if(finalValue!==prevValue){
         syncRecordGroupLatestTime(dk,data[dk][i].muscle,updatedAt);
         resetRecordGroupTimer(dk,data[dk][i].muscle);
     }
     save();
     showDetail(dk);
 }
-function adjWeight(dk,i,d){if(!isEditableDateKey(dk)||!data[dk]||!data[dk][i])return;var updatedAt=getNowTimestampForDateKey(dk);data[dk][i].weight=Math.max(0,(data[dk][i].weight||0)+d);resetExerciseSetsOnWeightChange(data[dk][i]);data[dk][i].updatedAt=updatedAt;syncRecordGroupLatestTime(dk,data[dk][i].muscle,updatedAt);resetRecordGroupTimer(dk,data[dk][i].muscle);save();showDetail(dk);}
+function adjWeight(dk,i,d){if(!isEditableDateKey(dk)||!data[dk]||!data[dk][i])return;var updatedAt=getNowTimestampForDateKey(dk);data[dk][i].weight=Math.max(0,(data[dk][i].weight||0)+d);data[dk][i].updatedAt=updatedAt;syncRecordGroupLatestTime(dk,data[dk][i].muscle,updatedAt);resetRecordGroupTimer(dk,data[dk][i].muscle);save();showDetail(dk);}
 function dup(dk,i){
     if(!isEditableDateKey(dk)||!data[dk]||!data[dk][i])return;
     var source=data[dk][i];
@@ -3667,7 +3708,7 @@ function del(dk,i){if(!isEditableDateKey(dk)||!data[dk]||!data[dk][i])return;var
 function adjSets(dk,i,d){
     if(!isEditableDateKey(dk)||!data[dk]||!data[dk][i])return;
     var prev=data[dk][i].sets;
-    data[dk][i].sets=Math.max(1,data[dk][i].sets+d);
+    data[dk][i].sets=Math.max(0,data[dk][i].sets+d);
     var updatedAt=getNowTimestampForDateKey(dk);
     data[dk][i].updatedAt=updatedAt;
     if(data[dk][i].sets!==prev)markRecordValueFlash(dk,i,'sets',data[dk][i].sets<prev?'down':'up');
@@ -3773,7 +3814,7 @@ function addEx(){
     var now=getNowTimestampForDateKey(targetDate);
     if(editIdx>=0){
         var existing=data[targetDate][editIdx]||{};
-        data[targetDate][editIdx]={muscle:selMuscle,name:actionNames[0],sets:isCardio?0:(Number(existing.sets)||1),reps:isCardio?'':existing.reps,weight:isCardio?null:existing.weight,createdAt:normalizeTimestampValue(existing.createdAt)||now,updatedAt:now};
+        data[targetDate][editIdx]={muscle:selMuscle,name:actionNames[0],sets:isCardio?0:(existing.sets==null?1:Number(existing.sets)),reps:isCardio?'':existing.reps,weight:isCardio?null:existing.weight,createdAt:normalizeTimestampValue(existing.createdAt)||now,updatedAt:now};
         rememberCustomExerciseName(selMuscle,actionNames[0]);
         editIdx=-1;
     }else{
@@ -3781,10 +3822,9 @@ function addEx(){
         for(var actionIndex=0;actionIndex<actionNames.length;actionIndex++){
             var actionName=actionNames[actionIndex];
             var previousDefaults=getExerciseHistoryDefaults(selMuscle,actionName);
-            var actionSets=previousDefaults?previousDefaults.sets:1;
             var actionReps=previousDefaults&&previousDefaults.reps?previousDefaults.reps:'1';
             var actionWeight=previousDefaults&&previousDefaults.weight!==null?previousDefaults.weight:1;
-            data[targetDate].push({muscle:selMuscle,name:actionName,sets:isCardio?0:actionSets,reps:isCardio?'':actionReps,weight:isCardio?null:actionWeight,createdAt:now,updatedAt:now});
+            data[targetDate].push({muscle:selMuscle,name:actionName,sets:0,reps:isCardio?'':actionReps,weight:isCardio?null:actionWeight,createdAt:now,updatedAt:now});
             rememberCustomExerciseName(selMuscle,actionName);
         }
     }
