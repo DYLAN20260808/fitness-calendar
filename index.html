@@ -3621,7 +3621,7 @@ function setWeightValue(dk,i,val){
     var finalValue=data[dk][i].weight==null?null:Number(data[dk][i].weight);
     if(finalValue!==prevValue)markRecordValueFlash(dk,i,'weight',finalValue!==null&&prevValue!==null&&finalValue<prevValue?'down':'up');
     if(finalValue!==prevValue){
-        resetSetsForMetricChange(data[dk][i]);
+        if(prevValue===null||finalValue===null||finalValue>prevValue)resetSetsForMetricChange(data[dk][i]);
         syncRecordGroupLatestTime(dk,data[dk][i].muscle,updatedAt);
         resetRecordGroupTimer(dk,data[dk][i].muscle);
     }
@@ -3634,7 +3634,7 @@ function adjWeight(dk,i,d){
     var prevWeight=exercise.weight==null?null:Number(exercise.weight);
     var updatedAt=getNowTimestampForDateKey(dk);
     exercise.weight=Math.max(0,(exercise.weight||0)+d);
-    if(exercise.weight!==prevWeight)resetSetsForMetricChange(exercise);
+    if(exercise.weight!==prevWeight&&(prevWeight===null||exercise.weight>prevWeight))resetSetsForMetricChange(exercise);
     exercise.updatedAt=updatedAt;
     syncRecordGroupLatestTime(dk,exercise.muscle,updatedAt);
     resetRecordGroupTimer(dk,exercise.muscle);
@@ -3679,7 +3679,7 @@ function adjReps(dk,i,d){
     data[dk][i].updatedAt=updatedAt;
     if(r!==prev)markRecordValueFlash(dk,i,'reps',r<prev?'down':'up');
     if(r!==prev){
-        resetSetsForMetricChange(data[dk][i]);
+        if(r>prev)resetSetsForMetricChange(data[dk][i]);
         syncRecordGroupLatestTime(dk,data[dk][i].muscle,updatedAt);
         resetRecordGroupTimer(dk,data[dk][i].muscle);
     }
