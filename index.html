@@ -529,7 +529,7 @@
         .stats-summary-actions { display: flex; justify-content: flex-end; margin-bottom: 10px; }
         .stats-copy-btn { background: var(--neutral-gradient); border: 1px solid rgba(255,255,255,0.74); border-radius: 12px; padding: 8px 12px; color: #3a3a3c; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.84), 0 8px 14px rgba(17,24,39,0.06); }
         .stats-copy-btn:active { transform: translateY(1px) scale(0.98); box-shadow: inset 0 1px 0 rgba(255,255,255,0.78), 0 4px 10px rgba(17,24,39,0.06); }
-        .stats-danger-action { display: flex; justify-content: flex-end; margin-top: 12px; }
+        .stats-danger-action { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 12px; }
         .stats-danger-btn { background: linear-gradient(180deg, var(--danger-top) 0%, var(--danger-mid) 58%, var(--danger-bottom) 100%); border: 1px solid rgba(203,213,225,0.8); border-radius: 12px; padding: 8px 12px; color: #475569; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.72), 0 8px 14px rgba(148,163,184,0.16); transition: transform 0.18s ease, box-shadow 0.18s ease; }
         .stats-danger-btn:active { transform: translateY(1px) scale(0.98); box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 4px 10px rgba(148,163,184,0.12); }
         .stats-markdown { margin: 0; white-space: pre-wrap; word-break: break-word; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 12px; line-height: 1.65; color: var(--text); background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(243,245,249,0.88) 100%); border: 1px solid rgba(255,255,255,0.72); border-radius: 16px; padding: 14px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), inset 0 -8px 16px rgba(220,226,234,0.24); }
@@ -1326,6 +1326,11 @@ applyDataMigrations();
 function getCustomExerciseNames(m){
     var names=customExerciseNames[m];
     return Array.isArray(names)?names:[];
+}
+function isExerciseNameTaken(m,name){
+    return (exerciseNames[m]||[]).concat(getCustomExerciseNames(m),getExerciseNamesFromData(m)).some(function(existingName){
+        return existingName.trim()===name.trim();
+    });
 }
 function hydrateCustomExerciseNamesFromData(){
     var changed=false;
@@ -3516,10 +3521,14 @@ function getTopSelectedRecordInfo(dk){
     }
     return {muscle:topGroup.muscle||null,name:activeActionName||''};
 }
-function renameExerciseAcrossData(targetMuscle,oldName,newName){
+function renameExerciseAcrossData(targetMuscle,oldName,newName,allDates){
+    if(newName!==oldName&&isExerciseNameTaken(targetMuscle,newName)){
+        alert('当前部位已存在该动作名称（含历史记录、自定义名称和预设名称），请选择其他名称');
+        return false;
+    }
     var changed=false;
     for(var dk in data){
-        if(!isEditableDateKey(dk))continue;
+        if(!allDates&&!isEditableDateKey(dk))continue;
         var exercises=data[dk]||[];
         for(var i=0;i<exercises.length;i++){
             if(exercises[i].muscle===targetMuscle&&exercises[i].name===oldName){
@@ -3530,16 +3539,22 @@ function renameExerciseAcrossData(targetMuscle,oldName,newName){
     }
     if(!changed)return false;
     for(var tabKey in recordActionTabs){
-        if(tabKey.split('__')[0]!==getTodayKey())continue;
+        if(!allDates&&tabKey.split('__')[0]!==getTodayKey())continue;
         if(recordActionTabs[tabKey]===oldName&&tabKey.split('__')[1]===targetMuscle){
             recordActionTabs[tabKey]=newName;
         }
     }
-    if(recordSelection.dateKey===getTodayKey()&&recordSelection.muscle===targetMuscle&&recordSelection.actionName===oldName){
+    if((allDates||recordSelection.dateKey===getTodayKey())&&recordSelection.muscle===targetMuscle&&recordSelection.actionName===oldName){
         saveRecordSelection(recordSelection.dateKey,targetMuscle,newName);
     }
     if(statsExerciseSelection[targetMuscle]===oldName){
         statsExerciseSelection[targetMuscle]=newName;
+    }
+    if(allDates&&Array.isArray(statsExerciseOrder[targetMuscle])){
+        statsExerciseOrder[targetMuscle]=statsExerciseOrder[targetMuscle].map(function(name){
+            return name===oldName?newName:name;
+        }).filter(function(name,index,names){return names.indexOf(name)===index;});
+        saveStatsExerciseOrder();
     }
     var customNames=getCustomExerciseNames(targetMuscle).slice();
     var customNameIdx=customNames.indexOf(oldName);
@@ -4757,6 +4772,37 @@ function jumpToStatsDate(dk,muscle,exerciseName,segmentId){
     showDetail(dk);
     switchPage('record');
 }
+function renameStatsExerciseAcrossData(targetMuscle,exerciseName){
+    var newName=prompt('重命名“'+exerciseName+'”：将修改当前部位所有日期的同名记录。',exerciseName);
+    if(newName===null)return;
+    newName=newName.trim();
+    if(!newName){
+        alert('请输入动作名称');
+        return;
+    }
+    if(newName===exerciseName)return;
+    var matchingCount=0;
+    for(var dk in data){
+        (data[dk]||[]).forEach(function(exercise){
+            if(exercise.muscle!==targetMuscle)return;
+            if(exercise.name===exerciseName)matchingCount++;
+        });
+    }
+    if(!matchingCount){
+        alert('未找到要修改的动作');
+        return;
+    }
+    if(isExerciseNameTaken(targetMuscle,newName)){
+        alert('当前部位已存在该动作名称（含历史记录、自定义名称和预设名称），请选择其他名称');
+        return;
+    }
+    if(!confirm('确定将当前部位所有日期中“'+exerciseName+'”的 '+matchingCount+' 条记录重命名为“'+newName+'”吗？训练数据保持不变。'))return;
+    if(renameExerciseAcrossData(targetMuscle,exerciseName,newName,true)){
+        save();
+        render();
+        showStats();
+    }
+}
 function deleteExerciseAcrossData(targetMuscle,exerciseName){
     if(!targetMuscle||!exerciseName)return;
     var hasMatchingExercise=Object.keys(data).some(function(dk){
@@ -4966,7 +5012,7 @@ function showStats(){
                         '<div class="milestone-date">'+milestone.date+'</div>'+
                     '</div>';
                 }
-                htm+='<div class="stats-danger-action"><button class="stats-danger-btn" onclick="deleteExerciseAcrossData(\''+mu+'\',\''+escapedActiveExercise+'\')">删除“'+escapeHtml(activeExercise)+'”的所有记录</button></div>';
+                htm+='<div class="stats-danger-action"><button class="stats-copy-btn" data-muscle="'+mu+'" data-exercise-name="'+escapeHtmlAttribute(activeExercise)+'" onclick="renameStatsExerciseAcrossData(this.dataset.muscle,this.dataset.exerciseName)">重命名</button><button class="stats-danger-btn" onclick="deleteExerciseAcrossData(\''+mu+'\',\''+escapedActiveExercise+'\')">删除“'+escapeHtml(activeExercise)+'”的所有记录</button></div>';
             }
             htm+='</div>';
         }else{
