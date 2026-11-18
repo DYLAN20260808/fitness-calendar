@@ -680,8 +680,7 @@
             <div class="page-date-footer-hint" id="pageDateFooterHint">当前页面日期提醒</div>
         </div>
         <div class="page-date-footer-actions">
-            <button class="page-date-btn" id="pageDateTodayBtn" type="button" onclick="jumpToRelativeDate(0)">今天</button>
-            <button class="page-date-btn" id="pageDatePreviousBtn" type="button" onclick="jumpToPreviousMuscleDate()">上一次</button>
+            <button class="page-date-btn" id="pageDatePreviousBtn" type="button" onclick="event.stopPropagation();jumpToPreviousMuscleDate()">上一次</button>
         </div>
     </div>
     <div class="modal" id="modal">
@@ -2448,9 +2447,8 @@ function syncSelectedDateView(){
 function updatePageDateFooter(){
     var textEl=document.getElementById('pageDateFooterText');
     var hintEl=document.getElementById('pageDateFooterHint');
-    var todayBtn=document.getElementById('pageDateTodayBtn');
     var previousBtn=document.getElementById('pageDatePreviousBtn');
-    if(!textEl||!hintEl||!todayBtn||!previousBtn)return;
+    if(!textEl||!hintEl||!previousBtn)return;
     var activeDateKey=selDate||getTodayKey();
     var relativeLabel=getRelativeSelectedDateLabel(activeDateKey)||'今天';
     var activeMuscle=getCurrentContextMuscle();
@@ -2458,7 +2456,6 @@ function updatePageDateFooter(){
     textEl.textContent=formatSelectedDateLabel(activeDateKey);
     hintEl.textContent='当前提醒：'+relativeLabel+(activeMuscle&&muscleNames[activeMuscle]?' · '+muscleNames[activeMuscle]:'');
     previousBtn.disabled=!previousDateKey;
-    todayBtn.classList.toggle('active',pageDateFooterAction==='today'||(pageDateFooterAction!=='previous'&&activeDateKey===getOffsetDateKey(0)));
     previousBtn.classList.toggle('active',pageDateFooterAction==='previous'&&!previousBtn.disabled);
     previousBtn.textContent=previousDateKey?'上一次':'无上次';
 }
@@ -2483,7 +2480,7 @@ function jumpToPreviousMuscleDate(){
         recordMuscleTabs[getRecordMuscleTabKey(previousDateKey)]=activeMuscle;
     }
     syncSelectedDateView();
-    switchPage('calendar');
+    switchPage('record');
 }
 function updateAddActionVisibility(){
     var addBtn=document.getElementById('addActionBtn');
