@@ -4860,7 +4860,6 @@ function renameStatsExerciseAcrossData(targetMuscle,exerciseName){
 }
 function deleteExerciseAcrossData(targetMuscle,exerciseName){
     if(!targetMuscle||!exerciseName)return;
-    if(!areExerciseHistoryDatesUnlocked(targetMuscle,exerciseName))return;
     var hasMatchingExercise=Object.keys(data).some(function(dk){
         return (data[dk]||[]).some(function(exercise){return exercise.muscle===targetMuscle&&exercise.name===exerciseName;});
     });
