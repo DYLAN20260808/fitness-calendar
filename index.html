@@ -668,7 +668,7 @@
             <span class="detail-timer-slot" id="detailTimerSlot" hidden></span>
             <span class="detail-reset-slot" id="detailResetSlot" hidden></span>
             <button class="add-btn-small" id="addActionBtn" onclick="event.stopPropagation();openM()" title="添加动作" aria-label="添加动作" hidden>+ 添加</button>
-            <button class="add-btn-small random-action-btn" id="randomActionBtn" onclick="event.stopPropagation();handleRandomActionButtonClick()" onpointerdown="startRandomActionLongPress(event)" onpointerup="finishRandomActionLongPress()" onpointerleave="cancelRandomActionLongPress()" onpointercancel="cancelRandomActionLongPress()" oncontextmenu="return false" title="点击添加随便动作，长按修改最近添加的随便动作" aria-label="随便添加动作" hidden>随便</button>
+            <button class="add-btn-small random-action-btn" id="randomActionBtn" onclick="event.stopPropagation();handleRandomActionButtonClick()" onpointerdown="startRandomActionLongPress(event)" onpointerup="finishRandomActionLongPress()" onpointerleave="cancelRandomActionLongPress()" onpointercancel="cancelRandomActionLongPress()" oncontextmenu="return false" title="点击添加随便动作，长按修改当天最近添加的动作" aria-label="随便添加动作" hidden>随便</button>
         </div>
         <div id="detailFooterMetricsHome"></div>
     </div>
@@ -2318,7 +2318,7 @@ function isFutureDateKey(dateKey){
     return !!dateKey&&dateKey>getTodayKey();
 }
 function isEditableDateKey(dateKey){
-    return !!dateKey&&dateKey===getTodayKey();
+    return !!dateKey&&!isFutureDateKey(dateKey);
 }
 function canAddRecordToDateKey(dateKey){
     if(!dateKey||isFutureDateKey(dateKey))return false;
@@ -2480,12 +2480,12 @@ function updateAddActionVisibility(){
     randomBtn.hidden=!canAddRecordToDateKey(selDate)||currentPage!=='record'||!getActiveRecordMuscle(selDate);
     updateDetailActionBarVisibility();
 }
-function getLatestPlaceholderActionName(dk,muscle){
+function getLatestActionName(dk,muscle){
     if(!dk||!muscle)return null;
     var exercises=data[dk]||[];
     for(var i=exercises.length-1;i>=0;i--){
         var exercise=exercises[i];
-        if(exercise.muscle===muscle&&/^随便\d+$/.test((exercise.name||'').trim()))return exercise.name;
+        if(exercise.muscle===muscle&&exercise.name)return exercise.name;
     }
     return null;
 }
@@ -2534,7 +2534,7 @@ function finishRandomActionLongPress(){
     if(!wasLongPress)return;
     randomActionLongPressTriggered=true;
     var muscle=getActiveRecordMuscle(selDate);
-    var actionName=getLatestPlaceholderActionName(selDate,muscle);
+    var actionName=getLatestActionName(selDate,muscle);
     if(actionName)openRecordActionRenameModal(selDate,muscle,actionName);
 }
 function cancelRandomActionLongPress(){
@@ -2868,6 +2868,35 @@ function reorderRecordActions(dk,muscle,fromActionName,toActionName){
     showDetail(dk);
     return true;
 }
+function promoteRecordAction(dk,muscle,actionName,previousActionName){
+    if(!isEditableDateKey(dk)||!muscle||!actionName)return false;
+    var groups=getExerciseGroups(data[dk]||[]);
+    var targetGroup=null;
+    for(var gi=0;gi<groups.length;gi++){
+        if(groups[gi].muscle===muscle){
+            targetGroup=groups[gi];
+            break;
+        }
+    }
+    if(!targetGroup||!targetGroup.actionMap[actionName])return false;
+    var orderedActions=[targetGroup.actionMap[actionName]];
+    if(previousActionName&&previousActionName!==actionName&&targetGroup.actionMap[previousActionName]){
+        orderedActions.push(targetGroup.actionMap[previousActionName]);
+    }
+    for(var ai=0;ai<targetGroup.actions.length;ai++){
+        var action=targetGroup.actions[ai];
+        if(action.name!==actionName&&action.name!==previousActionName)orderedActions.push(action);
+    }
+    targetGroup.actions=orderedActions;
+    data[dk]=reorderExercisesByGroups(groups);
+    recordMuscleTabs[getRecordMuscleTabKey(dk)]=muscle;
+    recordActionTabs[getRecordActionTabKey(dk,muscle)]=actionName;
+    saveRecordSelection(dk,muscle,actionName);
+    save();
+    render();
+    showDetail(dk);
+    return true;
+}
 function escapeHtmlAttribute(value){
     return String(value)
         .replace(/&/g,'&amp;')
@@ -2999,7 +3028,7 @@ function renderSimpleRecordDetail(dk){
             var action=selectionState.group.actions[ai];
             var escapedActionName=escapeJsSingleQuotedString(action.name);
             var actionIndex=action.items&&action.items[0]?action.items[0].index:-1;
-            htm+='<button class="exercise-tab-btn'+(action.name===selectionState.activeActionName?' active':'')+'" data-date-key="'+escapeHtmlAttribute(dk)+'" data-muscle="'+escapeHtmlAttribute(selectionState.group.muscle)+'" data-action-name="'+escapeHtmlAttribute(action.name)+'" ondblclick="handleRecordActionTabDoubleClick(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this)" onclick="handleRecordActionTabClick(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" onmousedown="startRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this,event)" onmouseup="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" onmouseleave="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchstart="startRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this,event)" ontouchend="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchcancel="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" title="点击切换动作，长按左右拖动排序，双击修改动作名称">'+escapeHtml(action.name)+'</button>';
+            htm+='<button class="exercise-tab-btn'+(action.name===selectionState.activeActionName?' active':'')+'" data-date-key="'+escapeHtmlAttribute(dk)+'" data-muscle="'+escapeHtmlAttribute(selectionState.group.muscle)+'" data-action-name="'+escapeHtmlAttribute(action.name)+'" ondblclick="handleRecordActionTabDoubleClick(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this)" onclick="handleRecordActionTabClick(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" onmousedown="startRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this,event)" onmouseup="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" onmouseleave="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchstart="startRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this,event)" ontouchend="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchcancel="cancelRecordActionLongPress(\''+dk+'\',\''+selectionState.group.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" title="点击切换并置顶动作，长按左右拖动排序，双击修改动作名称">'+escapeHtml(action.name)+'</button>';
         }
     }
     htm+='</div></div>';
@@ -3067,13 +3096,12 @@ function handleRecordActionTabClick(dk,muscle,segmentId,actionName){
     recordActionClickTimer=null;
     var activeActionName=recordActionTabs[getRecordActionTabKey(dk,muscle)];
     saveRecordSelection(dk,muscle,actionName);
-    if(activeActionName===actionName){
-        return;
-    }
     recordActionClickTimer=setTimeout(function(){
         recordActionClickTimer=null;
         if(selDate===dk&&recordMuscleTabs[getRecordMuscleTabKey(dk)]===muscle&&currentPage==='record'){
-            setRecordActionTab(dk,muscle,segmentId,actionName);
+            if(!promoteRecordAction(dk,muscle,actionName,activeActionName)){
+                setRecordActionTab(dk,muscle,segmentId,actionName);
+            }
         }
     },220);
 }
@@ -3116,7 +3144,7 @@ function confirmRecordActionRename(){
         if((data[dk]||[]).some(function(exercise){
             return exercise.muscle===muscle&&exercise.name===newName;
         })){
-            alert('今天已添加该动作名称，请选择其他名称');
+            alert(formatSelectedDateLabel(dk)+'已添加该动作名称，请选择其他名称');
             return;
         }
         var renamed=false;
@@ -3407,7 +3435,7 @@ function showDetail(dk){
             var action=segmentGroup.actions[ai];
             var escapedActionName=escapeJsSingleQuotedString(action.name);
             var actionIndex=action.items&&action.items[0]?action.items[0].index:-1;
-            htm+='<button class="exercise-tab-btn'+(action.name===activeActionName?' active':'')+'" data-date-key="'+escapeHtmlAttribute(dk)+'" data-muscle="'+escapeHtmlAttribute(e.muscle)+'" data-action-name="'+escapeHtmlAttribute(action.name)+'" onclick="handleRecordActionTabClick(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ondblclick="handleRecordActionTabDoubleClick(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this)" onmousedown="startRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this,event)" onmouseup="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" onmouseleave="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchstart="startRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this,event)" ontouchend="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchcancel="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" title="点击切换动作，长按左右拖动排序，双击修改动作名称">'+escapeHtml(action.name)+'</button>';
+            htm+='<button class="exercise-tab-btn'+(action.name===activeActionName?' active':'')+'" data-date-key="'+escapeHtmlAttribute(dk)+'" data-muscle="'+escapeHtmlAttribute(e.muscle)+'" data-action-name="'+escapeHtmlAttribute(action.name)+'" onclick="handleRecordActionTabClick(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ondblclick="handleRecordActionTabDoubleClick(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this)" onmousedown="startRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this,event)" onmouseup="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" onmouseleave="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchstart="startRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\','+actionIndex+',this,event)" ontouchend="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" ontouchcancel="cancelRecordActionLongPress(\''+dk+'\',\''+e.muscle+'\',\''+getDefaultSegmentId()+'\',\''+escapedActionName+'\')" title="点击切换并置顶动作，长按左右拖动排序，双击修改动作名称">'+escapeHtml(action.name)+'</button>';
         }
     }
     htm+='</div>';
@@ -3528,7 +3556,7 @@ function renameExerciseAcrossData(targetMuscle,oldName,newName,allDates){
     }
     var changed=false;
     for(var dk in data){
-        if(!allDates&&!isEditableDateKey(dk))continue;
+        if(!allDates&&dk!==getTodayKey())continue;
         var exercises=data[dk]||[];
         for(var i=0;i<exercises.length;i++){
             if(exercises[i].muscle===targetMuscle&&exercises[i].name===oldName){
@@ -3774,7 +3802,7 @@ function addEx(){
     }
     var isEditingExistingRecord=editIdx>=0;
     if(isEditingExistingRecord?!isEditableDateKey(selDate):!canAddRecordToDateKey(selDate)){
-        alert('只能添加到今天或没有记录的历史日期');
+        alert('不能修改未来日期的训练记录');
         return;
     }
     var actionNames=getModalExerciseNames();
