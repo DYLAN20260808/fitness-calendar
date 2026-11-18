@@ -265,6 +265,7 @@
         .exercise-timer-btn:active { transform: translateY(1px) scale(0.98); }
         .exercise-timer-reset-btn { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; min-width: 68px; min-height: var(--detail-tab-height); height: 100%; padding: 0 12px; border: 1px solid rgba(203,213,225,0.7); border-radius: 10px; background: linear-gradient(180deg, rgba(248,250,252,0.98) 0%, rgba(226,232,240,0.92) 100%); color: #475569; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(148,163,184,0.12); }
         .exercise-timer-reset-btn:active { transform: translateY(1px) scale(0.98); }
+        .history-unlock-btn.active { border-color: rgba(255,255,255,0.34); background: var(--primary-gradient); color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,0.36), 0 8px 14px rgba(147,197,253,0.22); }
         .exercise-timer-meta { white-space: nowrap; color: var(--muted); font-size: 11px; font-weight: 600; }
         .exercise-timer-value { min-width: 42px; text-align: right; color: var(--accent-deep); }
         .exercise-capacity-hint { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; padding: 8px 10px; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(240,245,252,0.88) 100%); border: 1px solid rgba(147,197,253,0.08); color: var(--muted); font-size: 11px; line-height: 1.45; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9); cursor: pointer; overflow: hidden; }
@@ -917,6 +918,7 @@ var statsActionLongPressTriggered = {};
 var statsActionDragState = null;
 var recordActionTabs = {};
 var recordMuscleTabs = {};
+var historyEditUnlocks = {};
 var recordSelection = readStoredJson(STORAGE_KEYS.recordSelection,{});
 var recordGroupTimerStarts = normalizeRecordGroupTimerStarts(readStoredJson(STORAGE_KEYS.recordGroupTimerStarts,{}));
 var recordGroupTimerIntervalId = null;
@@ -2317,12 +2319,23 @@ function getTodayKey(){
 function isFutureDateKey(dateKey){
     return !!dateKey&&dateKey>getTodayKey();
 }
+function isHistoricalDateKey(dateKey){
+    return !!dateKey&&dateKey<getTodayKey();
+}
 function isEditableDateKey(dateKey){
-    return !!dateKey&&!isFutureDateKey(dateKey);
+    if(!dateKey||isFutureDateKey(dateKey))return false;
+    return dateKey===getTodayKey()||!!historyEditUnlocks[dateKey];
 }
 function canAddRecordToDateKey(dateKey){
-    if(!dateKey||isFutureDateKey(dateKey))return false;
-    return isEditableDateKey(dateKey)||!(data[dateKey]||[]).length;
+    return isEditableDateKey(dateKey);
+}
+function toggleHistoryDateUnlock(dateKey){
+    if(currentPage!=='record'||dateKey!==selDate||!isHistoricalDateKey(dateKey))return;
+    if(historyEditUnlocks[dateKey])delete historyEditUnlocks[dateKey];
+    else historyEditUnlocks[dateKey]=true;
+    showDetail(dateKey);
+    updateAddActionVisibility();
+    updateDetailTimerButton();
 }
 function setRecordControlsReadOnly(root,dateKey){
     if(!root||isEditableDateKey(dateKey))return;
@@ -2571,19 +2584,19 @@ function updateDetailTimerButton(){
     var slot=document.getElementById('detailTimerSlot');
     var resetSlot=document.getElementById('detailResetSlot');
     if(!slot||!resetSlot)return;
-    var activeMuscle=currentPage==='record'&&isEditableDateKey(selDate)?getActiveRecordMuscle(selDate):null;
+    var isRecordPage=currentPage==='record'&&!!selDate;
+    var isHistoryPage=isRecordPage&&isHistoricalDateKey(selDate);
+    var historyUnlocked=isHistoryPage&&isEditableDateKey(selDate);
+    var activeMuscle=isRecordPage?getActiveRecordMuscle(selDate):null;
     if(!activeMuscle){
         slot.hidden=true;
-        resetSlot.hidden=true;
         slot.innerHTML='';
-        resetSlot.innerHTML='';
-        updateDetailActionBarVisibility();
-        return;
+    }else{
+        slot.hidden=false;
+        slot.innerHTML='<button class="exercise-timer-btn" data-date-key="'+selDate+'" data-muscle="'+activeMuscle+'" data-segment-id="'+getDefaultSegmentId()+'" '+(isHistoryPage&&!historyUnlocked?'disabled ':'')+'onclick="handleDetailTimerClick(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" ondblclick="handleDetailTimerDoubleClick(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" onmousedown="startDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" onmouseup="cancelDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" onmouseleave="cancelDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" ontouchstart="startDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" ontouchend="cancelDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" ontouchcancel="cancelDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" title="单击重新计时，双击或长按打开放大秒表"><span class="exercise-timer-meta">⏱</span><span class="exercise-timer-value">'+getRecordGroupTimerLabel(selDate,activeMuscle)+'</span></button>';
     }
-    slot.hidden=false;
-    resetSlot.hidden=false;
-    slot.innerHTML='<button class="exercise-timer-btn" data-date-key="'+selDate+'" data-muscle="'+activeMuscle+'" data-segment-id="'+getDefaultSegmentId()+'" onclick="handleDetailTimerClick(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" ondblclick="handleDetailTimerDoubleClick(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" onmousedown="startDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" onmouseup="cancelDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" onmouseleave="cancelDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" ontouchstart="startDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" ontouchend="cancelDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" ontouchcancel="cancelDetailTimerLongPress(\''+selDate+'\',\''+activeMuscle+'\',\''+getDefaultSegmentId()+'\')" title="单击重新计时，双击或长按打开放大秒表"><span class="exercise-timer-meta">⏱</span><span class="exercise-timer-value">'+getRecordGroupTimerLabel(selDate,activeMuscle)+'</span></button>';
-    resetSlot.innerHTML='<button class="exercise-timer-reset-btn" type="button" onclick="recalibrateRecordGroupTimer(\''+selDate+'\',\''+activeMuscle+'\')" title="将开始时间校准为当前时间并重新计时">重置</button>';
+    resetSlot.hidden=!isHistoryPage;
+    resetSlot.innerHTML=isHistoryPage?'<button class="exercise-timer-reset-btn history-unlock-btn'+(historyUnlocked?' active':'')+'" type="button" aria-pressed="'+(historyUnlocked?'true':'false')+'" onclick="toggleHistoryDateUnlock(\''+selDate+'\')" title="'+(historyUnlocked?'点击锁定此历史日期':'点击解锁此历史日期以修改记录')+'">解锁</button>':'';
     updateDetailActionBarVisibility();
 }
 function clearDetailTimerClick(dk,muscle,segmentId){
@@ -3554,6 +3567,7 @@ function renameExerciseAcrossData(targetMuscle,oldName,newName,allDates){
         alert('当前部位已存在该动作名称（含历史记录、自定义名称和预设名称），请选择其他名称');
         return false;
     }
+    if(allDates&&!areExerciseHistoryDatesUnlocked(targetMuscle,oldName))return false;
     var changed=false;
     for(var dk in data){
         if(!allDates&&dk!==getTodayKey())continue;
@@ -3601,6 +3615,18 @@ function renameExerciseAcrossData(targetMuscle,oldName,newName,allDates){
         var exerciseNameInput=document.getElementById('exerciseName');
         if(exerciseNameInput&&exerciseNameInput.value===oldName){
             exerciseNameInput.value=newName;
+        }
+    }
+    return true;
+}
+function areExerciseHistoryDatesUnlocked(muscle,exerciseName){
+    for(var dk in data){
+        if(!isHistoricalDateKey(dk)||isEditableDateKey(dk))continue;
+        if((data[dk]||[]).some(function(exercise){
+            return exercise.muscle===muscle&&exercise.name===exerciseName;
+        })){
+            alert('请先在对应历史日期点击“解锁”，再修改这些历史记录');
+            return false;
         }
     }
     return true;
@@ -3654,7 +3680,8 @@ function handleRecordMinusClick(button,dk,i,field){
     }
     adjustRecordMinus(dk,i,field,false);
 }
-function resetSetsForMetricChange(exercise){
+function resetSetsForMetricChange(exercise,dateKey){
+    if(isHistoricalDateKey(dateKey))return;
     if(!/^随便\d*$/.test((exercise.name||'').trim()))exercise.sets=1;
 }
 function setWeightValue(dk,i,val){
@@ -3668,7 +3695,7 @@ function setWeightValue(dk,i,val){
     var finalValue=data[dk][i].weight==null?null:Number(data[dk][i].weight);
     if(finalValue!==prevValue)markRecordValueFlash(dk,i,'weight',finalValue!==null&&prevValue!==null&&finalValue<prevValue?'down':'up');
     if(finalValue!==prevValue){
-        if(prevValue===null||finalValue===null||finalValue>prevValue)resetSetsForMetricChange(data[dk][i]);
+        if(prevValue===null||finalValue===null||finalValue>prevValue)resetSetsForMetricChange(data[dk][i],dk);
         syncRecordGroupLatestTime(dk,data[dk][i].muscle,updatedAt);
         resetRecordGroupTimer(dk,data[dk][i].muscle);
     }
@@ -3681,7 +3708,7 @@ function adjWeight(dk,i,d){
     var prevWeight=exercise.weight==null?null:Number(exercise.weight);
     var updatedAt=getNowTimestampForDateKey(dk);
     exercise.weight=Math.max(0,(exercise.weight||0)+d);
-    if(exercise.weight!==prevWeight&&(prevWeight===null||exercise.weight>prevWeight))resetSetsForMetricChange(exercise);
+    if(exercise.weight!==prevWeight&&(prevWeight===null||exercise.weight>prevWeight))resetSetsForMetricChange(exercise,dk);
     exercise.updatedAt=updatedAt;
     syncRecordGroupLatestTime(dk,exercise.muscle,updatedAt);
     resetRecordGroupTimer(dk,exercise.muscle);
@@ -3726,7 +3753,7 @@ function adjReps(dk,i,d){
     data[dk][i].updatedAt=updatedAt;
     if(r!==prev)markRecordValueFlash(dk,i,'reps',r<prev?'down':'up');
     if(r!==prev){
-        if(r>prev)resetSetsForMetricChange(data[dk][i]);
+        if(r>prev)resetSetsForMetricChange(data[dk][i],dk);
         syncRecordGroupLatestTime(dk,data[dk][i].muscle,updatedAt);
         resetRecordGroupTimer(dk,data[dk][i].muscle);
     }
@@ -4833,6 +4860,7 @@ function renameStatsExerciseAcrossData(targetMuscle,exerciseName){
 }
 function deleteExerciseAcrossData(targetMuscle,exerciseName){
     if(!targetMuscle||!exerciseName)return;
+    if(!areExerciseHistoryDatesUnlocked(targetMuscle,exerciseName))return;
     var hasMatchingExercise=Object.keys(data).some(function(dk){
         return (data[dk]||[]).some(function(exercise){return exercise.muscle===targetMuscle&&exercise.name===exerciseName;});
     });
