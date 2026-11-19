@@ -1346,6 +1346,9 @@ function isExerciseNameTaken(m,name){
         return existingName.trim()===name.trim();
     });
 }
+function isExerciseNameRecorded(m,name){
+    return getExerciseNamesFromData(m).indexOf(name.trim())>=0;
+}
 function hydrateCustomExerciseNamesFromData(){
     var changed=false;
     for(var dk in data){
@@ -3636,8 +3639,9 @@ function getTopSelectedRecordInfo(dk){
     }
     return {muscle:topGroup.muscle||null,name:activeActionName||''};
 }
-function renameExerciseAcrossData(targetMuscle,oldName,newName,allDates){
-    if(newName!==oldName&&isExerciseNameTaken(targetMuscle,newName)){
+function renameExerciseAcrossData(targetMuscle,oldName,newName,allDates,allowCatalogName){
+    var nameTaken=allowCatalogName?isExerciseNameRecorded(targetMuscle,newName):isExerciseNameTaken(targetMuscle,newName);
+    if(newName!==oldName&&nameTaken){
         alert('当前部位已存在该动作名称（含历史记录、自定义名称和预设名称），请选择其他名称');
         return false;
     }
@@ -4801,12 +4805,12 @@ function renameStatsExerciseAcrossData(targetMuscle,exerciseName){
         alert('未找到要修改的动作');
         return;
     }
-    if(isExerciseNameTaken(targetMuscle,newName)){
-        alert('当前部位已存在该动作名称（含历史记录、自定义名称和预设名称），请选择其他名称');
+    if(isExerciseNameRecorded(targetMuscle,newName)){
+        alert('当前部位已有训练记录使用该动作名称，请选择其他名称');
         return;
     }
     if(!confirm('确定将当前部位所有日期中“'+exerciseName+'”的 '+matchingCount+' 条记录重命名为“'+newName+'”吗？训练数据保持不变。'))return;
-    if(renameExerciseAcrossData(targetMuscle,exerciseName,newName,true)){
+    if(renameExerciseAcrossData(targetMuscle,exerciseName,newName,true,true)){
         save();
         render();
         showStats();
