@@ -2042,6 +2042,18 @@ function getBestMuscleCopyExercises(targetDate,muscle,sourceDate){
             };
         }
     }
+    if(!(data[targetDate]||[]).length){
+        var sourceGroup=getExerciseGroups(source.exercises).filter(function(group){
+            return group.muscle===muscle;
+        })[0];
+        var sourceNames=[];
+        if(sourceGroup)sourceGroup.actions.forEach(function(action){
+            var name=(action.name||'').trim();
+            if(name&&sourceNames.indexOf(name)<0)sourceNames.push(name);
+        });
+        // Reverse insertion makes the new tabs the reverse of the reference tabs.
+        return sourceNames.map(function(name){return bestByName[name];});
+    }
     var stats=calcMuscleStats(muscle);
     var statsNames=Object.keys(stats.exerciseMilestones||{}).filter(function(name){
         return stats.exerciseMilestones[name]&&stats.exerciseMilestones[name].length;
@@ -5096,17 +5108,17 @@ function init(){
     render();
     var todayKey = getTodayKey();
     var hasTodayRecords = !!((data[todayKey] || []).length);
-    var savedExercises=Array.isArray(data[recordSelection.dateKey])?data[recordSelection.dateKey]:[];
-    var hasSavedSelection=savedExercises.some(function(exercise){
+    var savedExercises=Array.isArray(data[todayKey])?data[todayKey]:[];
+    var hasSavedSelection=recordSelection.dateKey===todayKey&&savedExercises.some(function(exercise){
         return exercise.muscle===recordSelection.muscle&&exercise.name===recordSelection.actionName;
     });
-    var dk=hasSavedSelection?recordSelection.dateKey:todayKey;
+    var dk=todayKey;
     if(hasSavedSelection){
         recordMuscleTabs[getRecordMuscleTabKey(dk)]=recordSelection.muscle;
         recordActionTabs[getRecordActionTabKey(dk,recordSelection.muscle)]=recordSelection.actionName;
-        var dateParts=dk.split('-');
-        curDate=new Date(Number(dateParts[0]),Number(dateParts[1])-1,1);
     }
+    var dateParts=dk.split('-');
+    curDate=new Date(Number(dateParts[0]),Number(dateParts[1])-1,1);
     selDate = dk;
     currentPage = (hasSavedSelection||hasTodayRecords) ? 'record' : 'calendar';
     render();
