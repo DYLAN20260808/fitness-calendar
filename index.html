@@ -3641,7 +3641,6 @@ function renameExerciseAcrossData(targetMuscle,oldName,newName,allDates){
         alert('当前部位已存在该动作名称（含历史记录、自定义名称和预设名称），请选择其他名称');
         return false;
     }
-    if(allDates&&!areExerciseHistoryDatesUnlocked(targetMuscle,oldName))return false;
     var changed=false;
     for(var dk in data){
         if(!allDates&&dk!==getTodayKey())continue;
@@ -3689,18 +3688,6 @@ function renameExerciseAcrossData(targetMuscle,oldName,newName,allDates){
         var exerciseNameInput=document.getElementById('exerciseName');
         if(exerciseNameInput&&exerciseNameInput.value===oldName){
             exerciseNameInput.value=newName;
-        }
-    }
-    return true;
-}
-function areExerciseHistoryDatesUnlocked(muscle,exerciseName){
-    for(var dk in data){
-        if(!isHistoricalDateKey(dk)||isEditableDateKey(dk))continue;
-        if((data[dk]||[]).some(function(exercise){
-            return exercise.muscle===muscle&&exercise.name===exerciseName;
-        })){
-            alert('请先在对应历史日期点击“解锁”，再修改这些历史记录');
-            return false;
         }
     }
     return true;
