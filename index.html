@@ -1956,7 +1956,7 @@ function getCapacityHintText(dk,items,bestRecord){
     var latestExercise=latestItem.exercise;
     var repsValue=extractMaxRepsValue(latestExercise.reps);
     var weightValue=latestExercise.weight==null?0:Number(latestExercise.weight);
-    var bestVolume=bestRecord&&bestRecord.volume?bestRecord.volume:0;
+    var bestVolume=bestRecord&&bestRecord.maxVolume?bestRecord.maxVolume:0;
     var currentActionVolume=0;
     var currentSets=0;
     for(var i=0;i<items.length;i++){
@@ -1967,7 +1967,11 @@ function getCapacityHintText(dk,items,bestRecord){
     var neededSetsText='--';
     var maxWeight=bestRecord&&bestRecord.weight?bestRecord.weight:0;
     var maxWeightDays=bestRecord&&bestRecord.maxWeightDate?getDaysSinceDateKey(bestRecord.maxWeightDate):null;
-    var maxVolumeDays=bestRecord&&bestRecord.bestVolumeDate?getDaysSinceDateKey(bestRecord.bestVolumeDate):null;
+    var maxVolumeDays=bestRecord&&bestRecord.maxVolumeDate?getDaysSinceDateKey(bestRecord.maxVolumeDate):null;
+    if(currentActionVolume>bestVolume){
+        bestVolume=currentActionVolume;
+        maxVolumeDays=0;
+    }
     if(isNaN(weightValue))weightValue=0;
     if(bestVolume>0&&weightValue>0&&repsValue>0){
         var perSetVolume=weightValue*repsValue;
@@ -1986,10 +1990,12 @@ function getExerciseBestRecord(m,name){
     var bestRecord=null;
     var exerciseMaxWeight=0;
     var maxWeightDate='';
-    var bestVolumeDate='';
+    var maxVolume=0;
+    var maxVolumeDate='';
     var dateKeys=Object.keys(data).sort();
     for(var di=0;di<dateKeys.length;di++){
         var exercises=data[dateKeys[di]]||[];
+        var dailyVolume=0;
         for(var ei=0;ei<exercises.length;ei++){
             var exercise=exercises[ei];
             var exerciseName=(exercise.name||'').trim();
@@ -1999,6 +2005,7 @@ function getExerciseBestRecord(m,name){
             var repsText=exercise.reps||'';
             var volume=calcEntryVolume(exercise);
             if(isNaN(weight))weight=0;
+            dailyVolume+=volume;
             var isNewMaxWeight=weight>exerciseMaxWeight;
             if(isNewMaxWeight){
                 exerciseMaxWeight=weight;
@@ -2006,7 +2013,6 @@ function getExerciseBestRecord(m,name){
             }
             var isSameBestWeight=weight===exerciseMaxWeight&&!!bestRecord;
             if(isNewMaxWeight||isSameBestWeight&&volume>=bestRecord.volume){
-                if(isNewMaxWeight||volume>bestRecord.volume)bestVolumeDate=dateKeys[di];
                 bestRecord={
                     weight:weight,
                     sets:sets,
@@ -2016,10 +2022,15 @@ function getExerciseBestRecord(m,name){
                 };
             }
         }
+        if(dailyVolume>maxVolume){
+            maxVolume=dailyVolume;
+            maxVolumeDate=dateKeys[di];
+        }
     }
     var result=bestRecord||{weight:0,sets:0,reps:'',volume:0,date:''};
     result.maxWeightDate=maxWeightDate;
-    result.bestVolumeDate=bestVolumeDate;
+    result.maxVolume=maxVolume;
+    result.maxVolumeDate=maxVolumeDate;
     return result;
 }
 function getLatestMuscleCopySource(targetDate,muscle){
