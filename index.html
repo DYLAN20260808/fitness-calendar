@@ -146,6 +146,7 @@
         .modal-content { background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(247,248,251,0.9) 40%, rgba(232,236,242,0.82) 100%); -webkit-backdrop-filter: blur(28px) saturate(185%); backdrop-filter: blur(28px) saturate(185%); border: 1px solid rgba(255,255,255,0.8); border-radius: 20px; padding: 14px; width: 100%; max-width: 280px; height: 66vh; max-height: 66vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--highlight), var(--shadow-deep), 0 2px 0 rgba(255,255,255,0.9); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px; }
         .modal-header h2 { font-size: 13px; color: var(--text); }
+        .interval-modal-content { max-width: 380px; height: auto; max-height: 85vh; overflow-y: auto; }
         .modal-header-actions { display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; min-width: 0; margin-left: auto; }
         .close-btn { background: none; border: none; color: var(--accent); font-size: 15px; cursor: pointer; }
         .close-btn:active { transform: scale(0.9) rotate(-8deg); }
@@ -569,7 +570,7 @@
         .bottom-nav[hidden],
         .bottom-nav-items[hidden] { display: none !important; }
         .bottom-nav.collapsed { margin-bottom: 0; }
-        .bottom-nav-items { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; width: 100%; padding: 10px; border-radius: 16px; background: linear-gradient(180deg, rgba(252,253,255,0.98) 0%, rgba(233,239,247,0.94) 100%); border: 1px solid rgba(255,255,255,0.82); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 14px 24px rgba(17,24,39,0.1); -webkit-backdrop-filter: blur(18px) saturate(170%); backdrop-filter: blur(18px) saturate(170%); pointer-events: auto; transform-origin: top right; transition: opacity 0.16s ease, transform 0.16s ease; }
+        .bottom-nav-items { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; padding: 10px; border-radius: 16px; background: linear-gradient(180deg, rgba(252,253,255,0.98) 0%, rgba(233,239,247,0.94) 100%); border: 1px solid rgba(255,255,255,0.82); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 14px 24px rgba(17,24,39,0.1); -webkit-backdrop-filter: blur(18px) saturate(170%); backdrop-filter: blur(18px) saturate(170%); pointer-events: auto; transform-origin: top right; transition: opacity 0.16s ease, transform 0.16s ease; }
         .bottom-nav.collapsed .bottom-nav-items { opacity: 0; transform: translateY(-8px) scale(0.96); pointer-events: none; }
         .bottom-nav-btn { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 0; padding: 10px 8px; border: 1px solid rgba(255,255,255,0.82); border-radius: 12px; background: linear-gradient(180deg, rgba(252,253,255,0.96) 0%, rgba(233,239,247,0.88) 100%); color: #4a4a4f; font-size: 13px; font-weight: 700; line-height: 1; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 8px 14px rgba(17,24,39,0.06); min-width: 0; }
         .bottom-nav-btn span { white-space: nowrap; }
@@ -579,7 +580,6 @@
         #calendarPage .nav { margin-top: 10px; border-top-left-radius: 0; border-top-right-radius: 18px; }
         #recordContent,
         #simpleContent,
-        #volumeContent,
         #statsContent { min-height: 280px; }
         .page-date-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 14px 0 0; padding: 10px 12px; border-radius: 18px; background: var(--active-page-surface, var(--panel-surface)); border: var(--panel-border); box-shadow: var(--panel-shadow); flex-wrap: nowrap; cursor: pointer; }
         .page-date-footer-meta { min-width: 0; flex: 1 1 auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -611,7 +611,7 @@
             .record-muscle-tabs,
             .stats-buttons { gap: 8px; padding: 8px; }
             .bottom-nav { width: 100%; margin-top: 0; }
-            .bottom-nav-items { grid-template-columns: repeat(4, minmax(0, 1fr)); width: 100%; gap: 6px; padding: 8px; }
+            .bottom-nav-items { grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; gap: 6px; padding: 8px; }
             .bottom-nav-btn { min-height: 0; padding: 9px 4px; font-size: 12px; gap: 3px; }
             .page-date-footer { flex-direction: row; align-items: center; padding: 10px; gap: 8px; }
             .page-date-footer-meta { gap: 6px; }
@@ -639,10 +639,6 @@
                 <span class="bottom-nav-icon">🏋️</span>
                 <span>记录</span>
             </button>
-            <button class="bottom-nav-btn" id="bottomNavVolume" onclick="switchPage('volume')">
-                <span class="bottom-nav-icon">📈</span>
-                <span>容量</span>
-            </button>
             <button class="bottom-nav-btn" id="bottomNavStats" onclick="switchPage('stats')">
                 <span class="bottom-nav-icon">📊</span>
                 <span>统计</span>
@@ -669,14 +665,11 @@
             <div class="exercise-list" id="simpleExerciseList"><div class="no-data">点击日期添加/查看训练记录</div></div>
             <div class="detail-footer-metrics" id="detailFooterMetrics" hidden></div>
         </div>
-        <div class="tab-content" id="volumeContent">
-            <div class="chart-container" id="chartContainer"></div>
-        </div>
         <div class="tab-content" id="statsContent">
             <div class="stats-container" id="statsContainer"></div>
         </div>
         <div class="detail-action-bar" id="detailActionBar" hidden>
-            <button class="tab-btn active" id="tabRecord" onclick="switchTab('volume','interval')" hidden>每组间隔</button>
+            <button class="tab-btn active" id="tabRecord" type="button" onclick="openIntervalModal()" aria-haspopup="dialog" hidden>每组间隔</button>
             <span class="detail-timer-slot" id="detailTimerSlot" hidden></span>
             <span class="detail-reset-slot" id="detailResetSlot" hidden></span>
             <button class="tab-btn clear-day-btn" id="clearDayBtn" type="button" onclick="clearSelectedDay()" hidden>清空</button>
@@ -737,6 +730,11 @@
         </div>
     </div>
         </div>
+    <div class="modal" id="intervalModal">
+        <div class="modal-content interval-modal-content" role="dialog" aria-modal="true" aria-label="每组间隔" tabindex="-1">
+            <div id="intervalChartContainer"></div>
+        </div>
+    </div>
     <script>
 var STORAGE_KEYS = {
     data:'fd',
@@ -793,6 +791,9 @@ function normalizeImportedExercise(exercise){
     var muscle=String(exercise.muscle||'').trim();
     var name=String(exercise.name||'').trim();
     if(!muscle||!name)return null;
+    if(['chest','back','shoulder','leg','biceps','triceps','core','cardio','arm'].indexOf(muscle)<0){
+        throw new Error('INVALID_MUSCLE_KEY');
+    }
     var parsedSets=parseInt(exercise.sets,10);
     var sets=isNaN(parsedSets)?1:Math.max(0,parsedSets);
     var reps=String(exercise.reps==null?'':exercise.reps).trim()||'1';
@@ -814,10 +815,10 @@ function normalizeImportedExercise(exercise){
 }
 function normalizeImportedCustomExerciseNames(rawNames){
     if(!isPlainObject(rawNames))return {};
-    var normalizedNames={};
+    var normalizedNames=Object.create(null);
     for(var muscleKey in rawNames){
         if(!Array.isArray(rawNames[muscleKey]))continue;
-        var seenNames={};
+        var seenNames=Object.create(null);
         var nextNames=[];
         for(var i=0;i<rawNames[muscleKey].length;i++){
             var trimmedName=String(rawNames[muscleKey][i]||'').trim();
@@ -894,7 +895,15 @@ function normalizeImportedPayload(imported){
         dayTimeOverrides:normalizeImportedDayTimeOverrides(imported.dayTimeOverrides)
     };
 }
-var data = normalizeDateDataMap(readStoredJson(STORAGE_KEYS.data,{}));
+var data;
+try{
+    data=normalizeDateDataMap(readStoredJson(STORAGE_KEYS.data,{}));
+}catch(err){
+    if(err.message==='INVALID_MUSCLE_KEY'){
+        alert('本地训练数据包含不支持的部位标识，页面无法安全加载。原数据未删除，请先备份浏览器本地存储。');
+    }
+    throw err;
+}
 var customExerciseNames = normalizeImportedCustomExerciseNames(readStoredJson(STORAGE_KEYS.customExerciseNames,{}));
 var statsExerciseOrder = normalizeStatsExerciseOrder(readStoredJson(STORAGE_KEYS.statsExerciseOrder,{}));
 var dayTimeOverrides = normalizeImportedDayTimeOverrides(readStoredJson(STORAGE_KEYS.dayTimeOverrides,{}));
@@ -902,8 +911,7 @@ var curDate = new Date(), selDate = null, selMuscle = null, editIdx = -1;
 var modalMode = 'add';
 var renameActionState = null;
 var volumeMuscle = null;
-var volumeExerciseSelection = {};
-var volumeMetricMode = 'interval';
+var volumeMetricMode = 'maxReps';
 var currentPage = 'calendar';
 var pageDateFooterAction = '';
 var bottomNavCollapsed = readStoredJson(STORAGE_KEYS.bottomNavCollapsed,true);
@@ -1124,7 +1132,7 @@ function recalibrateRecordGroupTimer(dk,muscle){
     saveDayTimeOverrides();
     resetRecordGroupTimer(dk,muscle);
     showDetail(dk);
-    if(document.getElementById('volumeContent').classList.contains('active'))showVolumeChart();
+    if(currentPage==='stats')showStats();
 }
 function clearRecordGroupTimer(dk,muscle,segmentId){
     delete recordGroupTimerStarts[getRecordGroupTimerKey(dk,muscle,segmentId)];
@@ -1673,18 +1681,19 @@ function getMuscleRefreshIntervalSeries(dk,muscle,exercises){
         elapsedMinutes:0,
         timestamp:timeMeta.firstAddedAt,
         isSegmentStart:true,
-        xLabel:'开始'
+        xLabel:'0'
     });
     var previousTimestamp=timeMeta.firstAddedAt;
     var refreshCount=0;
     for(var pi=0;pi<refreshEntries.length;pi++){
         var currentEntry=refreshEntries[pi];
         var intervalMinutes=calcRefreshIntervalMinutes(currentEntry.timestamp,previousTimestamp);
-        var elapsedMinutes=calcRefreshIntervalMinutes(currentEntry.timestamp,timeMeta.firstAddedAt);
         if(intervalMinutes<1){
             previousTimestamp=currentEntry.timestamp;
             continue;
         }
+        intervalMinutes=Math.max(0,(currentEntry.timestamp-previousTimestamp)/60000);
+        var elapsedMinutes=Math.max(0,(currentEntry.timestamp-timeMeta.firstAddedAt)/60000);
         refreshCount++;
         intervals.push({
             fromIndex:refreshCount-1,
@@ -1701,7 +1710,7 @@ function getMuscleRefreshIntervalSeries(dk,muscle,exercises){
             elapsedMinutes:elapsedMinutes,
             timestamp:currentEntry.timestamp,
             isSegmentStart:false,
-            xLabel:String(refreshCount)+'次',
+            xLabel:String(refreshCount),
             segment:intervals[intervals.length-1]
         });
         previousTimestamp=currentEntry.timestamp;
@@ -1741,7 +1750,7 @@ function setDayTimeValue(dk,muscle,field,value,segmentId){
     cleanupDayTimeOverridesForDate(dk);
     saveDayTimeOverrides();
     showDetail(dk);
-    if(document.getElementById('volumeContent').classList.contains('active'))showVolumeChart();
+    if(currentPage==='stats')showStats();
 }
 function setDayTimePart(dk,muscle,field,part,value,segmentId){
     if(!isEditableDateKey(dk))return;
@@ -1804,7 +1813,7 @@ function refreshDayLatestTime(dk,muscle,segmentId,shouldResetTimer){
     syncDayLatestTime(dk);
     if(shouldResetTimer!==false)resetRecordGroupTimer(dk,muscle,segmentId);
     if(selDate===dk)showDetail(dk);
-    if(document.getElementById('volumeContent').classList.contains('active'))showVolumeChart();
+    if(currentPage==='stats')showStats();
 }
 function updateRecordTrainingDurationOnClick(){
     if(currentPage!=='record'||!selDate||selDate!==getTodayKey())return;
@@ -1851,7 +1860,7 @@ function syncRecordGroupLatestTime(dk,muscle,timestamp,segmentId){
     syncDayLatestTime(dk,timestamp);
 }
 function getExerciseNamesFromData(m){
-    var latestByName={};
+    var latestByName=Object.create(null);
     var dateKeys=Object.keys(data);
     for(var di=0;di<dateKeys.length;di++){
         var dateKey=dateKeys[di];
@@ -1918,9 +1927,9 @@ function formatMetricNumber(value){
     if(value==null||isNaN(value)||value<=0)return '--';
     return Math.abs(value-Math.round(value))<0.001?String(Math.round(value)):String(value);
 }
-function formatMinuteDecimal(value){
+function formatRoundedMinutes(value){
     if(value==null||isNaN(value))return '--';
-    return Number(value).toFixed(1);
+    return String(Math.round(value));
 }
 function getLatestAddedActionItem(dk,items){
     var latestItem=null;
@@ -2018,7 +2027,7 @@ function getBestMuscleCopyExercises(targetDate,muscle,sourceDate){
     if(!muscle)return [];
     var source=sourceDate?{dateKey:sourceDate,exercises:data[sourceDate]||[]}:getLatestMuscleCopySource(targetDate,muscle);
     if(!source||!source.exercises||!source.exercises.length)return [];
-    var bestByName={};
+    var bestByName=Object.create(null);
     var orderedNames=[];
     for(var ei=0;ei<source.exercises.length;ei++){
         var exercise=source.exercises[ei];
@@ -2157,7 +2166,7 @@ function copyTrainingExercises(sourceExercises){
     switchPage('record');
 }
 function getExerciseNamesUsedOnDate(dk,muscle){
-    var usedNames={};
+    var usedNames=Object.create(null);
     var exercises=data[dk]||[];
     for(var i=0;i<exercises.length;i++){
         if(exercises[i].muscle===muscle)usedNames[exercises[i].name]=true;
@@ -2449,7 +2458,6 @@ function getOffsetDateKey(offsetDays){
 }
 function getCurrentContextMuscle(){
     if(currentPage==='record'&&selDate)return getActiveRecordMuscle(selDate);
-    if(currentPage==='volume'&&volumeMuscle&&muscleNames[volumeMuscle])return volumeMuscle;
     if(currentPage==='stats'&&statsSection&&muscleNames[statsSection])return statsSection;
     if(selDate){
         var selectedInfo=getTopSelectedRecordInfo(selDate)||getTopExerciseInfo(selDate);
@@ -2489,10 +2497,6 @@ function syncSelectedDateView(){
     updatePageDateFooter();
     if(currentPage==='calendar'){
         focusCalendarDate(selDate);
-        return;
-    }
-    if(currentPage==='volume'){
-        switchTab('volume',volumeMetricMode);
         return;
     }
     if(currentPage==='stats'){
@@ -2719,7 +2723,7 @@ function updateDetailFooterMetricsVisibility(){
     var footer=document.getElementById('detailFooterMetrics');
     if(!footer)return;
     var activeMuscle=selDate?getActiveRecordMuscle(selDate):null;
-    footer.hidden=(currentPage!=='record'&&currentPage!=='volume')||!footer.innerHTML||(currentPage==='record'&&activeMuscle==='cardio');
+    footer.hidden=currentPage!=='record'||!footer.innerHTML||activeMuscle==='cardio';
 }
 function relocateDetailAuxiliarySections(){
     var footer=document.getElementById('detailFooterMetrics');
@@ -2741,7 +2745,6 @@ function jumpToRecordFromCapacityHint(){
 function updateBottomNavState(){
     document.getElementById('bottomNavCalendar').classList.toggle('active',currentPage==='calendar');
     document.getElementById('bottomNavRecord').classList.toggle('active',currentPage==='record');
-    document.getElementById('bottomNavVolume').classList.toggle('active',currentPage==='volume');
     document.getElementById('bottomNavStats').classList.toggle('active',currentPage==='stats');
 }
 function updateAppContentThemeState(){
@@ -2754,17 +2757,15 @@ function updateAppContentThemeState(){
 function updateDetailTabsState(){
     var tabs=document.getElementById('detailTabs');
     var recordTab=document.getElementById('tabRecord');
-    var volumeTab=document.getElementById('tabVolume');
     var statsTab=document.getElementById('tabStats');
     if(recordTab)recordTab.hidden=currentPage!=='record';
-    if(volumeTab)volumeTab.hidden=currentPage!=='volume';
     if(statsTab)statsTab.hidden=currentPage!=='stats';
-    if(tabs)tabs.hidden=(!volumeTab||volumeTab.hidden)&&(!statsTab||statsTab.hidden);
+    if(tabs)tabs.hidden=!statsTab||statsTab.hidden;
     updateDetailActionBarVisibility();
 }
 function switchPage(page){
     var isCalendarPage=page==='calendar';
-    currentPage=isCalendarPage?'calendar':(page==='stats'?'stats':(page==='volume'?'volume':'record'));
+    currentPage=isCalendarPage?'calendar':(page==='stats'?'stats':'record');
     document.getElementById('calendarPage').classList.toggle('hidden',!isCalendarPage);
     document.getElementById('detailSection').classList.toggle('hidden',isCalendarPage);
     updateAppContentThemeState();
@@ -2776,7 +2777,6 @@ function switchPage(page){
     updatePageDateFooter();
     relocateDetailAuxiliarySections();
     if(currentPage==='record')switchTab('record');
-    if(currentPage==='volume')switchTab('volume');
     if(currentPage==='stats')switchTab('stats');
 }
 function render(){
@@ -2881,7 +2881,7 @@ function getExerciseGroups(ex){
     for(var i=ex.length-1;i>=0;i--){
         var e=ex[i];
         if(!groupMap[e.muscle]){
-            groupMap[e.muscle]={muscle:e.muscle,actions:[],actionMap:{}};
+            groupMap[e.muscle]={muscle:e.muscle,actions:[],actionMap:Object.create(null)};
             groups.push(groupMap[e.muscle]);
         }
         var muscleGroup=groupMap[e.muscle];
@@ -3122,7 +3122,7 @@ function renderSimpleRecordDetail(dk){
                 '</div>';
             }else htm+='<div class="simple-record-card">'+
                 '<div class="simple-record-metrics">'+
-                    '<div class="simple-record-metric"><span class="simple-record-metric-label">次数</span><div class="simple-record-stepper">'+buildRecordMinusButton(dk,item.index,'reps','−')+'<span class="simple-record-value-box'+bestBoxClass+'"><span class="adjust-value'+repsFlashClass+'">'+item.exercise.reps+'</span></span><button class="adjust-btn adjust-btn-plus" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button></div></div>'+
+                    '<div class="simple-record-metric"><span class="simple-record-metric-label">次数</span><div class="simple-record-stepper">'+buildRecordMinusButton(dk,item.index,'reps','−')+'<span class="simple-record-value-box'+bestBoxClass+'"><span class="adjust-value'+repsFlashClass+'">'+escapeHtml(item.exercise.reps)+'</span></span><button class="adjust-btn adjust-btn-plus" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button></div></div>'+
                     '<div class="simple-record-metric"><span class="simple-record-metric-label">重量</span><div class="simple-record-stepper">'+buildRecordMinusButton(dk,item.index,'weight','−')+'<input type="number" class="metric-input'+weightFlashClass+bestBoxClass+'" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="1" min="0" oninput="syncDetailWeightInputFontSize(this)" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><button class="adjust-btn adjust-btn-plus" onclick="adjWeight(\''+dk+'\','+item.index+',1)">+</button></div></div>'+
                     '<div class="simple-record-metric"><span class="simple-record-metric-label">组数</span><div class="simple-record-stepper">'+buildRecordMinusButton(dk,item.index,'sets','−')+'<span class="simple-record-value-box'+bestBoxClass+'"><span class="adjust-value'+setsFlashClass+'">'+item.exercise.sets+'</span></span><button class="adjust-btn adjust-btn-plus" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button></div></div>'+
                 '</div>'+
@@ -3523,7 +3523,7 @@ function showDetail(dk){
         htm+='<div class="exercise-best-block">'+
             '<div class="exercise-subitem exercise-best-row">'+
                 '<div class="param-group"><button class="adjust-btn adjust-btn-placeholder" tabindex="-1" aria-hidden="true">-</button><span class="adjust-value count-slot">'+formatMetricNumber(bestRecord.sets)+'</span><button class="adjust-btn adjust-btn-placeholder" tabindex="-1" aria-hidden="true">+</button><span class="param-label">组</span></div>'+
-                '<div class="param-group"><button class="adjust-btn adjust-btn-placeholder" tabindex="-1" aria-hidden="true">-</button><span class="adjust-value count-slot">'+(bestRecord.reps||'--')+'</span><button class="adjust-btn adjust-btn-placeholder" tabindex="-1" aria-hidden="true">+</button><span class="param-label">次</span></div>'+
+                '<div class="param-group"><button class="adjust-btn adjust-btn-placeholder" tabindex="-1" aria-hidden="true">-</button><span class="adjust-value count-slot">'+escapeHtml(bestRecord.reps||'--')+'</span><button class="adjust-btn adjust-btn-placeholder" tabindex="-1" aria-hidden="true">+</button><span class="param-label">次</span></div>'+
                 '<div class="param-group"><input type="text" class="metric-input metric-input-readonly" tabindex="-1" aria-hidden="true" value="'+formatMetricNumber(bestRecord.weight)+'" readonly /><span class="param-label">kg</span></div>'+
                 '<span class="exercise-best-badge">历史最佳</span>'+
             '</div>'+
@@ -3537,7 +3537,7 @@ function showDetail(dk){
             var weightFlashClass=getRecordValueFlashClass(dk,item.index,'weight');
             htm+='<div class="exercise-subitem'+rowBestClass+'">'+
                 '<div class="param-group">'+buildRecordMinusButton(dk,item.index,'sets','-')+'<span class="adjust-value count-slot'+setsFlashClass+'">'+item.exercise.sets+'</span><button class="adjust-btn adjust-btn-plus" onclick="adjSets(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">组</span></div>'+
-                '<div class="param-group">'+buildRecordMinusButton(dk,item.index,'reps','-')+'<span class="adjust-value count-slot'+repsFlashClass+'">'+item.exercise.reps+'</span><button class="adjust-btn adjust-btn-plus" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">次</span></div>'+
+                '<div class="param-group">'+buildRecordMinusButton(dk,item.index,'reps','-')+'<span class="adjust-value count-slot'+repsFlashClass+'">'+escapeHtml(item.exercise.reps)+'</span><button class="adjust-btn adjust-btn-plus" onclick="adjReps(\''+dk+'\','+item.index+',1)">+</button><span class="param-label">次</span></div>'+
                 '<div class="param-group"><input type="number" class="metric-input'+weightFlashClass+'" value="'+(item.exercise.weight!=null?item.exercise.weight:'')+'" step="1" min="0" oninput="syncDetailWeightInputFontSize(this)" onchange="setWeightValue(\''+dk+'\','+item.index+',this.value)" /><span class="param-label">kg</span></div>'+
                 '<button class="delete-btn" onclick="del(\''+dk+'\','+item.index+')" title="删除" aria-label="删除">-</button>'+
                 '<button class="copy-btn" onclick="dup(\''+dk+'\','+item.index+')" title="复制" aria-label="复制">+</button>'+
@@ -3692,7 +3692,10 @@ function areExerciseHistoryDatesUnlocked(muscle,exerciseName){
     return true;
 }
 function escapeJsSingleQuotedString(str){
-    return String(str).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    var escaped=String(str).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/[\u0000-\u001f\u2028\u2029]/g,function(char){
+        return '\\u'+('0000'+char.charCodeAt(0).toString(16)).slice(-4);
+    });
+    return escapeHtmlAttribute(escaped);
 }
 function buildRecordMinusButton(dk,i,field,label){
     var args="'"+dk+"',"+i+",'"+field+"'";
@@ -3967,6 +3970,18 @@ document.getElementById('modal').onclick=function(e){
 };
 document.getElementById('closeTimerModal').onclick=closeTimerModal;
 document.getElementById('timerModal').onclick=function(e){if(e.target===this)closeTimerModal();};
+document.getElementById('intervalModal').onclick=function(e){if(e.target===this)closeIntervalModal();};
+document.addEventListener('keydown',function(e){
+    var modal=document.getElementById('intervalModal');
+    if(!modal.classList.contains('show'))return;
+    if(e.key==='Escape'){
+        e.preventDefault();
+        closeIntervalModal();
+    }else if(e.key==='Tab'){
+        e.preventDefault();
+        modal.querySelector('[role="dialog"]').focus();
+    }
+});
 document.querySelectorAll('.muscle-btn').forEach(function(b){b.onclick=function(){selM(this.dataset.muscle);};});
 document.getElementById('addExercise').onclick=addEx;
 bindExerciseNameDropdown();
@@ -3993,7 +4008,7 @@ if(appContent)appContent.addEventListener('click',function(e){
     if(e.target.closest('.detail-footer-duration, .exercise-time-duration, #clearDayBtn'))return;
     updateRecordTrainingDurationOnClick();
 },true);
-function switchTab(tab,metricMode){
+function switchTab(tab){
     if(currentPage!=='calendar')currentPage=tab;
     updateAppContentThemeState();
     updateBottomNavState();
@@ -4001,26 +4016,14 @@ function switchTab(tab,metricMode){
     updateAddActionVisibility();
     relocateDetailAuxiliarySections();
     var recordTab=document.getElementById('tabRecord');
-    var volumeTab=document.getElementById('tabVolume');
     var statsTab=document.getElementById('tabStats');
     if(recordTab)recordTab.classList.toggle('active',tab==='record');
-    if(volumeTab)volumeTab.classList.toggle('active',tab==='volume');
     if(statsTab)statsTab.classList.toggle('active',tab==='stats');
     document.getElementById('recordContent').classList.remove('active');
     document.getElementById('simpleContent').classList.toggle('active',tab==='record');
-    document.getElementById('volumeContent').classList.toggle('active',tab==='volume');
     document.getElementById('statsContent').classList.toggle('active',tab==='stats');
     if(tab==='record'){
         renderSimpleRecordDetail(selDate);
-    }
-    if(tab==='volume'){
-        volumeMetricMode=metricMode||'maxReps';
-        volumeMuscle=getActiveRecordMuscle(selDate);
-        var topVolumeExerciseInfo=getTopSelectedRecordInfo(selDate)||getTopExerciseInfo(selDate);
-        if(topVolumeExerciseInfo&&topVolumeExerciseInfo.muscle&&topVolumeExerciseInfo.name){
-            volumeExerciseSelection[topVolumeExerciseInfo.muscle]=topVolumeExerciseInfo.name;
-        }
-        showVolumeChart();
     }
     if(tab==='stats'){
         var topExerciseInfo=getTopSelectedRecordInfo(selDate)||getTopExerciseInfo(selDate);
@@ -4031,8 +4034,28 @@ function switchTab(tab,metricMode){
         showStats();
     }
 }
+function openIntervalModal(){
+    volumeMuscle=getActiveRecordMuscle(selDate);
+    document.getElementById('intervalModal').classList.add('show');
+    showVolumeChart();
+    document.querySelector('#intervalModal [role="dialog"]').focus();
+}
+function closeIntervalModal(){
+    document.getElementById('intervalModal').classList.remove('show');
+    document.getElementById('intervalChartContainer').innerHTML='';
+    document.getElementById('tabRecord').focus();
+}
 function showVolumeChart(){
-    var container=document.getElementById('chartContainer');
+    var isIntervalModal=document.getElementById('intervalModal').classList.contains('show');
+    var container=document.getElementById(isIntervalModal?'intervalChartContainer':'chartContainer');
+    if(!container)return;
+    renderVolumeChart(container,isIntervalModal?'interval':volumeMetricMode,isIntervalModal,isIntervalModal?volumeMuscle:statsSection);
+}
+function renderVolumeChart(container,volumeMetricMode,isIntervalModal,volumeMuscle){
+    function renderChartContent(html){
+        container.innerHTML=html+(isIntervalModal?'':getVolumeChartFooter(volumeMetricMode));
+        bindChartPointTooltips(container);
+    }
     var muscles=['chest','back','shoulder','leg','biceps','triceps','core'];
     var dateDurations={};
     var muscleDateVols={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
@@ -4040,11 +4063,16 @@ function showVolumeChart(){
     var muscleDateMaxVolumeByExercise={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleDateMaxReps={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
     var muscleDateMaxSets={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
-    var muscleExerciseDateVols={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
-    var muscleExerciseDateMaxWeights={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
-    var muscleExerciseDateMaxVolumes={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
-    var muscleExerciseDateMaxReps={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
-    var muscleExerciseDateMaxSets={chest:{},back:{},shoulder:{},leg:{},biceps:{},triceps:{},core:{}};
+    function createMuscleExerciseMap(){
+        var map={};
+        muscles.forEach(function(muscle){map[muscle]=Object.create(null);});
+        return map;
+    }
+    var muscleExerciseDateVols=createMuscleExerciseMap();
+    var muscleExerciseDateMaxWeights=createMuscleExerciseMap();
+    var muscleExerciseDateMaxVolumes=createMuscleExerciseMap();
+    var muscleExerciseDateMaxReps=createMuscleExerciseMap();
+    var muscleExerciseDateMaxSets=createMuscleExerciseMap();
     var muscleRefreshIntervals={chest:null,back:null,shoulder:null,leg:null,biceps:null,triceps:null,core:null};
     var selectedDateExercises=selDate?(data[selDate]||[]):[];
     function hasChartMetricValue(value){
@@ -4053,8 +4081,10 @@ function showVolumeChart(){
         return (value||0)>0;
     }
     for(var dk in data){
+        if(isIntervalModal&&dk!==selDate)continue;
         var ex=data[dk]||[];
-        dateDurations[dk]=calcTrainingDurationMinutes(dk,ex);
+        var durationExercises=ex.filter(function(exercise){return exercise.muscle===volumeMuscle;});
+        dateDurations[dk]=durationExercises.length?calcTrainingDurationMinutes(dk,durationExercises,volumeMuscle):null;
         var exercisesByMuscle={};
         for(var i=0;i<ex.length;i++){
             var e=ex[i];
@@ -4070,7 +4100,7 @@ function showVolumeChart(){
             muscleDateMaxWeights[muscleKey][dk]=calcMaxWeight(muscleExercises);
             muscleDateMaxReps[muscleKey][dk]=calcMaxWeightReps(muscleExercises);
             muscleDateMaxSets[muscleKey][dk]=calcMaxWeightSets(muscleExercises);
-            var exercisesByName={};
+            var exercisesByName=Object.create(null);
             for(var mxi=0;mxi<muscleExercises.length;mxi++){
                 var muscleExercise=muscleExercises[mxi];
                 if(!exercisesByName[muscleExercise.name])exercisesByName[muscleExercise.name]=[];
@@ -4126,37 +4156,13 @@ function showVolumeChart(){
     }
     var allDataDates=Object.keys(allDates).sort();
     if(volumeMetricMode!=='interval'&&!allDataDates.length){
-        container.innerHTML='<div class="no-data">暂无训练数据</div>';
+        renderChartContent('<div class="no-data">暂无训练数据</div>');
         return;
     }
 
     var htm='';
-    if(volumeMetricMode!=='duration'){
-        htm='<div class="stats-buttons stats-buttons-nine" style="margin-bottom:10px;">';
-        var firstAvailableMuscle=null;
-        for(var bi=0;bi<muscles.length;bi++){
-            var muBtn=muscles[bi];
-            var hasData=volumeMetricMode==='interval'
-                ? !!(muscleRefreshIntervals[muBtn]&&muscleRefreshIntervals[muBtn].segments.length)
-                : Object.keys(activeMetricMap[muBtn]||{}).some(function(dateKey){
-                    return hasChartMetricValue(activeMetricMap[muBtn][dateKey]);
-                });
-            if(hasData&&!firstAvailableMuscle)firstAvailableMuscle=muBtn;
-            var btnActive=(volumeMuscle===muBtn)?' active':'';
-            var btnEmpty=!hasData?' is-empty':'';
-            htm+='<button class="stats-btn muscle-filter-btn '+muBtn+btnActive+btnEmpty+'" onclick="setVolumeMuscle(\''+muBtn+'\')"><span class="stats-btn-icon">'+getMuscleIconHtml(muBtn)+'</span><span class="stats-btn-label">'+muscleNames[muBtn]+'</span></button>';
-        }
-        if(volumeMetricMode!=='interval'){
-            var allActive=(volumeMuscle==='all')?' active':'';
-            htm+='<button class="stats-btn'+allActive+'" onclick="setVolumeMuscle(\'all\')"><span class="stats-btn-icon">📊</span><span class="stats-btn-label">全部</span></button>';
-        }else if(!volumeMuscle&&firstAvailableMuscle){
-            volumeMuscle=firstAvailableMuscle;
-        }
-        htm+='</div>';
-    }
-    if(volumeMetricMode==='interval'&&(volumeMuscle==='all'||!volumeMuscle||!muscleNames[volumeMuscle]))volumeMuscle=firstAvailableMuscle||volumeMuscle||null;
     if(volumeMetricMode!=='duration'&&!volumeMuscle){
-        container.innerHTML=htm+(volumeMetricMode==='interval'?'<div class="no-data">暂无刷新间隔数据</div>':'');
+        renderChartContent(htm+(volumeMetricMode==='interval'?'<div class="no-data">暂无刷新间隔数据</div>':''));
         return;
     }
 
@@ -4180,18 +4186,14 @@ function showVolumeChart(){
             return false;
         });
         if(availableExercises.length){
-            selectedExercise=volumeExerciseSelection[selectedMuscle];
+            selectedExercise=statsExerciseSelection[selectedMuscle];
             if(!selectedExercise||availableExercises.indexOf(selectedExercise)<0){
-                selectedExercise=availableExercises[0];
-                volumeExerciseSelection[selectedMuscle]=selectedExercise;
+                renderChartContent('<div class="no-data">当前动作暂无此项数据</div>');
+                return;
             }
-            htm+='<div class="milestone-actions">';
-            for(var vei=0;vei<availableExercises.length;vei++){
-                var exerciseBtnName=availableExercises[vei];
-                var escapedVolumeExerciseName=escapeJsSingleQuotedString(exerciseBtnName);
-                htm+='<button class="milestone-action-btn'+(exerciseBtnName===selectedExercise?' active':'')+'" onclick="setVolumeExercise(\''+selectedMuscle+'\',\''+escapedVolumeExerciseName+'\')">'+escapeHtml(exerciseBtnName)+'</button>';
-            }
-            htm+='</div>';
+        }else{
+            renderChartContent('<div class="no-data">当前动作暂无此项数据</div>');
+            return;
         }
     }
 
@@ -4213,7 +4215,7 @@ function showVolumeChart(){
     }
     if(dates.length>10)dates=dates.slice(-10);
 
-    var padding={top:20,right:20,bottom:30,left:40};
+    var padding={top:20,right:volumeMetricMode==='interval'?40:20,bottom:30,left:40};
     var width=320,height=144;
     var chartW=width-padding.left-padding.right;
     var chartH=height-padding.top-padding.bottom;
@@ -4229,11 +4231,11 @@ function showVolumeChart(){
         intervalSegments=intervalSeries.segments.slice(-10);
         intervalPoints=intervalSeries.points.slice(-12);
         if(!intervalSegments.length){
-            container.innerHTML=htm+'<div class="no-data">至少点击两次刷新后，才会生成间隔图</div>';
+            renderChartContent(htm+'<div class="no-data">至少点击两次刷新后，才会生成间隔图</div>');
             return;
         }
         for(var ip=0;ip<intervalPoints.length;ip++){
-            xLabels.push(intervalPoints[ip].xLabel||intervalPoints[ip].count+'次');
+            xLabels.push(intervalPoints[ip].xLabel||String(intervalPoints[ip].count));
             if(intervalPoints[ip].elapsedMinutes>displayedMaxVol)displayedMaxVol=intervalPoints[ip].elapsedMinutes;
         }
         displayedMinVol=0;
@@ -4296,7 +4298,7 @@ function showVolumeChart(){
     }
 
     if(volumeMetricMode!=='interval'&&!Object.keys(seriesMap).length){
-        container.innerHTML=htm+'<div class="no-data">暂无训练数据</div>';
+        renderChartContent(htm+'<div class="no-data">暂无训练数据</div>');
         return;
     }
 
@@ -4309,10 +4311,13 @@ function showVolumeChart(){
     }
     var axisRange=Math.max(axisStep,axisMax-axisMin);
     htm+='<div class="line-chart"><svg class="line-chart-svg" viewBox="0 0 '+width+' '+height+'">';
+    if(volumeMetricMode==='interval')htm+='<text class="chart-axis chart-axis-unit" x="'+(padding.left-5)+'" y="'+(padding.top-8)+'" text-anchor="end">(分钟)</text>';
+    if(volumeMetricMode==='interval')htm+='<text class="chart-axis chart-axis-unit chart-x-axis-unit" x="'+(width-2)+'" y="'+(height-10)+'" text-anchor="end">(次)</text>';
     for(var gi=0;gi<=4;gi++){
         var gridY=padding.top+chartH*gi/4;
         htm+='<line class="chart-grid" x1="'+padding.left+'" y1="'+gridY+'" x2="'+(width-padding.right)+'" y2="'+gridY+'"/>';
         var axisVal=Math.round((axisMin+axisRange*(4-gi)/4)*10)/10;
+        if(volumeMetricMode==='interval')axisVal=Math.round(axisMin+axisRange*(4-gi)/4);
         htm+='<text class="chart-axis" x="'+(padding.left-5)+'" y="'+(gridY+4)+'" text-anchor="end">'+axisVal+'</text>';
     }
     for(var xi=0;xi<xLabels.length;xi++){
@@ -4341,21 +4346,21 @@ function showVolumeChart(){
             var startY=padding.top+chartH*(1-(prevPoint.elapsedMinutes-axisMin)/axisRange);
             var endY=padding.top+chartH*(1-(currPoint.elapsedMinutes-axisMin)/axisRange);
             htm+='<path class="chart-line" stroke="'+chartRiseColor+'" d="M'+startX+' '+startY+' L'+endX+' '+endY+'"/>';
-            htm+='<text class="chart-segment-label" x="'+((startX+endX)/2)+'" y="'+Math.max(padding.top+10,((startY+endY)/2)-6)+'">'+formatMinuteDecimal(segment.intervalMinutes)+'分</text>';
+            htm+='<text class="chart-segment-label" x="'+((startX+endX)/2)+'" y="'+Math.max(padding.top+10,((startY+endY)/2)-6)+'">'+formatRoundedMinutes(segment.intervalMinutes)+'</text>';
         }
         for(var ipi=0;ipi<intervalPoints.length;ipi++){
             var point=intervalPoints[ipi];
             var pointX=padding.left+chartW*ipi/(intervalPoints.length-1||1);
             var pointY=padding.top+chartH*(1-(point.elapsedMinutes-axisMin)/axisRange);
             var pointTitle=point.isSegmentStart
-                ? ('起点 · 0.0分钟')
-                : ('第'+point.segment.toIndex+'次刷新 · 累计训练时长 '+formatMinuteDecimal(point.elapsedMinutes)+'分钟');
+                ? ('起点 · 0分钟')
+                : ('第'+point.segment.toIndex+'次刷新 · 累计训练时长 '+formatRoundedMinutes(point.elapsedMinutes)+'分钟');
             var pointDateLabel=point.isSegmentStart
                 ? ('起点 · '+formatClockTime(point.timestamp))
                 : ('第'+point.segment.toIndex+'次刷新 · '+point.segment.toDateKey+' '+formatClockTime(point.segment.toTimestamp));
-            htm+='<circle class="chart-point'+(ipi===intervalPoints.length-1?' chart-point-max':'')+'" cx="'+pointX+'" cy="'+pointY+'" r="4" fill="'+muscleColors[selectedMuscle]+'" data-muscle="'+selectedMuscle+'" data-date="'+pointDateLabel+'" data-vol="'+formatMinuteDecimal(point.elapsedMinutes)+'" data-unit="分钟"><title>'+pointTitle+'</title></circle>';
+            htm+='<circle class="chart-point'+(ipi===intervalPoints.length-1?' chart-point-max':'')+'" cx="'+pointX+'" cy="'+pointY+'" r="4" fill="'+muscleColors[selectedMuscle]+'" data-muscle="'+selectedMuscle+'" data-date="'+pointDateLabel+'" data-vol="'+formatRoundedMinutes(point.elapsedMinutes)+'" data-unit="分钟"><title>'+pointTitle+'</title></circle>';
             if(ipi===intervalPoints.length-1){
-                htm+='<text class="chart-point-label" x="'+pointX+'" y="'+Math.max(padding.top-2,pointY-10)+'">'+formatMinuteDecimal(point.elapsedMinutes)+'分</text>';
+                htm+='<text class="chart-point-label" x="'+pointX+'" y="'+Math.max(padding.top-2,pointY-10)+'">'+formatRoundedMinutes(point.elapsedMinutes)+'</text>';
             }
         }
     }
@@ -4400,16 +4405,18 @@ function showVolumeChart(){
                 : volumeMetricMode==='interval'
                 ? ('第'+pts[pj].index+'次刷新 · '+pts[pj].dk+' '+formatClockTime(pts[pj].timestamp)+' · 间隔 '+pts[pj].intervalMinutes+metricSuffix)
                 : (selectedMuscle==='all'?getMuscleIconText(key)+' '+muscleNames[key]+' · ':((selectedExercise&&selectedMuscle!=='all')?selectedExercise+' · ':'' )+pts[pj].dk.split('-')[2]+'日: ')+pts[pj].vol+metricSuffix;
-            htm+='<circle class="chart-point'+(isMaxPoint?' chart-point-max':'')+'" cx="'+pointX+'" cy="'+pointY+'" r="'+pointR+'"'+(isMaxPoint||volumeMetricMode==='duration'?'':' fill="'+muscleColors[key]+'"')+' data-muscle="'+key+'" data-date="'+pointLabelDate+'" data-vol="'+pts[pj].vol+'" data-unit="'+metricSuffix+'"><title>'+pointTitle+'</title></circle>';
+            htm+='<circle class="chart-point'+(isMaxPoint?' chart-point-max':'')+'" cx="'+pointX+'" cy="'+pointY+'" r="'+pointR+'"'+(isMaxPoint||volumeMetricMode==='duration'?'':' fill="'+muscleColors[key]+'"')+' data-muscle="'+key+'" data-date="'+pointLabelDate+'" data-vol="'+pts[pj].vol+'" data-unit="'+metricSuffix+'"><title>'+escapeHtml(pointTitle)+'</title></circle>';
             if(isLastPoint){
                 htm+='<text class="chart-point-label" x="'+pointX+'" y="'+Math.max(padding.top-2,pointY-10)+'">'+formatMetricNumber(pts[pj].vol)+(volumeMetricMode==='interval'?'分':'')+'</text>';
             }
         }
     }
     htm+='</svg></div>';
-    htm+='<div class="chart-footer">'+
+    renderChartContent(htm);
+}
+function getVolumeChartFooter(volumeMetricMode){
+    return '<div class="chart-footer">'+
         '<div class="chart-mode-pill">'+
-            '<button class="chart-mode-toggle'+(volumeMetricMode==='interval'?' active':'')+'" onclick="setVolumeMetricMode(\'interval\')">每组间隔</button>'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='maxReps'?' active':'')+'" onclick="setVolumeMetricMode(\'maxReps\')">部位总容量</button>'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='total'?' active':'')+'" onclick="setVolumeMetricMode(\'total\')">最大容量</button>'+
             '<button class="chart-mode-toggle'+(volumeMetricMode==='maxWeight'?' active':'')+'" onclick="setVolumeMetricMode(\'maxWeight\')">最大重量</button>'+
@@ -4417,15 +4424,12 @@ function showVolumeChart(){
             '<button class="chart-mode-toggle'+(volumeMetricMode==='duration'?' active':'')+'" onclick="setVolumeMetricMode(\'duration\')">训练时长</button>'+
         '</div>'+
     '</div>';
-    container.innerHTML=htm;
-    bindChartPointTooltips();
 }
 function hideChartTooltip(){
-    var tooltip=document.querySelector('#chartContainer .chart-tooltip');
-    if(tooltip)tooltip.remove();
+    document.querySelectorAll('#chartContainer .chart-tooltip, #intervalChartContainer .chart-tooltip').forEach(function(tooltip){tooltip.remove();});
 }
-function bindChartPointTooltips(){
-    var chart=document.querySelector('#chartContainer .line-chart');
+function bindChartPointTooltips(container){
+    var chart=container.querySelector('.line-chart');
     if(!chart)return;
     chart.onclick=function(e){
         if(!e.target.classList.contains('chart-point'))hideChartTooltip();
@@ -4452,14 +4456,6 @@ function bindChartPointTooltips(){
         };
     });
 }
-function setVolumeMuscle(mu){
-    volumeMuscle=mu;
-    showVolumeChart();
-}
-function setVolumeExercise(mu,exerciseName){
-    volumeExerciseSelection[mu]=exerciseName;
-    showVolumeChart();
-}
 function setVolumeMetricMode(mode){
     if(mode!=='maxWeight'&&mode!=='maxSets'&&mode!=='maxReps'&&mode!=='total'&&mode!=='interval'&&mode!=='duration')return;
     volumeMetricMode=mode;
@@ -4475,8 +4471,8 @@ function escapeHtml(str){
 function calcMuscleStats(mu){
     var maxWeight=0,maxRecord=null,maxDailyVol=0,maxDailyDate='';
     var milestones=[];
-    var exerciseMilestones={};
-    var exerciseMaxWeights={};
+    var exerciseMilestones=Object.create(null);
+    var exerciseMaxWeights=Object.create(null);
     var dateKeys=Object.keys(data).sort();
     for(var di=0;di<dateKeys.length;di++){
         var dk=dateKeys[di];
@@ -4524,7 +4520,7 @@ function generateSummaryMarkdown(){
     if(!dateKeys.length)return '# 健身数据总结\n\n暂无训练数据。';
     var allMuscles=['chest','back','shoulder','leg','biceps','triceps','core','cardio'];
     var summaryByMuscle={};
-    var exerciseSummary={};
+    var exerciseSummary=Object.create(null);
     var monthSummary={};
     var totalEntries=0,totalSets=0,totalVolume=0;
     for(var ai=0;ai<allMuscles.length;ai++){
@@ -5020,7 +5016,9 @@ function showStats(){
     for(var i=0;i<muscles.length;i++){
         var mu=muscles[i];
         var stats=calcMuscleStats(mu);
-        if(stats.maxWeight>0||stats.maxDailyVol>0){
+        if(stats.maxWeight>0||stats.maxDailyVol>0||Object.keys(data).some(function(dk){
+            return (data[dk]||[]).some(function(exercise){return exercise.muscle===mu;});
+        })){
             htm+='<button class="stats-btn muscle-filter-btn '+mu+(isActive(mu)?' active':'')+'" onclick="setStats(\''+mu+'\')"><span class="stats-btn-icon">'+getMuscleIconHtml(mu)+'</span><span class="stats-btn-label">'+muscleNames[mu]+'</span></button>';
         }
     }
@@ -5154,7 +5152,7 @@ function showStats(){
                     var milestone=milestoneList[mi];
                     htm+='<div class="milestone-item clickable'+(mi===0?' is-top-1':'')+'" onclick="jumpToStatsDate(\''+milestone.date+'\',\''+mu+'\',\''+escapedActiveExercise+'\')" title="跳转到'+milestone.date+'的训练记录">'+
                         '<div class="milestone-value">'+milestone.weight+' kg</div>'+
-                        '<div class="milestone-meta">'+milestone.sets+'组 × '+milestone.reps+'次</div>'+
+                        '<div class="milestone-meta">'+milestone.sets+'组 × '+escapeHtml(milestone.reps)+'次</div>'+
                         '<div class="milestone-date">'+milestone.date+'</div>'+
                     '</div>';
                 }
@@ -5166,7 +5164,11 @@ function showStats(){
         }
         htm+='</div>';
     }
+    if(statsSection&&muscles.indexOf(statsSection)>=0){
+        htm+='<div class="chart-container" id="chartContainer"></div>';
+    }
     container.innerHTML=htm;
+    showVolumeChart();
 }
 function setStats(btn){
     statsSection=(statsSection===btn)?null:btn;
@@ -5204,7 +5206,7 @@ function importData(input){
                 alert('导入成功！');
             }
         }catch(err){
-            alert('导入失败：文件格式不正确');
+            alert(err.message==='INVALID_MUSCLE_KEY'?'导入失败：文件包含不支持的训练部位。':'导入失败：文件格式不正确');
         }
     };
     reader.readAsText(file);
