@@ -1923,6 +1923,13 @@ function formatMetricNumber(value){
     if(value==null||isNaN(value)||value<=0)return '--';
     return Math.abs(value-Math.round(value))<0.001?String(Math.round(value)):String(value);
 }
+function getDaysSinceDateKey(dateKey){
+    if(!dateKey)return null;
+    var dateTimestamp=Date.parse(dateKey+'T00:00:00Z');
+    var todayTimestamp=Date.parse(getTodayKey()+'T00:00:00Z');
+    if(isNaN(dateTimestamp)||isNaN(todayTimestamp))return null;
+    return Math.max(0,Math.floor((todayTimestamp-dateTimestamp)/86400000));
+}
 function formatRoundedMinutes(value){
     if(value==null||isNaN(value))return '--';
     return String(Math.round(value));
@@ -1958,6 +1965,7 @@ function getCapacityHintText(dk,items,bestRecord){
     var neededSetsText='--';
     var maxWeight=bestRecord&&bestRecord.weight?bestRecord.weight:0;
     var maxSets=bestRecord&&bestRecord.sets?bestRecord.sets:0;
+    var maxWeightDays=bestRecord&&bestRecord.maxWeightDate?getDaysSinceDateKey(bestRecord.maxWeightDate):null;
     if(isNaN(weightValue))weightValue=0;
     if(bestVolume>0&&weightValue>0&&repsValue>0){
         var perSetVolume=weightValue*repsValue;
@@ -1968,13 +1976,14 @@ function getCapacityHintText(dk,items,bestRecord){
     }
     return '<div class="exercise-capacity-hint-line">'+
             '<span class="exercise-capacity-hint-item">最大/达标: <span class="exercise-capacity-hint-value is-current">'+formatMetricNumber(maxSets)+'组</span>/<span class="exercise-capacity-hint-value is-best">'+neededSetsText+'组</span></span>；'+
-            '<span class="exercise-capacity-hint-item">目前/最大: <span class="exercise-capacity-hint-value is-current">'+formatMetricNumber(weightValue)+'kg</span>/<span class="exercise-capacity-hint-value is-best">'+formatMetricNumber(maxWeight)+'kg</span></span>；'+
+            '<span class="exercise-capacity-hint-item">目前/最大: <span class="exercise-capacity-hint-value is-current">'+formatMetricNumber(weightValue)+'kg</span>/<span class="exercise-capacity-hint-value is-best">'+formatMetricNumber(maxWeight)+'kg</span>'+(maxWeightDays!==null?'/'+maxWeightDays+'天':'')+'</span>；'+
             '<span class="exercise-capacity-hint-item">容量: <span class="exercise-capacity-hint-value is-current">'+formatMetricNumber(currentActionVolume)+'</span>/<span class="exercise-capacity-hint-value is-best">'+formatMetricNumber(bestVolume)+'</span></span>'+ 
         '</div>';
 }
 function getExerciseBestRecord(m,name){
     var bestRecord=null;
     var exerciseMaxWeight=0;
+    var maxWeightDate='';
     var dateKeys=Object.keys(data).sort();
     for(var di=0;di<dateKeys.length;di++){
         var exercises=data[dateKeys[di]]||[];
@@ -1987,8 +1996,12 @@ function getExerciseBestRecord(m,name){
             var repsText=exercise.reps||'';
             var volume=calcEntryVolume(exercise);
             if(isNaN(weight))weight=0;
-            if(weight>exerciseMaxWeight||(weight===exerciseMaxWeight&&bestRecord&&volume>=bestRecord.volume)){
+            var isNewMaxWeight=weight>exerciseMaxWeight;
+            if(isNewMaxWeight){
                 exerciseMaxWeight=weight;
+                maxWeightDate=dateKeys[di];
+            }
+            if(isNewMaxWeight||(weight===exerciseMaxWeight&&bestRecord&&volume>=bestRecord.volume)){
                 bestRecord={
                     weight:weight,
                     sets:sets,
@@ -1999,7 +2012,9 @@ function getExerciseBestRecord(m,name){
             }
         }
     }
-    return bestRecord||{weight:0,sets:0,reps:'',volume:0,date:''};
+    var result=bestRecord||{weight:0,sets:0,reps:'',volume:0,date:''};
+    result.maxWeightDate=maxWeightDate;
+    return result;
 }
 function getLatestMuscleCopySource(targetDate,muscle){
     if(!muscle)return null;
