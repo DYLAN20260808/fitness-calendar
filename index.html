@@ -551,11 +551,6 @@
         .milestone-action-btn { width: 100%; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(241,244,248,0.9) 100%); border: 1px solid rgba(255,255,255,0.74); border-radius: 999px; padding: 6px 8px; color: #3a3a3c; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.82); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; touch-action: manipulation; }
         .milestone-action-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 8px 18px rgba(147,197,253,0.2); }
         .milestone-action-btn:active { transform: translateY(1px) scale(0.985); box-shadow: inset 0 1px 0 rgba(255,255,255,0.78), 0 4px 10px rgba(17,24,39,0.08); }
-        .milestone-action-btn.drag-armed { box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 0 0 2px rgba(147,197,253,0.16), 0 8px 18px rgba(147,197,253,0.14); }
-        .milestone-action-btn.drag-target { box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 0 0 2px rgba(174,213,250,0.48), 0 10px 20px rgba(147,197,253,0.14); }
-        .milestone-action-btn.is-dragging { opacity: 0.96; box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 16px 28px rgba(147,197,253,0.24); cursor: grabbing; transition: none; pointer-events: none; }
-        body.stats-action-dragging { user-select: none; overflow-x: hidden; }
-        body.stats-action-dragging .milestone-action-btn { transition: box-shadow 0.16s ease, background 0.16s ease, color 0.16s ease; }
         .milestone-group { padding: 8px 0 4px; }
         .milestone-exercise-name { color: var(--accent); font-size: 15px; font-weight: 700; background: rgba(147,197,253,0.12); border: 1px solid rgba(147,197,253,0.14); border-radius: 10px; padding: 6px 10px; display: inline-block; }
         .milestone-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--line); }
@@ -933,9 +928,6 @@ var timerModalContext = null;
 var timerModalAlertMode = false;
 var recordValueFlashState = {};
 var statsActionClickTimers = {};
-var statsActionLongPressTimers = {};
-var statsActionLongPressTriggered = {};
-var statsActionDragState = null;
 var recordActionTabs = {};
 var recordMuscleTabs = {};
 var historyEditUnlocks = {};
@@ -2050,9 +2042,18 @@ function getBestMuscleCopyExercises(targetDate,muscle,sourceDate){
             };
         }
     }
-    return orderedNames.filter(function(name){
+    var stats=calcMuscleStats(muscle);
+    var statsNames=Object.keys(stats.exerciseMilestones||{}).filter(function(name){
+        return stats.exerciseMilestones[name]&&stats.exerciseMilestones[name].length;
+    });
+    var copyNames=getOrderedStatsExerciseNames(muscle,statsNames).filter(function(name){
         return !!bestByName[name];
-    }).map(function(name){
+    });
+    orderedNames.forEach(function(name){
+        if(copyNames.indexOf(name)<0)copyNames.push(name);
+    });
+    // Record actions display in reverse insertion order.
+    return copyNames.reverse().map(function(name){
         return bestByName[name];
     });
 }
@@ -4702,6 +4703,19 @@ function copySummaryMarkdown(){
     document.body.removeChild(textarea);
 }
 function setStatsExercise(mu, exerciseName){
+    var stats=calcMuscleStats(mu);
+    var exerciseNames=Object.keys(stats.exerciseMilestones||{}).filter(function(name){
+        return stats.exerciseMilestones[name]&&stats.exerciseMilestones[name].length;
+    });
+    var ordered=getOrderedStatsExerciseNames(mu,exerciseNames);
+    moveArrayItem(ordered,ordered.indexOf(exerciseName),0);
+    var previousOrder=statsExerciseOrder[mu];
+    statsExerciseOrder[mu]=ordered;
+    if(!saveStatsExerciseOrder()){
+        if(previousOrder)statsExerciseOrder[mu]=previousOrder;
+        else delete statsExerciseOrder[mu];
+        return;
+    }
     statsExerciseSelection[mu]=exerciseName;
     showStats();
 }
@@ -4716,32 +4730,8 @@ function getOrderedStatsExerciseNames(mu,exerciseNames){
     }
     return ordered;
 }
-function reorderStatsExercises(mu,fromName,toName){
-    if(!mu||!fromName||!toName||fromName===toName)return false;
-    var stats=calcMuscleStats(mu);
-    var exerciseNames=Object.keys(stats.exerciseMilestones||{}).filter(function(name){
-        return stats.exerciseMilestones[name]&&stats.exerciseMilestones[name].length;
-    });
-    var ordered=getOrderedStatsExerciseNames(mu,exerciseNames);
-    var fromIndex=ordered.indexOf(fromName);
-    var toIndex=ordered.indexOf(toName);
-    if(!moveArrayItem(ordered,fromIndex,toIndex))return false;
-    var previousOrder=statsExerciseOrder[mu];
-    statsExerciseOrder[mu]=ordered;
-    if(!saveStatsExerciseOrder()){
-        if(previousOrder)statsExerciseOrder[mu]=previousOrder;
-        else delete statsExerciseOrder[mu];
-        return false;
-    }
-    showStats();
-    return true;
-}
 function handleStatsExerciseClick(mu,exerciseName){
     var actionKey=getStatsActionKey(mu,exerciseName);
-    if(statsActionLongPressTriggered[actionKey]){
-        delete statsActionLongPressTriggered[actionKey];
-        return;
-    }
     if(statsActionClickTimers[actionKey])clearTimeout(statsActionClickTimers[actionKey]);
     statsActionClickTimers[actionKey]=setTimeout(function(){
         delete statsActionClickTimers[actionKey];
@@ -4754,136 +4744,7 @@ function handleStatsExerciseDoubleClick(mu,exerciseName,el){
         clearTimeout(statsActionClickTimers[actionKey]);
         delete statsActionClickTimers[actionKey];
     }
-    cancelStatsExerciseLongPress(mu,exerciseName);
     editStatsExerciseName(mu,exerciseName,el);
-}
-function getStatsActionButtons(container){
-    return container?Array.prototype.slice.call(container.querySelectorAll('.milestone-action-btn')):[];
-}
-function clearStatsActionDragTarget(container){
-    getStatsActionButtons(container).forEach(function(button){
-        button.classList.remove('drag-target');
-    });
-}
-function finishStatsActionDrag(shouldCommit){
-    var dragState=statsActionDragState;
-    if(!dragState)return;
-    document.removeEventListener('mousemove',handleStatsActionDragMove,true);
-    document.removeEventListener('mouseup',handleStatsActionDragEnd,true);
-    document.removeEventListener('touchmove',handleStatsActionDragMove,true);
-    document.removeEventListener('touchend',handleStatsActionDragEnd,true);
-    document.removeEventListener('touchcancel',handleStatsActionDragEnd,true);
-    document.body.classList.remove('stats-action-dragging');
-    dragState.button.classList.remove('drag-armed','is-dragging');
-    dragState.button.style.transform='';
-    dragState.button.style.zIndex='';
-    clearStatsActionDragTarget(dragState.container);
-    statsActionDragState=null;
-    if(shouldCommit&&dragState.didMove&&dragState.targetExerciseName!==dragState.exerciseName){
-        reorderStatsExercises(dragState.muscle,dragState.exerciseName,dragState.targetExerciseName);
-    }else if(shouldCommit&&!dragState.didMove){
-        editStatsExerciseName(dragState.muscle,dragState.exerciseName,dragState.button);
-    }
-    setTimeout(function(){delete statsActionLongPressTriggered[dragState.actionKey];},700);
-}
-function updateStatsActionDragTarget(point){
-    var dragState=statsActionDragState;
-    if(!dragState||!point)return;
-    var buttons=getStatsActionButtons(dragState.container);
-    var closestButton=null;
-    var originRect=dragState.originRect;
-    var overOrigin=point.clientX>=originRect.left&&point.clientX<=originRect.right&&point.clientY>=originRect.top&&point.clientY<=originRect.bottom;
-    if(!overOrigin){
-        var pointTarget=document.elementFromPoint(point.clientX,point.clientY);
-        if(pointTarget&&typeof pointTarget.closest==='function'){
-            var hoveredButton=pointTarget.closest('.milestone-action-btn');
-            if(hoveredButton&&hoveredButton.parentElement===dragState.container&&hoveredButton!==dragState.button){
-                closestButton=hoveredButton;
-            }
-        }
-    }
-    var closestDistance=Number.POSITIVE_INFINITY;
-    if(!closestButton&&!overOrigin){
-        buttons.forEach(function(button){
-            if(button===dragState.button)return;
-            var rect=button.getBoundingClientRect();
-            var centerX=rect.left+rect.width/2;
-            var centerY=rect.top+rect.height/2;
-            var distance=Math.abs(centerX-point.clientX)+(Math.abs(centerY-point.clientY)*0.35);
-            if(distance<closestDistance){
-                closestDistance=distance;
-                closestButton=button;
-            }
-        });
-    }
-    clearStatsActionDragTarget(dragState.container);
-    if(closestButton){
-        closestButton.classList.add('drag-target');
-        dragState.targetExerciseName=closestButton.dataset.exerciseName||dragState.exerciseName;
-    }else{
-        dragState.targetExerciseName=dragState.exerciseName;
-    }
-}
-function handleStatsActionDragMove(event){
-    var dragState=statsActionDragState;
-    if(!dragState)return;
-    var point=getClientPointFromEvent(event);
-    if(!point)return;
-    if(event&&event.cancelable)event.preventDefault();
-    dragState.lastPoint=point;
-    var offsetX=point.clientX-dragState.startPoint.clientX;
-    var offsetY=point.clientY-dragState.startPoint.clientY;
-    if(Math.abs(offsetX)>8||Math.abs(offsetY)>8)dragState.didMove=true;
-    dragState.button.style.transform='translate('+offsetX+'px,'+Math.max(-8,Math.min(8,offsetY*0.18))+'px) scale(1.06)';
-    updateStatsActionDragTarget(point);
-}
-function handleStatsActionDragEnd(event){
-    var point=getClientPointFromEvent(event);
-    if(point)updateStatsActionDragTarget(point);
-    if(event&&event.cancelable)event.preventDefault();
-    finishStatsActionDrag(!event||event.type!=='touchcancel');
-}
-function beginStatsActionDrag(mu,exerciseName,el,startPoint){
-    if(!el)return;
-    finishStatsActionDrag(false);
-    statsActionDragState={
-        muscle:mu,
-        exerciseName:exerciseName,
-        targetExerciseName:exerciseName,
-        actionKey:getStatsActionKey(mu,exerciseName),
-        button:el,
-        container:el.parentElement,
-        originRect:el.getBoundingClientRect(),
-        startPoint:startPoint||{clientX:0,clientY:0},
-        lastPoint:startPoint||{clientX:0,clientY:0},
-        didMove:false
-    };
-    document.body.classList.add('stats-action-dragging');
-    el.classList.add('drag-armed','is-dragging');
-    el.style.zIndex='6';
-    document.addEventListener('mousemove',handleStatsActionDragMove,true);
-    document.addEventListener('mouseup',handleStatsActionDragEnd,true);
-    document.addEventListener('touchmove',handleStatsActionDragMove,true);
-    document.addEventListener('touchend',handleStatsActionDragEnd,true);
-    document.addEventListener('touchcancel',handleStatsActionDragEnd,true);
-}
-function startStatsExerciseLongPress(mu,exerciseName,el,event){
-    var actionKey=getStatsActionKey(mu,exerciseName);
-    var startPoint=getClientPointFromEvent(event);
-    cancelStatsExerciseLongPress(mu,exerciseName);
-    statsActionLongPressTriggered[actionKey]=false;
-    statsActionLongPressTimers[actionKey]=setTimeout(function(){
-        delete statsActionLongPressTimers[actionKey];
-        statsActionLongPressTriggered[actionKey]=true;
-        beginStatsActionDrag(mu,exerciseName,el,startPoint);
-    },450);
-}
-function cancelStatsExerciseLongPress(mu,exerciseName){
-    var actionKey=getStatsActionKey(mu,exerciseName);
-    if(statsActionLongPressTimers[actionKey]){
-        clearTimeout(statsActionLongPressTimers[actionKey]);
-        delete statsActionLongPressTimers[actionKey];
-    }
 }
 function editStatsExerciseName(mu, exerciseName, el){
     if(!(data[getTodayKey()]||[]).some(function(exercise){return exercise.muscle===mu&&exercise.name===exerciseName;}))return;
@@ -5154,7 +5015,7 @@ function showStats(){
                 for(var mni=0;mni<milestoneNames.length;mni++){
                     var exerciseName=milestoneNames[mni];
                     var escapedExerciseName=escapeJsSingleQuotedString(exerciseName);
-                    htm+='<button class="milestone-action-btn'+(exerciseName===activeExercise?' active':'')+'" data-exercise-name="'+escapeHtmlAttribute(exerciseName)+'" onclick="handleStatsExerciseClick(\''+mu+'\',\''+escapedExerciseName+'\')" ondblclick="handleStatsExerciseDoubleClick(\''+mu+'\',\''+escapedExerciseName+'\',this)" onmousedown="startStatsExerciseLongPress(\''+mu+'\',\''+escapedExerciseName+'\',this,event)" onmouseup="cancelStatsExerciseLongPress(\''+mu+'\',\''+escapedExerciseName+'\')" onmouseleave="cancelStatsExerciseLongPress(\''+mu+'\',\''+escapedExerciseName+'\')" ontouchstart="startStatsExerciseLongPress(\''+mu+'\',\''+escapedExerciseName+'\',this,event)" ontouchend="cancelStatsExerciseLongPress(\''+mu+'\',\''+escapedExerciseName+'\')" ontouchcancel="cancelStatsExerciseLongPress(\''+mu+'\',\''+escapedExerciseName+'\')" ontouchmove="cancelStatsExerciseLongPress(\''+mu+'\',\''+escapedExerciseName+'\')" oncontextmenu="return false" title="点击选择；长按拖动排序；双击改名">'+escapeHtml(exerciseName)+'</button>';
+                    htm+='<button class="milestone-action-btn'+(exerciseName===activeExercise?' active':'')+'" data-exercise-name="'+escapeHtmlAttribute(exerciseName)+'" onclick="handleStatsExerciseClick(\''+mu+'\',\''+escapedExerciseName+'\')" ondblclick="handleStatsExerciseDoubleClick(\''+mu+'\',\''+escapedExerciseName+'\',this)" oncontextmenu="return false" title="点击选择并置顶；双击改名">'+escapeHtml(exerciseName)+'</button>';
                 }
                 htm+='</div>';
                 var milestoneList=s.exerciseMilestones[activeExercise].slice(-3).reverse();
