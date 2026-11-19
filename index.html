@@ -51,6 +51,7 @@
             --page-surface-record: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(240,245,251,0.9) 48%, rgba(228,235,244,0.84) 100%);
             --page-surface-volume: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(240,245,251,0.9) 48%, rgba(228,235,244,0.84) 100%);
             --page-surface-stats: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(240,245,251,0.9) 48%, rgba(228,235,244,0.84) 100%);
+            --page-surface-coach: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(240,245,251,0.9) 48%, rgba(228,235,244,0.84) 100%);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         button { position: relative; transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease, opacity 0.16s ease, background 0.16s ease, color 0.16s ease; }
@@ -91,6 +92,7 @@
         .app-content.page-simple { --active-page-surface: var(--page-surface-record); }
         .app-content.page-volume { --active-page-surface: var(--page-surface-volume); }
         .app-content.page-stats { --active-page-surface: var(--page-surface-stats); }
+        .app-content.page-coach { --active-page-surface: var(--page-surface-coach); }
         .page-section { position: relative; z-index: 1; width: 100%; margin: 0 auto; padding: 0; }
         .page-section.hidden { display: none; }
         .calendar-add-wrap { padding: 16px 0 0; }
@@ -226,8 +228,10 @@
         .exercise-tabs::-webkit-scrollbar { display: none; }
         .exercise-tabs.multi-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: stretch; overflow: visible; }
         .exercise-tabs.multi-row .exercise-tab-btn { width: 100%; min-width: 0; }
-        .exercise-tab-btn { border: 1px solid rgba(147,197,253,0.12); border-radius: 999px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); padding: 4px 10px; font-size: 10px; font-weight: 600; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(147,197,253,0.06); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; touch-action: manipulation; }
-        .exercise-tab-btn.active { background: var(--primary-gradient); color: #fff; border-color: rgba(255,255,255,0.34); box-shadow: inset 0 1px 0 rgba(255,255,255,0.36), 0 8px 14px rgba(147,197,253,0.18); transform: scale(1.1); }
+        .exercise-tab-btn { border: 1px solid rgba(100,116,139,0.58); border-radius: 999px; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,244,252,0.92) 100%); color: var(--accent-deep); padding: 4px 10px; font-size: 10px; font-weight: 600; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 5px 10px rgba(147,197,253,0.06); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; touch-action: manipulation; }
+        .exercise-tab-btn:hover { border-color: var(--accent); }
+        .exercise-tab-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .exercise-tab-btn.active { background: var(--primary-gradient); color: #fff; border-color: var(--accent); box-shadow: inset 0 1px 0 rgba(255,255,255,0.36), 0 0 0 1px rgba(147,197,253,0.3), 0 8px 14px rgba(147,197,253,0.18); transform: scale(1.1); }
         .exercise-tab-btn:active { transform: translateY(1px) scale(0.98); box-shadow: inset 0 1px 0 rgba(255,255,255,0.84), 0 3px 8px rgba(147,197,253,0.12); }
         .exercise-tab-btn.drag-armed { box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 0 0 2px rgba(147,197,253,0.16), 0 8px 18px rgba(147,197,253,0.14); }
         .exercise-tab-btn.drag-target { box-shadow: inset 0 1px 0 rgba(255,255,255,0.94), 0 0 0 2px rgba(174,213,250,0.48), 0 10px 20px rgba(147,197,253,0.14); }
@@ -545,11 +549,17 @@
         .stats-danger-btn { background: linear-gradient(180deg, var(--danger-top) 0%, var(--danger-mid) 58%, var(--danger-bottom) 100%); border: 1px solid rgba(203,213,225,0.8); border-radius: 12px; padding: 8px 12px; color: #475569; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.72), 0 8px 14px rgba(148,163,184,0.16); transition: transform 0.18s ease, box-shadow 0.18s ease; }
         .stats-danger-btn:active { transform: translateY(1px) scale(0.98); box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 4px 10px rgba(148,163,184,0.12); }
         .stats-markdown { margin: 0; white-space: pre-wrap; word-break: break-word; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 12px; line-height: 1.65; color: var(--text); background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(243,245,249,0.88) 100%); border: 1px solid rgba(255,255,255,0.72); border-radius: 16px; padding: 14px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), inset 0 -8px 16px rgba(220,226,234,0.24); }
+        .coach-container { min-height: 280px; }
+        .coach-note-input { display: block; width: 100%; min-height: 180px; padding: 12px; border: 1px solid rgba(255,255,255,0.78); border-radius: 14px; background: rgba(255,255,255,0.82); color: var(--text); font: inherit; font-size: 14px; line-height: 1.6; resize: vertical; box-shadow: inset 0 1px 0 rgba(255,255,255,0.92); }
+        .coach-note-input:focus { outline: 2px solid rgba(147,197,253,0.5); }
+        .coach-delete-action { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
         .milestone-section { margin-top: 12px; padding-top: 0; }
         .milestone-title { color: var(--accent); font-size: 14px; font-weight: 600; margin-bottom: 8px; }
         .milestone-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
-        .milestone-action-btn { width: 100%; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(241,244,248,0.9) 100%); border: 1px solid rgba(255,255,255,0.74); border-radius: 999px; padding: 6px 8px; color: #3a3a3c; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.82); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; touch-action: manipulation; }
-        .milestone-action-btn.active { background: var(--primary-gradient); color: white; box-shadow: 0 8px 18px rgba(147,197,253,0.2); }
+        .milestone-action-btn { width: 100%; background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(241,244,248,0.9) 100%); border: 1px solid rgba(100,116,139,0.58); border-radius: 999px; padding: 6px 8px; color: #3a3a3c; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.82), 0 1px 2px rgba(17,24,39,0.08); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; touch-action: manipulation; }
+        .milestone-action-btn:hover { border-color: var(--accent); }
+        .milestone-action-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .milestone-action-btn.active { background: var(--primary-gradient); color: white; border-color: var(--accent); box-shadow: 0 0 0 1px rgba(147,197,253,0.3), 0 8px 18px rgba(147,197,253,0.2); }
         .milestone-action-btn:active { transform: translateY(1px) scale(0.985); box-shadow: inset 0 1px 0 rgba(255,255,255,0.78), 0 4px 10px rgba(17,24,39,0.08); }
         .milestone-group { padding: 8px 0 4px; }
         .milestone-exercise-name { color: var(--accent); font-size: 15px; font-weight: 700; background: rgba(147,197,253,0.12); border: 1px solid rgba(147,197,253,0.14); border-radius: 10px; padding: 6px 10px; display: inline-block; }
@@ -566,7 +576,7 @@
         .bottom-nav[hidden],
         .bottom-nav-items[hidden] { display: none !important; }
         .bottom-nav.collapsed { margin-bottom: 0; }
-        .bottom-nav-items { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; padding: 10px; border-radius: 16px; background: linear-gradient(180deg, rgba(252,253,255,0.98) 0%, rgba(233,239,247,0.94) 100%); border: 1px solid rgba(255,255,255,0.82); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 14px 24px rgba(17,24,39,0.1); -webkit-backdrop-filter: blur(18px) saturate(170%); backdrop-filter: blur(18px) saturate(170%); pointer-events: auto; transform-origin: top right; transition: opacity 0.16s ease, transform 0.16s ease; }
+        .bottom-nav-items { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; width: 100%; padding: 10px; border-radius: 16px; background: linear-gradient(180deg, rgba(252,253,255,0.98) 0%, rgba(233,239,247,0.94) 100%); border: 1px solid rgba(255,255,255,0.82); box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 14px 24px rgba(17,24,39,0.1); -webkit-backdrop-filter: blur(18px) saturate(170%); backdrop-filter: blur(18px) saturate(170%); pointer-events: auto; transform-origin: top right; transition: opacity 0.16s ease, transform 0.16s ease; }
         .bottom-nav.collapsed .bottom-nav-items { opacity: 0; transform: translateY(-8px) scale(0.96); pointer-events: none; }
         .bottom-nav-btn { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 0; padding: 10px 8px; border: 1px solid rgba(255,255,255,0.82); border-radius: 12px; background: linear-gradient(180deg, rgba(252,253,255,0.96) 0%, rgba(233,239,247,0.88) 100%); color: #4a4a4f; font-size: 13px; font-weight: 700; line-height: 1; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 8px 14px rgba(17,24,39,0.06); min-width: 0; }
         .bottom-nav-btn span { white-space: nowrap; }
@@ -607,7 +617,7 @@
             .record-muscle-tabs,
             .stats-buttons { gap: 8px; padding: 8px; }
             .bottom-nav { width: 100%; margin-top: 0; }
-            .bottom-nav-items { grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; gap: 6px; padding: 8px; }
+            .bottom-nav-items { grid-template-columns: repeat(4, minmax(0, 1fr)); width: 100%; gap: 6px; padding: 8px; }
             .bottom-nav-btn { min-height: 0; padding: 9px 4px; font-size: 12px; gap: 3px; }
             .page-date-footer { flex-direction: row; align-items: center; padding: 10px; gap: 8px; }
             .page-date-footer-meta { gap: 6px; }
@@ -620,6 +630,10 @@
         body .app-content.page-record.is-history-record .page-date-footer-hint { color: #fff !important; }
         body *::placeholder { color: var(--text) !important; }
         body svg text { fill: var(--text) !important; }
+        button { border: 1px solid rgba(100,116,139,0.48) !important; }
+        button.active,
+        button[aria-pressed="true"],
+        button:hover:not(:disabled) { border-color: var(--accent) !important; }
     </style>
 </head>
 <body>
@@ -638,6 +652,10 @@
             <button class="bottom-nav-btn" id="bottomNavStats" onclick="switchPage('stats')">
                 <span class="bottom-nav-icon">📊</span>
                 <span>统计</span>
+            </button>
+            <button class="bottom-nav-btn" id="bottomNavCoach" onclick="switchPage('coach')">
+                <span class="bottom-nav-icon">🧑‍🏫</span>
+                <span>教练</span>
             </button>
         </div>
     </div>
@@ -674,6 +692,9 @@
         </div>
         <div id="detailFooterMetricsHome"></div>
     </div>
+    <div class="page-section hidden" id="coachPage">
+        <div class="stats-container coach-container" id="coachContainer"></div>
+    </div>
     <div id="detailActionBarHome"></div>
     <div class="page-date-footer" id="pageDateFooter" onclick="handlePageDateFooterClick()">
         <div class="page-date-footer-meta">
@@ -704,7 +725,7 @@
                 <button class="muscle-btn cardio" data-muscle="cardio"><span>🏃</span>有氧</button>
             </div>
             <div class="add-form" id="addForm">
-                <div class="form-group" id="exerciseNameGroup"><label>动作名称</label><div class="dropdown-field"><div class="dropdown-control"><input type="text" id="exerciseName" class="dropdown-input" placeholder="可选择或手动输入" autocomplete="off"><button type="button" class="dropdown-toggle-btn" id="exerciseNameToggle" aria-label="展开动作名称下拉" aria-expanded="false">▾</button></div><div class="dropdown-list" id="exerciseNameOptions"></div></div><div class="selected-exercise-list" id="selectedExerciseNames" aria-live="polite" hidden></div></div>
+                <div class="form-group" id="exerciseNameGroup"><label>动作名称</label><div class="dropdown-field"><div class="dropdown-control"><input type="text" id="exerciseName" class="dropdown-input" maxlength="4" placeholder="可选择或手动输入" autocomplete="off"><button type="button" class="dropdown-toggle-btn" id="exerciseNameToggle" aria-label="展开动作名称下拉" aria-expanded="false">▾</button></div><div class="dropdown-list" id="exerciseNameOptions"></div></div><div class="selected-exercise-list" id="selectedExerciseNames" aria-live="polite" hidden></div></div>
             </div>
         </div>
     </div>
@@ -736,12 +757,119 @@ var STORAGE_KEYS = {
     data:'fd',
     customExerciseNames:'fd_custom_exercise_names',
     statsExerciseOrder:'fd_stats_exercise_order',
+    coachPageState:'fd_coach_page_state',
     dayTimeOverrides:'fd_day_time_overrides',
     bottomNavCollapsed:'fd_bottom_nav_collapsed',
     importBackup:'fd_import_backup',
     timerReminderConfig:'fd_timer_reminder_config',
     recordGroupTimerStarts:'fd_record_group_timer_starts',
     recordSelection:'fd_record_selection'
+};
+var COACH_GUIDE_VERSION = 3;
+function formatCoachGuideNote(firstPoint,secondPoint,thirdPoint){
+    return '1. '+firstPoint+'\n2. '+secondPoint+'\n3. '+thirdPoint;
+}
+var COACH_GUIDES = {
+    chest:[
+        {name:'卧推',note:formatCoachGuideNote('肩胛后收，双脚踩稳。','杠铃控制下放到胸部附近，手腕在肘上方。','推起不耸肩、不反弹。')},
+        {name:'上斜哑推',note:formatCoachGuideNote('凳背选舒适的低到中等上斜。','肩胛稳定，哑铃在上胸两侧控制下放。','避免肩前顶和腰部过度反弓。')},
+        {name:'哑铃飞鸟',note:formatCoachGuideNote('肘微屈并保持稳定。','在肩部舒适范围内打开，再用胸部合拢。','不要追求过深拉伸或让哑铃相撞。')},
+        {name:'俯卧撑',note:formatCoachGuideNote('头、躯干和髋保持一条线。','身体整体下放，肩膀远离耳朵。','避免塌腰；需要时用跪姿调整难度。')},
+        {name:'器械夹胸',note:formatCoachGuideNote('座椅调到把手约在胸部高度。','肘微弯，缓慢打开再用胸部合拢。','避免肩部前伸或耸起。')}
+    ],
+    back:[
+        {name:'引体向上',note:formatCoachGuideNote('先收紧肩胛，让肩远离耳朵。','把肘向下拉，避免蹬腿借力。','下降保持控制；需要时使用辅助。')},
+        {name:'高位下拉',note:formatCoachGuideNote('躯干稳定，只轻微后倾。','横杆拉向上胸，肘向下走。','不要拉到颈后或用身体猛甩。')},
+        {name:'杠铃划船',note:formatCoachGuideNote('髋部后移，脊柱保持自然稳定。','杠铃朝下肋部拉。','避免弓背、耸肩和突然借力。')},
+        {name:'坐姿划船',note:formatCoachGuideNote('坐稳，躯干不要摇晃。','把手拉向腹部，肩胛自然后收。','回程缓慢，避免过度后仰。')},
+        {name:'硬拉',note:formatCoachGuideNote('杠铃贴近身体，先绷紧躯干。','保持背部稳定，用腿和髋站起。','顶端站直即可，不要向后仰腰。')}
+    ],
+    shoulder:[
+        {name:'哑铃推举',note:formatCoachGuideNote('收紧腹部和臀部，手腕大致在肘上方。','沿肩部舒适轨迹推举。','避免腰部过度反弓和耸肩。')},
+        {name:'杠铃推举',note:formatCoachGuideNote('核心收紧，杠铃沿身体附近上推。','在头顶稳定后，控制回到肩前。','不要用腰部后仰代偿。')},
+        {name:'侧平举',note:formatCoachGuideNote('肘微屈，手臂沿身体侧前方抬起。','抬到肩部舒适高度即可。','用轻重量控制，避免甩动和耸肩。')},
+        {name:'前平举',note:formatCoachGuideNote('躯干保持稳定，手臂沿身体前方抬起。','抬至肩部附近，控制下放。','不要借腰摆动或抬得过高。')},
+        {name:'面拉',note:formatCoachGuideNote('绳索设在面部附近高度。','向脸部拉，肘自然外展。','避免后仰借力或耸肩。')}
+    ],
+    leg:[
+        {name:'深蹲',note:formatCoachGuideNote('双脚站在舒适宽度，脚掌踩稳。','屈髋屈膝，膝盖跟随脚尖方向。','躯干稳定，深度以舒适可控为准。')},
+        {name:'腿举',note:formatCoachGuideNote('腰背贴靠靠垫，脚掌踩稳踏板。','下放到髋部仍稳定的位置。','膝盖顺脚尖方向，推起不锁死。')},
+        {name:'腿弯举',note:formatCoachGuideNote('髋部贴稳器械。','由膝关节带动弯起小腿。','缓慢还原，不用惯性甩动。')},
+        {name:'罗马硬拉',note:formatCoachGuideNote('膝盖微屈，髋部向后推。','重量贴近腿部，背部保持稳定。','下放到腿后侧有拉伸感即可。')},
+        {name:'保加蹲',note:formatCoachGuideNote('前脚踩稳，找到可控的站距。','下蹲时前膝顺着脚尖方向。','平衡不足可扶稳支撑物。')}
+    ],
+    biceps:[
+        {name:'哑铃弯举',note:formatCoachGuideNote('上臂贴近身体，手腕保持中立。','屈肘举起，再缓慢放下。','避免摆动身体或把肘向前甩。')},
+        {name:'杠铃弯举',note:formatCoachGuideNote('站稳并收紧躯干。','肘部位置基本固定，用手臂屈肘。','控制下放，不用腰部借力。')},
+        {name:'锤式弯举',note:formatCoachGuideNote('掌心相对、拇指朝上。','上臂稳定，平稳屈肘。','控制还原，避免耸肩或甩动。')},
+        {name:'集中弯举',note:formatCoachGuideNote('上臂靠在大腿内侧并保持稳定。','在舒适范围内屈肘，顶端收紧。','慢慢放下，不要扭腕借力。')},
+        {name:'牧师弯举',note:formatCoachGuideNote('上臂贴稳靠垫，肩膀放松。','控制弯举和下放。','底部不弹震，也不强行锁肘。')}
+    ],
+    triceps:[
+        {name:'绳索下压',note:formatCoachGuideNote('肘部靠近身体并固定，肩膀放松。','伸肘下压，再缓慢回到起始位。','避免身体前后摇摆。')},
+        {name:'哑铃屈伸',note:formatCoachGuideNote('选择肩肘舒适的姿势。','稳定上臂，主要通过伸肘完成动作。','使用可控重量，不要突然下放。')},
+        {name:'仰卧屈伸',note:formatCoachGuideNote('上臂大致保持竖直。','屈肘将重量控制到头部附近。','伸肘还原时避免肘部大幅外张。')},
+        {name:'过顶屈伸',note:formatCoachGuideNote('收住肋骨，上臂靠近头部。','在肩肘舒适范围内屈伸手肘。','避免腰部反弓；疼痛时停止。')},
+        {name:'窄距卧推',note:formatCoachGuideNote('握距不必过窄，手腕在肘上方。','肘部自然靠近躯干，控制下放。','不要反弹杠铃。')}
+    ],
+    core:[
+        {name:'平板支撑',note:formatCoachGuideNote('肘在肩下方，身体保持一条线。','收紧腹部和臀部并持续呼吸。','避免塌腰或撅臀。')},
+        {name:'卷腹',note:formatCoachGuideNote('轻收下巴，颈部放松。','用腹部带动肩胛离地。','幅度可控，不要猛起猛落。')},
+        {name:'死虫',note:formatCoachGuideNote('仰卧收紧腹部，腰背保持稳定。','对侧手脚缓慢伸展。','只下放到腰背仍能贴稳的位置。')},
+        {name:'俄式转体',note:formatCoachGuideNote('坐稳并保持躯干拉长。','控制小幅转动，不用手臂甩。','避免快速扭腰；不适时停止。')},
+        {name:'悬垂举腿',note:formatCoachGuideNote('先稳定悬垂并收紧核心。','控制骨盆和腿部上举，避免摆荡。','必要时屈膝降低难度。')}
+    ]
+};
+var COACH_GUIDE_LEGACY_NOTES = {
+    chest:{
+        '卧推':'肩胛后收并稳定，双脚踩稳；杠铃控制下放到胸部附近，手腕大致在肘上方，推起不耸肩、不反弹。',
+        '上斜哑铃卧推':'凳背选舒适的低到中等上斜；肩胛稳定，哑铃在上胸两侧控制下放，避免肩前顶和腰部过度反弓。',
+        '哑铃飞鸟':'肘保持微屈并固定，在肩部舒适范围内打开；用胸部合拢哑铃，不追求过深拉伸或让哑铃相撞。',
+        '俯卧撑':'头、躯干和髋保持一条线；身体整体下放，避免塌腰、撅臀和耸肩，可用跪姿调整难度。',
+        '器械夹胸':'座椅调到把手约在胸部高度，肘微弯；缓慢打开再用胸部合拢，避免肩部前伸或耸起。'
+    },
+    back:{
+        '引体向上':'先收紧肩胛并让肩远离耳朵，再把肘向下拉；避免蹬腿借力，下降过程保持控制，必要时使用辅助。',
+        '高位下拉':'躯干保持稳定，轻微后倾即可；把横杆拉向上胸，肘向下走，不要拉到颈后或用身体猛甩。',
+        '杠铃划船':'髋部后移并保持脊柱自然稳定；杠铃朝下肋部拉，避免弓背、耸肩和突然借力。',
+        '坐姿划船':'坐稳并保持躯干不摇晃；先控制肩胛，再将把手拉向腹部，回程缓慢，不要过度后仰。',
+        '硬拉':'杠铃贴近身体，先绷紧躯干并保持背部稳定；用腿和髋伸展站起，顶端站直即可，不要向后仰腰。'
+    },
+    shoulder:{
+        '哑铃推举':'收紧腹部和臀部，手腕大致在肘上方；沿舒适轨迹推举，避免腰部过度反弓和耸肩。',
+        '杠铃推举':'核心收紧，杠铃尽量沿身体附近上推并在头顶稳定；让杠铃回到肩前，避免用腰部后仰代偿。',
+        '侧平举':'肘微屈，手臂沿身体侧前方抬起至舒适高度；用轻重量控制动作，避免甩动和耸肩。',
+        '前平举':'躯干保持稳定，手臂沿身体前方抬至肩部附近；控制下放，不要借腰摆动或抬得过高。',
+        '面拉':'绳索设在面部附近高度，向脸部拉并让肘自然外展；肩胛稳定，避免后仰借力或耸肩。'
+    },
+    leg:{
+        '深蹲':'双脚站在舒适宽度，脚掌踩稳；屈髋屈膝下蹲，膝盖跟随脚尖方向，保持躯干稳定且不勉强深度。',
+        '腿举':'腰背贴靠靠垫，脚掌踩稳踏板；下放至髋部仍稳定的位置，膝盖顺着脚尖方向，推起时不要锁死膝盖。',
+        '腿弯举':'髋部贴稳器械，动作由膝关节完成；弯起后缓慢还原，不用惯性甩动或抬起髋部。',
+        '罗马尼亚硬拉':'膝盖微屈，髋部向后推，重量贴近腿部；保持背部稳定，下放到腘绳肌有拉伸感的位置即可。',
+        '保加利亚分腿蹲':'前脚踩稳并找到可控的站距，躯干保持稳定；下蹲时前膝顺着脚尖方向，平衡不足可扶稳支撑物。'
+    },
+    biceps:{
+        '哑铃弯举':'上臂贴近身体，手腕保持中立；屈肘举起并缓慢放下，避免摆动身体或把肘向前甩。',
+        '杠铃弯举':'站稳并收紧躯干，肘部位置基本固定；用二头肌屈肘，控制下放，不用腰部借力。',
+        '锤式弯举':'掌心相对、拇指朝上，上臂保持稳定；平稳屈肘并控制还原，避免耸肩或甩动哑铃。',
+        '集中弯举':'上臂靠在大腿内侧并保持稳定；在舒适范围内屈肘，顶端收紧后慢慢放下，不要扭腕借力。',
+        '牧师椅弯举':'上臂贴稳靠垫，肩膀放松；控制弯举和下放，底部保留轻微屈肘，不要弹震或强行锁肘。'
+    },
+    triceps:{
+        '绳索下压':'肘部靠近身体并固定，肩膀放松；伸肘下压后缓慢回到起始位，避免身体前后摇摆。',
+        '哑铃臂屈伸':'选择肩肘舒适的姿势并稳定上臂；主要通过伸肘完成动作，使用可控重量，不要突然下放。',
+        '仰卧臂屈伸':'上臂大致保持竖直，屈肘将重量控制到头部附近；伸肘还原时避免肘部大幅外张或借力。',
+        '过顶臂屈伸':'肋骨收住、上臂靠近头部；在肩肘舒适范围内屈伸手肘，避免腰部反弓和肘部疼痛。',
+        '窄距卧推':'握距不必过窄，手腕保持在肘上方；肘部自然靠近躯干，控制下放，不反弹杠铃。'
+    },
+    core:{
+        '平板支撑':'肘在肩下方，头、躯干和髋保持一条线；收紧腹部和臀部并持续呼吸，避免塌腰或撅臀。',
+        '卷腹':'轻收下巴，用腹部让肩胛离地；动作幅度小而可控，不用手拉脖子，也不要猛起猛落。',
+        '死虫':'仰卧时保持腰背稳定，腹部收紧；对侧手脚缓慢伸展，只下放到腰背仍能贴稳的位置。',
+        '俄罗斯转体':'坐稳并保持躯干拉长，控制小幅转动；避免用手臂甩动或快速扭腰，腰部不适时停止。',
+        '悬垂举腿':'先稳定悬垂并收紧核心，控制骨盆和腿部上举；避免摆荡，必要时屈膝降低难度。'
+    }
 };
 var EXPORT_SCHEMA_VERSION = 2;
 function isPlainObject(value){
@@ -868,6 +996,40 @@ function normalizeStatsExerciseOrder(rawOrder){
     }
     return normalized;
 }
+function normalizeCoachPageState(rawState){
+    var normalized={names:Object.create(null),deleted:Object.create(null),notes:Object.create(null),selected:Object.create(null),selectedMuscle:'',guideVersion:0};
+    if(!isPlainObject(rawState))return normalized;
+    normalized.guideVersion=Math.max(0,Number(rawState.guideVersion)||0);
+    var muscles=['chest','back','shoulder','leg','biceps','triceps','core'];
+    function normalizeNameList(source){
+        if(!Array.isArray(source))return [];
+        var names=[];
+        source.forEach(function(name){
+            var trimmed=String(name||'').trim();
+            if(trimmed&&names.indexOf(trimmed)<0)names.push(trimmed);
+        });
+        return names;
+    }
+    for(var i=0;i<muscles.length;i++){
+        var muscle=muscles[i];
+        var names=normalizeNameList(rawState.names&&rawState.names[muscle]);
+        var deleted=normalizeNameList(rawState.deleted&&rawState.deleted[muscle]);
+        if(names.length)normalized.names[muscle]=names;
+        if(deleted.length)normalized.deleted[muscle]=deleted;
+        var sourceNotes=rawState.notes&&rawState.notes[muscle];
+        if(isPlainObject(sourceNotes)){
+            var notes=Object.create(null);
+            for(var name in sourceNotes){
+                if(typeof sourceNotes[name]==='string'&&name.trim())notes[name.trim()]=sourceNotes[name];
+            }
+            if(Object.keys(notes).length)normalized.notes[muscle]=notes;
+        }
+        var selectedName=String(rawState.selected&&rawState.selected[muscle]||'').trim();
+        if(selectedName)normalized.selected[muscle]=selectedName;
+    }
+    if(muscles.indexOf(rawState.selectedMuscle)>=0)normalized.selectedMuscle=rawState.selectedMuscle;
+    return normalized;
+}
 function buildExportPayload(){
     return {
         version:EXPORT_SCHEMA_VERSION,
@@ -902,6 +1064,7 @@ try{
 }
 var customExerciseNames = normalizeImportedCustomExerciseNames(readStoredJson(STORAGE_KEYS.customExerciseNames,{}));
 var statsExerciseOrder = normalizeStatsExerciseOrder(readStoredJson(STORAGE_KEYS.statsExerciseOrder,{}));
+var coachPageState = normalizeCoachPageState(readStoredJson(STORAGE_KEYS.coachPageState,{}));
 var dayTimeOverrides = normalizeImportedDayTimeOverrides(readStoredJson(STORAGE_KEYS.dayTimeOverrides,{}));
 var curDate = new Date(), selDate = null, selMuscle = null, editIdx = -1;
 var modalMode = 'add';
@@ -941,13 +1104,21 @@ var exerciseNames = {
     shoulder:['哑铃推举','杠铃推举','侧平举','前平举','俯身飞鸟','面拉'],
     leg:['深蹲','腿举','腿弯举','腿屈伸','弓步蹲','小腿提踵'],
     biceps:['哑铃弯举','杠铃弯举','锤式弯举','集中弯举'],
-    triceps:['绳索下压','哑铃臂屈伸','仰卧臂屈伸','过顶臂屈伸'],
-    core:['卷腹','仰卧起坐','平板支撑','俄罗斯转体','悬垂举腿','健腹轮'],
+    triceps:['绳索下压','哑铃屈伸','仰卧屈伸','过顶屈伸'],
+    core:['卷腹','仰卧起坐','平板支撑','俄式转体','悬垂举腿','健腹轮'],
     cardio:['跑步','椭圆机','动感单车','跳绳','游泳','爬楼梯','划船机']
+};
+var EXERCISE_NAME_ALIASES = {
+    chest:{'上斜哑铃卧推':'上斜哑推'},
+    leg:{'罗马尼亚硬拉':'罗马硬拉','保加利亚分腿蹲':'保加蹲'},
+    biceps:{'牧师椅弯举':'牧师弯举'},
+    triceps:{'哑铃臂屈伸':'哑铃屈伸','仰卧臂屈伸':'仰卧屈伸','过顶臂屈伸':'过顶屈伸'},
+    core:{'俄罗斯转体':'俄式转体'}
 };
 function save(){return writeStoredJson(STORAGE_KEYS.data,data);}
 function saveCustomExerciseNames(){return writeStoredJson(STORAGE_KEYS.customExerciseNames,customExerciseNames);}
 function saveStatsExerciseOrder(){return writeStoredJson(STORAGE_KEYS.statsExerciseOrder,statsExerciseOrder);}
+function saveCoachPageState(){return writeStoredJson(STORAGE_KEYS.coachPageState,coachPageState);}
 function saveDayTimeOverrides(){return writeStoredJson(STORAGE_KEYS.dayTimeOverrides,dayTimeOverrides);}
 function saveBottomNavCollapsedState(){return writeStoredJson(STORAGE_KEYS.bottomNavCollapsed,bottomNavCollapsed);}
 function saveImportBackup(){return writeStoredJson(STORAGE_KEYS.importBackup,buildExportPayload());}
@@ -1335,6 +1506,103 @@ function applyDataMigrations(){
     migrateLegacyDayTimeOverrides();
     normalizeSegmentDayTimeOverrides();
     migrateLegacyRecordSegments();
+    migrateExerciseNameAliases();
+}
+function migrateExerciseNameAliases(){
+    var changedData=false,changedCoach=false,changedStatsOrder=false,changedRecordSelection=false,changedCustomNames=false;
+    for(var muscle in EXERCISE_NAME_ALIASES){
+        var aliases=EXERCISE_NAME_ALIASES[muscle];
+        var customNames=getCustomExerciseNames(muscle);
+        var recordedNames=getExerciseNamesFromData(muscle);
+        var coachNames=coachPageState.names[muscle]||[];
+        var coachNotes=coachPageState.notes[muscle]||{};
+        var coachDeleted=coachPageState.deleted[muscle]||[];
+        var applicableAliases=Object.create(null);
+        for(var oldName in aliases){
+            var newName=aliases[oldName];
+            if(customNames.indexOf(newName)>=0||recordedNames.indexOf(newName)>=0)continue;
+            if(coachNames.indexOf(newName)>=0||coachDeleted.indexOf(newName)>=0||Object.prototype.hasOwnProperty.call(coachNotes,newName))continue;
+            applicableAliases[oldName]=newName;
+        }
+        if(!Object.keys(applicableAliases).length)continue;
+        if(customNames.length){
+            var mappedCustomNames=[];
+            for(var customIndex=0;customIndex<customNames.length;customIndex++){
+                var mappedCustomName=applicableAliases[customNames[customIndex]]||customNames[customIndex];
+                if(mappedCustomNames.indexOf(mappedCustomName)<0)mappedCustomNames.push(mappedCustomName);
+                if(mappedCustomName!==customNames[customIndex])changedCustomNames=true;
+            }
+            customExerciseNames[muscle]=mappedCustomNames;
+        }
+        for(var dateKey in data){
+            var exercises=data[dateKey]||[];
+            for(var exerciseIndex=0;exerciseIndex<exercises.length;exerciseIndex++){
+                var exercise=exercises[exerciseIndex];
+                if(exercise.muscle===muscle&&applicableAliases[exercise.name]){
+                    exercise.name=applicableAliases[exercise.name];
+                    changedData=true;
+                }
+            }
+        }
+        var names=coachPageState.names[muscle];
+        if(Array.isArray(names)){
+            var mappedNames=[];
+            for(var nameIndex=0;nameIndex<names.length;nameIndex++){
+                var mappedName=applicableAliases[names[nameIndex]]||names[nameIndex];
+                if(mappedNames.indexOf(mappedName)<0)mappedNames.push(mappedName);
+                if(mappedName!==names[nameIndex])changedCoach=true;
+            }
+            coachPageState.names[muscle]=mappedNames;
+        }
+        var deleted=coachPageState.deleted[muscle];
+        if(Array.isArray(deleted)){
+            var mappedDeleted=[];
+            for(var deletedIndex=0;deletedIndex<deleted.length;deletedIndex++){
+                var mappedDeletedName=applicableAliases[deleted[deletedIndex]]||deleted[deletedIndex];
+                if(mappedDeleted.indexOf(mappedDeletedName)<0)mappedDeleted.push(mappedDeletedName);
+                if(mappedDeletedName!==deleted[deletedIndex])changedCoach=true;
+            }
+            coachPageState.deleted[muscle]=mappedDeleted;
+        }
+        var notes=coachPageState.notes[muscle];
+        if(notes&&typeof notes==='object'){
+            for(var noteName in notes){
+                var mappedNoteName=applicableAliases[noteName];
+                if(!mappedNoteName)continue;
+                if(!Object.prototype.hasOwnProperty.call(notes,mappedNoteName))notes[mappedNoteName]=notes[noteName];
+                delete notes[noteName];
+                changedCoach=true;
+            }
+        }
+        if(coachPageState.selected[muscle]&&applicableAliases[coachPageState.selected[muscle]]){
+            coachPageState.selected[muscle]=applicableAliases[coachPageState.selected[muscle]];
+            changedCoach=true;
+        }
+        if(Array.isArray(statsExerciseOrder[muscle])){
+            var mappedOrder=[];
+            for(var orderIndex=0;orderIndex<statsExerciseOrder[muscle].length;orderIndex++){
+                var mappedOrderName=applicableAliases[statsExerciseOrder[muscle][orderIndex]]||statsExerciseOrder[muscle][orderIndex];
+                if(mappedOrder.indexOf(mappedOrderName)<0)mappedOrder.push(mappedOrderName);
+                if(mappedOrderName!==statsExerciseOrder[muscle][orderIndex])changedStatsOrder=true;
+            }
+            statsExerciseOrder[muscle]=mappedOrder;
+        }
+        if(recordSelection.muscle===muscle&&applicableAliases[recordSelection.actionName]){
+            recordSelection.actionName=applicableAliases[recordSelection.actionName];
+            changedRecordSelection=true;
+        }
+        for(var actionTabKey in recordActionTabs){
+            var actionTabParts=actionTabKey.split('__');
+            if(actionTabParts[1]===muscle&&applicableAliases[recordActionTabs[actionTabKey]]){
+                recordActionTabs[actionTabKey]=applicableAliases[recordActionTabs[actionTabKey]];
+            }
+        }
+    }
+    if(changedData)save();
+    if(changedCustomNames)saveCustomExerciseNames();
+    if(changedCoach)saveCoachPageState();
+    if(changedStatsOrder)saveStatsExerciseOrder();
+    if(changedRecordSelection)writeStoredJson(STORAGE_KEYS.recordSelection,recordSelection);
 }
 applyDataMigrations();
 function getCustomExerciseNames(m){
@@ -1348,6 +1616,15 @@ function isExerciseNameTaken(m,name){
 }
 function isExerciseNameRecorded(m,name){
     return getExerciseNamesFromData(m).indexOf(name.trim())>=0;
+}
+function getExerciseNameCharacterCount(name){
+    return Array.from(String(name||'')).length;
+}
+function validateExerciseNameLength(m,name,allowExistingName){
+    if(getExerciseNameCharacterCount(name)<=4)return true;
+    if(allowExistingName&&isExerciseNameTaken(m,name))return true;
+    alert('新动作名称不能超过4个字符');
+    return false;
 }
 function hydrateCustomExerciseNamesFromData(){
     var changed=false;
@@ -2226,6 +2503,10 @@ function fillExerciseNameOptions(m){
     var options=document.getElementById('exerciseNameOptions');
     options.innerHTML='';
     var names=getExerciseNamesFromData(m);
+    var additionalNames=getCustomExerciseNames(m).concat(coachPageState.names[m]||[],coachPageState.deleted[m]||[]);
+    for(var nameIndex=0;nameIndex<additionalNames.length;nameIndex++){
+        if(names.indexOf(additionalNames[nameIndex])<0)names.push(additionalNames[nameIndex]);
+    }
     var isMultiSelect=modalMode==='add'&&editIdx<0;
     if(isMultiSelect||modalMode==='renameAction'){
         var usedTodayNames=getExerciseNamesUsedOnDate(selDate,m);
@@ -2558,6 +2839,8 @@ function updatePageDateFooter(){
     var textEl=document.getElementById('pageDateFooterText');
     var hintEl=document.getElementById('pageDateFooterHint');
     var previousBtn=document.getElementById('pageDatePreviousBtn');
+    var footer=document.getElementById('pageDateFooter');
+    if(footer)footer.hidden=currentPage==='coach';
     if(!textEl||!hintEl||!previousBtn)return;
     var activeDateKey=selDate||getTodayKey();
     var relativeLabel=getRelativeSelectedDateLabel(activeDateKey)||'今天';
@@ -2795,11 +3078,12 @@ function updateBottomNavState(){
     document.getElementById('bottomNavCalendar').classList.toggle('active',currentPage==='calendar');
     document.getElementById('bottomNavRecord').classList.toggle('active',currentPage==='record');
     document.getElementById('bottomNavStats').classList.toggle('active',currentPage==='stats');
+    document.getElementById('bottomNavCoach').classList.toggle('active',currentPage==='coach');
 }
 function updateAppContentThemeState(){
     var container=document.querySelector('.app-content');
     if(!container)return;
-    container.classList.remove('page-calendar','page-record','page-simple','page-volume','page-stats');
+    container.classList.remove('page-calendar','page-record','page-simple','page-volume','page-stats','page-coach');
     container.classList.add('page-'+currentPage);
     container.classList.toggle('is-history-record',currentPage==='record'&&isHistoricalDateKey(selDate));
 }
@@ -2814,9 +3098,11 @@ function updateDetailTabsState(){
 }
 function switchPage(page){
     var isCalendarPage=page==='calendar';
-    currentPage=isCalendarPage?'calendar':(page==='stats'?'stats':'record');
+    var isCoachPage=page==='coach';
+    currentPage=isCalendarPage?'calendar':(isCoachPage?'coach':(page==='stats'?'stats':'record'));
     document.getElementById('calendarPage').classList.toggle('hidden',!isCalendarPage);
-    document.getElementById('detailSection').classList.toggle('hidden',isCalendarPage);
+    document.getElementById('detailSection').classList.toggle('hidden',isCalendarPage||isCoachPage);
+    document.getElementById('coachPage').classList.toggle('hidden',!isCoachPage);
     updateAppContentThemeState();
     updateBottomNavState();
     updateBottomNavCollapseState();
@@ -2827,6 +3113,7 @@ function switchPage(page){
     relocateDetailAuxiliarySections();
     if(currentPage==='record')switchTab('record');
     if(currentPage==='stats')switchTab('stats');
+    if(currentPage==='coach')renderCoachPage();
 }
 function render(){
     updateAppContentThemeState();
@@ -3262,6 +3549,7 @@ function confirmRecordActionRename(){
         alert('请输入动作名称');
         return;
     }
+    if(!validateExerciseNameLength(muscle,newName,true))return;
     if(newName!==oldName){
         if((data[dk]||[]).some(function(exercise){
             return exercise.muscle===muscle&&exercise.name===newName;
@@ -3672,6 +3960,7 @@ function getTopSelectedRecordInfo(dk){
     return {muscle:topGroup.muscle||null,name:activeActionName||''};
 }
 function renameExerciseAcrossData(targetMuscle,oldName,newName,allDates,allowCatalogName){
+    if(newName!==oldName&&!validateExerciseNameLength(targetMuscle,newName,true))return false;
     var nameTaken=allowCatalogName?isExerciseNameRecorded(targetMuscle,newName):isExerciseNameTaken(targetMuscle,newName);
     if(newName!==oldName&&nameTaken){
         alert('当前部位已存在该动作名称（含历史记录、自定义名称和预设名称），请选择其他名称');
@@ -3965,6 +4254,9 @@ function addEx(){
     var actionNames=getModalExerciseNames();
     var isCardio=selMuscle==='cardio';
     if(!actionNames.length||!selMuscle||!selDate){alert('请填写完整信息');return;}
+    for(var actionNameIndex=0;actionNameIndex<actionNames.length;actionNameIndex++){
+        if(!validateExerciseNameLength(selMuscle,actionNames[actionNameIndex],true))return;
+    }
     var targetDate=selDate;
     var now=getNowTimestampForDateKey(targetDate);
     if(editIdx>=0){
@@ -4783,6 +5075,7 @@ function editStatsExerciseName(mu, exerciseName, el){
     var input=document.createElement('input');
     input.type='text';
     input.className='exercise-name-input';
+    input.maxLength=4;
     input.value=exerciseName;
     input.onblur=function(){
         var newName=this.value.trim();
@@ -4818,7 +5111,7 @@ function jumpToStatsDate(dk,muscle,exerciseName,segmentId){
     switchPage('record');
 }
 function renameStatsExerciseAcrossData(targetMuscle,exerciseName){
-    var newName=prompt('重命名“'+exerciseName+'”：将修改当前部位所有日期的同名记录。',exerciseName);
+    var newName=prompt('重命名“'+exerciseName+'”：将修改当前部位所有日期的同名记录。新名称最多4个字符。',exerciseName);
     if(newName===null)return;
     newName=newName.trim();
     if(!newName){
@@ -4826,6 +5119,7 @@ function renameStatsExerciseAcrossData(targetMuscle,exerciseName){
         return;
     }
     if(newName===exerciseName)return;
+    if(!validateExerciseNameLength(targetMuscle,newName,true))return;
     var matchingCount=0;
     for(var dk in data){
         (data[dk]||[]).forEach(function(exercise){
@@ -5073,6 +5367,189 @@ function showStats(){
 function setStats(btn){
     statsSection=(statsSection===btn)?null:btn;
     showStats();
+}
+function ensureCoachGuides(){
+    if(coachPageState.guideVersion>=COACH_GUIDE_VERSION)return;
+    var previousVersion=coachPageState.guideVersion;
+    for(var muscle in COACH_GUIDES){
+        var names=coachPageState.names[muscle]||(coachPageState.names[muscle]=[]);
+        var deleted=coachPageState.deleted[muscle]||[];
+        var notes=coachPageState.notes[muscle]||(coachPageState.notes[muscle]=Object.create(null));
+        var guides=COACH_GUIDES[muscle];
+        for(var i=0;i<guides.length;i++){
+            var guide=guides[i];
+            if(deleted.indexOf(guide.name)>=0)continue;
+            var wasKnown=names.indexOf(guide.name)>=0;
+            if(!wasKnown)names.push(guide.name);
+            if(Object.prototype.hasOwnProperty.call(notes,guide.name)){
+                var legacyNote=COACH_GUIDE_LEGACY_NOTES[muscle]&&COACH_GUIDE_LEGACY_NOTES[muscle][guide.name];
+                if(previousVersion===1&&legacyNote&&notes[guide.name]===legacyNote)notes[guide.name]=guide.note;
+            }else if(previousVersion!==1||!wasKnown){
+                notes[guide.name]=guide.note;
+            }
+        }
+    }
+    coachPageState.guideVersion=COACH_GUIDE_VERSION;
+    saveCoachPageState();
+}
+function syncCoachActionCatalog(){
+    var changed=false;
+    var muscles=['chest','back','shoulder','leg','biceps','triceps','core'];
+    for(var mi=0;mi<muscles.length;mi++){
+        var muscle=muscles[mi];
+        var names=Array.isArray(coachPageState.names[muscle])?coachPageState.names[muscle].slice():[];
+        var deleted=Array.isArray(coachPageState.deleted[muscle])?coachPageState.deleted[muscle]:[];
+        var recordedNames=getExerciseNamesFromData(muscle);
+        for(var ni=0;ni<recordedNames.length;ni++){
+            var name=recordedNames[ni];
+            if(names.indexOf(name)<0&&deleted.indexOf(name)<0){
+                names.push(name);
+                changed=true;
+            }
+        }
+        if(names.length)coachPageState.names[muscle]=names;
+        else delete coachPageState.names[muscle];
+    }
+    if(changed)saveCoachPageState();
+}
+function setCoachMuscle(muscle){
+    if(!Array.isArray(coachPageState.names[muscle])||!coachPageState.names[muscle].length)return;
+    coachPageState.selectedMuscle=muscle;
+    if(!coachPageState.selected[muscle])coachPageState.selected[muscle]=coachPageState.names[muscle][0];
+    saveCoachPageState();
+    renderCoachPage();
+}
+function selectCoachExercise(muscle,exerciseName){
+    var names=coachPageState.names[muscle];
+    if(!Array.isArray(names)||names.indexOf(exerciseName)<0)return;
+    var previousState=JSON.stringify(coachPageState);
+    coachPageState.names[muscle]=[exerciseName].concat(names.filter(function(name){return name!==exerciseName;}));
+    coachPageState.selected[muscle]=exerciseName;
+    coachPageState.selectedMuscle=muscle;
+    if(!saveCoachPageState()){
+        coachPageState=normalizeCoachPageState(JSON.parse(previousState));
+        return;
+    }
+    renderCoachPage();
+}
+function updateCoachNote(value){
+    var muscle=coachPageState.selectedMuscle;
+    var exerciseName=coachPageState.selected[muscle];
+    if(!muscle||!exerciseName)return;
+    var notes=coachPageState.notes[muscle]||(coachPageState.notes[muscle]=Object.create(null));
+    var previousValue=notes[exerciseName]||'';
+    if(value)notes[exerciseName]=value;
+    else delete notes[exerciseName];
+    if(!saveCoachPageState()){
+        if(previousValue)notes[exerciseName]=previousValue;
+        else delete notes[exerciseName];
+        var input=document.getElementById('coachNoteInput');
+        if(input)input.value=previousValue;
+    }
+}
+function deleteCoachExercise(muscle,exerciseName){
+    var names=coachPageState.names[muscle];
+    if(!Array.isArray(names)||names.indexOf(exerciseName)<0)return;
+    if(!confirm('确定只从教练页删除“'+exerciseName+'”及其心得吗？训练记录不会删除。'))return;
+    var previousState=JSON.stringify(coachPageState);
+    coachPageState.names[muscle]=names.filter(function(name){return name!==exerciseName;});
+    if(!coachPageState.names[muscle].length)delete coachPageState.names[muscle];
+    var deleted=coachPageState.deleted[muscle]||(coachPageState.deleted[muscle]=[]);
+    if(deleted.indexOf(exerciseName)<0)deleted.push(exerciseName);
+    if(coachPageState.notes[muscle])delete coachPageState.notes[muscle][exerciseName];
+    if(coachPageState.selected[muscle]===exerciseName){
+        if(coachPageState.names[muscle]&&coachPageState.names[muscle].length){
+            coachPageState.selected[muscle]=coachPageState.names[muscle][0];
+        }else{
+            delete coachPageState.selected[muscle];
+        }
+    }
+    if(!saveCoachPageState()){
+        coachPageState=normalizeCoachPageState(JSON.parse(previousState));
+        return;
+    }
+    renderCoachPage();
+}
+function addCoachExercise(muscle){
+    if(['chest','back','shoulder','leg','biceps','triceps','core'].indexOf(muscle)<0)return;
+    var exerciseName=prompt('输入要添加的动作名称（最多4个字符）：');
+    if(exerciseName===null)return;
+    exerciseName=exerciseName.trim();
+    if(!exerciseName){
+        alert('请输入动作名称');
+        return;
+    }
+    syncCoachActionCatalog();
+    var names=coachPageState.names[muscle]||[];
+    if(!validateExerciseNameLength(muscle,exerciseName,names.indexOf(exerciseName)>=0))return;
+    if(names.indexOf(exerciseName)>=0){
+        alert('该动作已在教练列表中');
+        selectCoachExercise(muscle,exerciseName);
+        return;
+    }
+    var previousState=JSON.stringify(coachPageState);
+    coachPageState.names[muscle]=[exerciseName].concat(names);
+    coachPageState.selected[muscle]=exerciseName;
+    coachPageState.selectedMuscle=muscle;
+    var deleted=coachPageState.deleted[muscle]||[];
+    coachPageState.deleted[muscle]=deleted.filter(function(name){return name!==exerciseName;});
+    if(!coachPageState.deleted[muscle].length)delete coachPageState.deleted[muscle];
+    if(!saveCoachPageState()){
+        coachPageState=normalizeCoachPageState(JSON.parse(previousState));
+        return;
+    }
+    rememberCustomExerciseName(muscle,exerciseName);
+    renderCoachPage();
+}
+function renderCoachPage(){
+    var container=document.getElementById('coachContainer');
+    if(!container)return;
+    ensureCoachGuides();
+    syncCoachActionCatalog();
+    var muscles=['chest','back','shoulder','leg','biceps','triceps','core'];
+    var availableMuscles=muscles.filter(function(muscle){
+        return Array.isArray(coachPageState.names[muscle])&&coachPageState.names[muscle].length>0;
+    });
+    var selectedMuscle=coachPageState.selectedMuscle;
+    if(availableMuscles.indexOf(selectedMuscle)<0){
+        selectedMuscle=availableMuscles[0]||'';
+        coachPageState.selectedMuscle=selectedMuscle;
+        if(selectedMuscle)saveCoachPageState();
+    }
+    var htm='<div class="stats-card"><div class="stats-card-title">🏋️ 部位</div><div class="stats-buttons stats-buttons-nine">';
+    for(var mi=0;mi<availableMuscles.length;mi++){
+        var muscle=availableMuscles[mi];
+        htm+='<button class="stats-btn muscle-filter-btn '+muscle+(muscle===selectedMuscle?' active':'')+'" onclick="setCoachMuscle(\''+muscle+'\')"><span class="stats-btn-icon">'+getMuscleIconHtml(muscle)+'</span><span class="stats-btn-label">'+muscleNames[muscle]+'</span></button>';
+    }
+    htm+='</div>';
+    if(!selectedMuscle){
+        htm+='<div class="stats-empty">添加训练动作后，这里会保留该部位的动作名称。</div></div>';
+        container.innerHTML=htm;
+        return;
+    }
+    var names=coachPageState.names[selectedMuscle]||[];
+    var selectedName=coachPageState.selected[selectedMuscle];
+    if(names.indexOf(selectedName)<0){
+        selectedName=names[0]||'';
+        if(selectedName)coachPageState.selected[selectedMuscle]=selectedName;
+    }
+    htm+='</div><div class="stats-card"><div class="stats-card-title">动作名称</div>';
+    if(names.length){
+        htm+='<div class="milestone-actions coach-actions">';
+        for(var ni=0;ni<names.length;ni++){
+            var exerciseName=names[ni];
+            var escapedName=escapeHtmlAttribute(escapeJsSingleQuotedString(exerciseName));
+            htm+='<button class="milestone-action-btn'+(exerciseName===selectedName?' active':'')+'" onclick="selectCoachExercise(\''+selectedMuscle+'\',\''+escapedName+'\')">'+escapeHtml(exerciseName)+'</button>';
+        }
+        htm+='</div>';
+        var note=coachPageState.notes[selectedMuscle]&&coachPageState.notes[selectedMuscle][selectedName]||'';
+        htm+='<textarea id="coachNoteInput" class="coach-note-input" aria-label="'+escapeHtmlAttribute(selectedName)+' 心得" placeholder="记录这个动作的训练心得……" oninput="updateCoachNote(this.value)">'+escapeHtml(note)+'</textarea>'+
+            '<div class="coach-delete-action"><button class="stats-copy-btn" onclick="addCoachExercise(\''+selectedMuscle+'\')">添加动作</button><button class="stats-danger-btn" onclick="deleteCoachExercise(\''+selectedMuscle+'\',\''+escapeHtmlAttribute(escapeJsSingleQuotedString(selectedName))+'\')">删除此动作</button></div>';
+    }else{
+        htm+='<div class="stats-empty">该部位暂无动作名称</div>';
+    }
+    htm+='</div>';
+    container.innerHTML=htm;
 }
 function exportData(){
     var exportPayload=buildExportPayload();
