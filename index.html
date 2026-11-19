@@ -1958,14 +1958,16 @@ function getCapacityHintText(dk,items,bestRecord){
     var weightValue=latestExercise.weight==null?0:Number(latestExercise.weight);
     var bestVolume=bestRecord&&bestRecord.volume?bestRecord.volume:0;
     var currentActionVolume=0;
+    var currentSets=0;
     for(var i=0;i<items.length;i++){
-        currentActionVolume+=calcEntryVolume(items[i].exercise);
+        var currentExercise=items[i].exercise;
+        currentActionVolume+=calcEntryVolume(currentExercise);
+        currentSets+=Math.max(0,Number(currentExercise.sets)||0);
     }
-    var currentSets=Math.max(0,Number(latestExercise.sets)||0);
     var neededSetsText='--';
     var maxWeight=bestRecord&&bestRecord.weight?bestRecord.weight:0;
-    var maxSets=bestRecord&&bestRecord.sets?bestRecord.sets:0;
     var maxWeightDays=bestRecord&&bestRecord.maxWeightDate?getDaysSinceDateKey(bestRecord.maxWeightDate):null;
+    var maxVolumeDays=bestRecord&&bestRecord.bestVolumeDate?getDaysSinceDateKey(bestRecord.bestVolumeDate):null;
     if(isNaN(weightValue))weightValue=0;
     if(bestVolume>0&&weightValue>0&&repsValue>0){
         var perSetVolume=weightValue*repsValue;
@@ -1975,15 +1977,16 @@ function getCapacityHintText(dk,items,bestRecord){
         neededSetsText=String(currentSets);
     }
     return '<div class="exercise-capacity-hint-line">'+
-            '<span class="exercise-capacity-hint-item">最大/达标: <span class="exercise-capacity-hint-value is-current">'+formatMetricNumber(maxSets)+'组</span>/<span class="exercise-capacity-hint-value is-best">'+neededSetsText+'组</span></span>；'+
-            '<span class="exercise-capacity-hint-item">目前/最大: <span class="exercise-capacity-hint-value is-current">'+formatMetricNumber(weightValue)+'kg</span>/<span class="exercise-capacity-hint-value is-best">'+formatMetricNumber(maxWeight)+'kg</span>'+(maxWeightDays!==null?'/'+maxWeightDays+'天':'')+'</span>；'+
-            '<span class="exercise-capacity-hint-item">容量: <span class="exercise-capacity-hint-value is-current">'+formatMetricNumber(currentActionVolume)+'</span>/<span class="exercise-capacity-hint-value is-best">'+formatMetricNumber(bestVolume)+'</span></span>'+ 
+            '<span class="exercise-capacity-hint-item">组数: <span class="exercise-capacity-hint-value is-current">'+formatMetricNumber(currentSets)+'组</span>/<span class="exercise-capacity-hint-value is-best">'+neededSetsText+'组</span></span>；'+
+            '<span class="exercise-capacity-hint-item">重量: <span class="exercise-capacity-hint-value is-current">'+formatMetricNumber(weightValue)+'kg</span>/<span class="exercise-capacity-hint-value is-best">'+formatMetricNumber(maxWeight)+'kg</span>'+(maxWeightDays!==null?'/'+maxWeightDays+'天':'')+'</span>；'+
+            '<span class="exercise-capacity-hint-item">容量: <span class="exercise-capacity-hint-value is-current">'+formatMetricNumber(currentActionVolume)+'</span>/<span class="exercise-capacity-hint-value is-best">'+formatMetricNumber(bestVolume)+'</span>'+(maxVolumeDays!==null?'/'+maxVolumeDays+'天':'')+'</span>'+ 
         '</div>';
 }
 function getExerciseBestRecord(m,name){
     var bestRecord=null;
     var exerciseMaxWeight=0;
     var maxWeightDate='';
+    var bestVolumeDate='';
     var dateKeys=Object.keys(data).sort();
     for(var di=0;di<dateKeys.length;di++){
         var exercises=data[dateKeys[di]]||[];
@@ -2001,7 +2004,9 @@ function getExerciseBestRecord(m,name){
                 exerciseMaxWeight=weight;
                 maxWeightDate=dateKeys[di];
             }
-            if(isNewMaxWeight||(weight===exerciseMaxWeight&&bestRecord&&volume>=bestRecord.volume)){
+            var isSameBestWeight=weight===exerciseMaxWeight&&!!bestRecord;
+            if(isNewMaxWeight||isSameBestWeight&&volume>=bestRecord.volume){
+                if(isNewMaxWeight||volume>bestRecord.volume)bestVolumeDate=dateKeys[di];
                 bestRecord={
                     weight:weight,
                     sets:sets,
@@ -2014,6 +2019,7 @@ function getExerciseBestRecord(m,name){
     }
     var result=bestRecord||{weight:0,sets:0,reps:'',volume:0,date:''};
     result.maxWeightDate=maxWeightDate;
+    result.bestVolumeDate=bestVolumeDate;
     return result;
 }
 function getLatestMuscleCopySource(targetDate,muscle){
