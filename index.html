@@ -470,6 +470,7 @@
         .chart-point { cursor: pointer; }
         .chart-point-max { fill: #93c5fd; stroke: #93c5fd; stroke-width: 2; }
         .chart-point-label { font-size: 10px; font-weight: 700; fill: var(--accent-deep); text-anchor: middle; }
+        #chartContainer .chart-point-label, #chartContainer .chart-guide-label { pointer-events: none; }
         .chart-segment-label { font-size: 9px; font-weight: 700; fill: var(--accent-deep); text-anchor: middle; }
         .chart-point:hover { r: 6; }
         .chart-tooltip { position: absolute; background: rgba(28,28,30,0.88); color: white; padding: 4px 8px; border-radius: 8px; font-size: 11px; pointer-events: none; white-space: nowrap; z-index: 2; box-shadow: 0 8px 18px rgba(0,0,0,0.18); }
@@ -4054,7 +4055,7 @@ function showVolumeChart(){
 function renderVolumeChart(container,volumeMetricMode,isIntervalModal,volumeMuscle){
     function renderChartContent(html){
         container.innerHTML=html+(isIntervalModal?'':getVolumeChartFooter(volumeMetricMode));
-        bindChartPointTooltips(container);
+        bindChartPointInteractions(container);
     }
     var muscles=['chest','back','shoulder','leg','biceps','triceps','core'];
     var dateDurations={};
@@ -4083,8 +4084,7 @@ function renderVolumeChart(container,volumeMetricMode,isIntervalModal,volumeMusc
     for(var dk in data){
         if(isIntervalModal&&dk!==selDate)continue;
         var ex=data[dk]||[];
-        var durationExercises=ex.filter(function(exercise){return exercise.muscle===volumeMuscle;});
-        dateDurations[dk]=durationExercises.length?calcTrainingDurationMinutes(dk,durationExercises,volumeMuscle):null;
+        dateDurations[dk]=calcTrainingDurationMinutes(dk,ex);
         var exercisesByMuscle={};
         for(var i=0;i<ex.length;i++){
             var e=ex[i];
@@ -4405,7 +4405,7 @@ function renderVolumeChart(container,volumeMetricMode,isIntervalModal,volumeMusc
                 : volumeMetricMode==='interval'
                 ? ('第'+pts[pj].index+'次刷新 · '+pts[pj].dk+' '+formatClockTime(pts[pj].timestamp)+' · 间隔 '+pts[pj].intervalMinutes+metricSuffix)
                 : (selectedMuscle==='all'?getMuscleIconText(key)+' '+muscleNames[key]+' · ':((selectedExercise&&selectedMuscle!=='all')?selectedExercise+' · ':'' )+pts[pj].dk.split('-')[2]+'日: ')+pts[pj].vol+metricSuffix;
-            htm+='<circle class="chart-point'+(isMaxPoint?' chart-point-max':'')+'" cx="'+pointX+'" cy="'+pointY+'" r="'+pointR+'"'+(isMaxPoint||volumeMetricMode==='duration'?'':' fill="'+muscleColors[key]+'"')+' data-muscle="'+key+'" data-date="'+pointLabelDate+'" data-vol="'+pts[pj].vol+'" data-unit="'+metricSuffix+'"><title>'+escapeHtml(pointTitle)+'</title></circle>';
+            htm+='<circle class="chart-point'+(isMaxPoint?' chart-point-max':'')+'" cx="'+pointX+'" cy="'+pointY+'" r="'+pointR+'"'+(isMaxPoint||volumeMetricMode==='duration'?'':' fill="'+muscleColors[key]+'"')+' data-muscle="'+key+'" data-date="'+pointLabelDate+'" data-exercise="'+escapeHtmlAttribute(selectedExercise)+'" data-vol="'+pts[pj].vol+'" data-unit="'+metricSuffix+'" role="link" tabindex="0" aria-label="'+escapeHtmlAttribute(pointTitle+'，点击查看训练记录')+'"><title>'+escapeHtml(pointTitle)+'</title></circle>';
             if(isLastPoint){
                 htm+='<text class="chart-point-label" x="'+pointX+'" y="'+Math.max(padding.top-2,pointY-10)+'">'+formatMetricNumber(pts[pj].vol)+(volumeMetricMode==='interval'?'分':'')+'</text>';
             }
@@ -4428,7 +4428,7 @@ function getVolumeChartFooter(volumeMetricMode){
 function hideChartTooltip(){
     document.querySelectorAll('#chartContainer .chart-tooltip, #intervalChartContainer .chart-tooltip').forEach(function(tooltip){tooltip.remove();});
 }
-function bindChartPointTooltips(container){
+function bindChartPointInteractions(container){
     var chart=container.querySelector('.line-chart');
     if(!chart)return;
     chart.onclick=function(e){
@@ -4438,9 +4438,13 @@ function bindChartPointTooltips(container){
         point.onclick=function(e){
             e.stopPropagation();
             hideChartTooltip();
-            var tooltip=document.createElement('div');
             var mu=this.dataset.muscle;
             var date=this.dataset.date||'';
+            if(container.id==='chartContainer'){
+                jumpToStatsDate(date,muscleNames[mu]?mu:null,this.dataset.exercise||'');
+                return;
+            }
+            var tooltip=document.createElement('div');
             var vol=this.dataset.vol||'0';
             var unit=this.dataset.unit||'kg';
             tooltip.className='chart-tooltip';
@@ -4453,6 +4457,12 @@ function bindChartPointTooltips(container){
             var maxLeft=chart.clientWidth-tooltip.offsetWidth;
             tooltip.style.left=Math.max(0,Math.min(left,maxLeft))+'px';
             tooltip.style.top=Math.max(0,top)+'px';
+        };
+        if(container.id==='chartContainer')point.onkeydown=function(e){
+            if(e.key==='Enter'){
+                e.preventDefault();
+                this.dispatchEvent(new MouseEvent('click',{bubbles:true}));
+            }
         };
     });
 }
