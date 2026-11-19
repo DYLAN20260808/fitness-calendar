@@ -87,6 +87,7 @@
         .app-content { position: relative; z-index: 1; width: min(100%, var(--page-max-width)); margin: 0 auto; padding: 0 10px; --active-page-surface: var(--page-surface-calendar); }
         .app-content.page-calendar { --active-page-surface: var(--page-surface-calendar); }
         .app-content.page-record { --active-page-surface: var(--page-surface-record); }
+        .app-content.page-record.is-history-record { --active-page-surface: #000; }
         .app-content.page-simple { --active-page-surface: var(--page-surface-record); }
         .app-content.page-volume { --active-page-surface: var(--page-surface-volume); }
         .app-content.page-stats { --active-page-surface: var(--page-surface-stats); }
@@ -449,6 +450,8 @@
         .tab-btn { flex: 1; min-height: var(--detail-tab-height); padding: 7px 8px; border: none; border-radius: 12px; background: var(--neutral-gradient); -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%); color: #3a3a3c; font-size: 12px; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; border: 1px solid rgba(255,255,255,0.78); box-shadow: inset 0 1px 0 rgba(255,255,255,0.88), 0 8px 16px rgba(17,24,39,0.06); }
         .tab-btn.active { background: var(--primary-gradient); color: white; box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -3px 0 rgba(122,184,238,0.22), 0 14px 24px rgba(147,197,253,0.22); transform: translateY(-2px); }
         .tab-btn:active { transform: translateY(1px) scale(0.985); box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 4px 10px rgba(17,24,39,0.08); }
+        .clear-day-btn { color: #b42318; }
+        .clear-day-btn:disabled { opacity: 0.45; cursor: default; box-shadow: none; }
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: sectionFadeIn 0.22s ease-out; }
         .chart-container { padding: 14px 12px; min-height: 260px; border-radius: 20px; background: linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(241,244,249,0.56) 100%); border: 1px solid rgba(255,255,255,0.56); box-shadow: inset 0 1px 0 rgba(255,255,255,0.84); }
@@ -487,6 +490,12 @@
             .detail-action-bar .exercise-timer-meta,
             .detail-action-bar .exercise-timer-value { white-space: nowrap; }
             .detail-action-bar .exercise-timer-value { min-width: 0; }
+            #detailActionBar { gap: 6px; }
+            #detailActionBar .tab-btn,
+            #detailActionBar .exercise-timer-btn,
+            #detailActionBar .exercise-timer-reset-btn,
+            #detailActionBar .add-btn-small { padding: 5px 3px; font-size: 11px; }
+            #detailActionBar .exercise-timer-value { font-size: 11px; }
             .detail-footer-summary { grid-template-columns: minmax(0, 1fr) minmax(72px, auto) minmax(0, 1fr); gap: 6px; }
             .detail-footer-card { padding: 10px 8px; }
             .detail-footer-label { font-size: 10px; }
@@ -611,6 +620,8 @@
             #calendarPage .nav { border-top-right-radius: 16px; }
         }
         body, body * { color: var(--text) !important; }
+        body .app-content.page-record.is-history-record .page-date-footer-text,
+        body .app-content.page-record.is-history-record .page-date-footer-hint { color: #fff !important; }
         body *::placeholder { color: var(--text) !important; }
         body svg text { fill: var(--text) !important; }
     </style>
@@ -668,7 +679,8 @@
             <button class="tab-btn active" id="tabRecord" onclick="switchTab('volume','interval')" hidden>每组间隔</button>
             <span class="detail-timer-slot" id="detailTimerSlot" hidden></span>
             <span class="detail-reset-slot" id="detailResetSlot" hidden></span>
-            <button class="add-btn-small" id="addActionBtn" onclick="event.stopPropagation();openM()" title="添加动作" aria-label="添加动作" hidden>+ 添加</button>
+            <button class="tab-btn clear-day-btn" id="clearDayBtn" type="button" onclick="clearSelectedDay()" hidden>清空</button>
+            <button class="add-btn-small" id="addActionBtn" onclick="event.stopPropagation();addRecordAction()" title="添加动作" aria-label="添加动作" hidden>+ 添加</button>
             <button class="add-btn-small random-action-btn" id="randomActionBtn" onclick="event.stopPropagation();handleRandomActionButtonClick()" onpointerdown="startRandomActionLongPress(event)" onpointerup="finishRandomActionLongPress()" onpointerleave="cancelRandomActionLongPress()" onpointercancel="cancelRandomActionLongPress()" oncontextmenu="return false" title="点击添加随便动作，长按修改当天最近添加的动作" aria-label="随便添加动作" hidden>随便</button>
         </div>
         <div id="detailFooterMetricsHome"></div>
@@ -2002,9 +2014,9 @@ function getLatestMuscleCopySource(targetDate,muscle){
     }
     return fallbackSource;
 }
-function getBestMuscleCopyExercises(targetDate,muscle){
+function getBestMuscleCopyExercises(targetDate,muscle,sourceDate){
     if(!muscle)return [];
-    var source=getLatestMuscleCopySource(targetDate,muscle);
+    var source=sourceDate?{dateKey:sourceDate,exercises:data[sourceDate]||[]}:getLatestMuscleCopySource(targetDate,muscle);
     if(!source||!source.exercises||!source.exercises.length)return [];
     var bestByName={};
     var orderedNames=[];
@@ -2019,6 +2031,7 @@ function getBestMuscleCopyExercises(targetDate,muscle){
         var existing=bestByName[exerciseName];
         if(!existing||weight>existing.weight||(weight===existing.weight&&volume>existing.volume)){
             bestByName[exerciseName]={
+                muscle:muscle,
                 name:exerciseName,
                 reps:exercise.reps||'',
                 weight:weight,
@@ -2045,11 +2058,49 @@ function getNextChestBackMuscle(targetDate){
     }
     return null;
 }
+function getLatestSimilarTrainingDate(targetDate,muscle){
+    var parts=targetDate.split('-');
+    var weekday=new Date(Number(parts[0]),Number(parts[1])-1,Number(parts[2])).getDay();
+    var isWeekend=weekday===0||weekday===6;
+    var dateKeys=Object.keys(data).filter(function(dateKey){
+        if(dateKey>=targetDate||!(data[dateKey]||[]).some(function(exercise){return exercise.muscle===muscle;}))return false;
+        var dateParts=dateKey.split('-');
+        var day=new Date(Number(dateParts[0]),Number(dateParts[1])-1,Number(dateParts[2])).getDay();
+        return (day===0||day===6)===isWeekend;
+    }).sort().reverse();
+    return dateKeys[0]||null;
+}
+function addTrainingFromSimilarDay(){
+    var muscle=getNextChestBackMuscle(selDate);
+    if(!muscle){
+        openM();
+        return;
+    }
+    var sourceDate=getLatestSimilarTrainingDate(selDate,muscle);
+    var sourceExercises=sourceDate?getBestMuscleCopyExercises(selDate,muscle,sourceDate):[];
+    if(!sourceExercises.length){
+        openM();
+        selM(muscle);
+        return;
+    }
+    copyTrainingExercises(sourceExercises);
+}
+function addRecordAction(){
+    if(selDate===getTodayKey()&&!(data[selDate]||[]).length){
+        addTrainingFromSimilarDay();
+        return;
+    }
+    openM();
+}
 function addCalendarTraining(){
     var today=new Date();
     selDate=getTodayKey();
     curDate=new Date(today.getFullYear(),today.getMonth(),1);
     if(!canAddRecordToDateKey(selDate))return;
+    if(!(data[selDate]||[]).length){
+        addTrainingFromSimilarDay();
+        return;
+    }
     var targetMuscle=getNextChestBackMuscle(selDate);
     if(!targetMuscle){
         openM();
@@ -2070,13 +2121,17 @@ function copyLastMuscleExercises(){
         alert('这个部位还没有可复制的上次训练记录');
         return;
     }
+    copyTrainingExercises(sourceExercises);
+}
+function copyTrainingExercises(sourceExercises){
     if(!data[selDate])data[selDate]=[];
     var now=getNowTimestampForDateKey(selDate);
+    var copiedMuscles=[];
     for(var i=0;i<sourceExercises.length;i++){
         var sourceExercise=sourceExercises[i];
         var copiedName=(sourceExercise.name||'').trim();
         var copiedExercise={
-            muscle:selMuscle,
+            muscle:sourceExercise.muscle,
             name:copiedName,
             sets:0,
             reps:sourceExercise.reps||'',
@@ -2085,9 +2140,11 @@ function copyLastMuscleExercises(){
             updatedAt:now===null?null:(now+i)
         };
         data[selDate].push(copiedExercise);
-        if(copiedName)rememberCustomExerciseName(selMuscle,copiedName);
+        if(copiedName)rememberCustomExerciseName(sourceExercise.muscle,copiedName);
+        if(copiedMuscles.indexOf(sourceExercise.muscle)<0)copiedMuscles.push(sourceExercise.muscle);
     }
-    syncRecordGroupLatestTime(selDate,selMuscle,now);
+    copiedMuscles.forEach(function(muscle){syncRecordGroupLatestTime(selDate,muscle,now);});
+    selMuscle=sourceExercises[sourceExercises.length-1].muscle;
     recordMuscleTabs[getRecordMuscleTabKey(selDate)]=selMuscle;
     var selectedName=(sourceExercises[sourceExercises.length-1].name||'').trim();
     recordActionTabs[getRecordActionTabKey(selDate,selMuscle)]=selectedName;
@@ -2650,8 +2707,12 @@ function updateDetailActionBarVisibility(){
     var randomBtn=document.getElementById('randomActionBtn');
     var timerSlot=document.getElementById('detailTimerSlot');
     var resetSlot=document.getElementById('detailResetSlot');
-    if(!actionBar||!recordTab||!addBtn||!randomBtn||!timerSlot||!resetSlot)return;
-    actionBar.hidden=recordTab.hidden&&addBtn.hidden&&randomBtn.hidden&&timerSlot.hidden&&resetSlot.hidden;
+    var clearBtn=document.getElementById('clearDayBtn');
+    if(!actionBar||!recordTab||!addBtn||!randomBtn||!timerSlot||!resetSlot||!clearBtn)return;
+    clearBtn.hidden=currentPage!=='record'||!selDate;
+    clearBtn.disabled=!isEditableDateKey(selDate)||!(data[selDate]||[]).length;
+    clearBtn.title=isHistoricalDateKey(selDate)&&!isEditableDateKey(selDate)?'请先解锁历史日期':'清空当前日期的所有训练记录';
+    actionBar.hidden=recordTab.hidden&&addBtn.hidden&&randomBtn.hidden&&timerSlot.hidden&&resetSlot.hidden&&clearBtn.hidden;
     updateDetailFooterMetricsVisibility();
 }
 function updateDetailFooterMetricsVisibility(){
@@ -2688,6 +2749,7 @@ function updateAppContentThemeState(){
     if(!container)return;
     container.classList.remove('page-calendar','page-record','page-simple','page-volume','page-stats');
     container.classList.add('page-'+currentPage);
+    container.classList.toggle('is-history-record',currentPage==='record'&&isHistoricalDateKey(selDate));
 }
 function updateDetailTabsState(){
     var tabs=document.getElementById('detailTabs');
@@ -2718,6 +2780,7 @@ function switchPage(page){
     if(currentPage==='stats')switchTab('stats');
 }
 function render(){
+    updateAppContentThemeState();
     var c=document.getElementById('calendar');c.innerHTML='';
     ['日','一','二','三','四','五','六'].forEach(function(d){c.innerHTML+='<div class="weekday">'+d+'</div>';});
     var y=curDate.getFullYear(),m=curDate.getMonth();
@@ -3725,6 +3788,36 @@ function dup(dk,i){
     render();
     showDetail(dk);
 }
+function clearSelectedDay(){
+    var dk=selDate;
+    if(currentPage!=='record'||!isEditableDateKey(dk)||!(data[dk]||[]).length)return;
+    if(!confirm('确定清空 '+dk+' 的所有训练记录吗？此操作无法撤销。'))return;
+    if(recordActionClickTimer)clearTimeout(recordActionClickTimer);
+    recordActionClickTimer=null;
+    Object.keys(detailTimerClickTimers).forEach(function(key){
+        if(key.indexOf(dk+'::')!==0)return;
+        clearTimeout(detailTimerClickTimers[key]);
+        delete detailTimerClickTimers[key];
+    });
+    Object.keys(recordGroupTimerStarts).forEach(function(key){
+        if(key.indexOf(dk+'::')===0)delete recordGroupTimerStarts[key];
+    });
+    Object.keys(recordGroupTimerReminderState).forEach(function(key){
+        if(key.indexOf(dk+'::')===0)delete recordGroupTimerReminderState[key];
+    });
+    Object.keys(recordActionTabs).forEach(function(key){
+        if(key.indexOf(dk+'__')===0)delete recordActionTabs[key];
+    });
+    delete recordMuscleTabs[getRecordMuscleTabKey(dk)];
+    delete data[dk];
+    delete dayTimeOverrides[dk];
+    save();
+    saveDayTimeOverrides();
+    saveRecordGroupTimerStarts();
+    if(recordSelection.dateKey===dk&&writeStoredJson(STORAGE_KEYS.recordSelection,{}))recordSelection={};
+    render();
+    showDetail(dk);
+}
 function del(dk,i){if(!isEditableDateKey(dk)||!data[dk]||!data[dk][i])return;var deletedExercise=data[dk][i];data[dk].splice(i,1);if(!data[dk].length){delete data[dk];delete dayTimeOverrides[dk];saveDayTimeOverrides();}else{cleanupDayTimeOverridesForDate(dk);saveDayTimeOverrides();}if(deletedExercise&&deletedExercise.muscle&&data[dk]){var hasRemainingInMuscle=(data[dk]||[]).some(function(exercise){return exercise.muscle===deletedExercise.muscle;});if(hasRemainingInMuscle){syncRecordGroupLatestTime(dk,deletedExercise.muscle,getNowTimestampForDateKey(dk));resetRecordGroupTimer(dk,deletedExercise.muscle);}else{clearRecordGroupTimer(dk,deletedExercise.muscle);}}save();render();showDetail(dk);}
 function adjSets(dk,i,d){
     if(!isEditableDateKey(dk)||!data[dk]||!data[dk][i])return;
@@ -3897,11 +3990,12 @@ document.addEventListener('click',function(e){
 var appContent=document.querySelector('.app-content');
 if(appContent)appContent.addEventListener('click',function(e){
     if(currentPage!=='record'||!e.target||!e.target.closest)return;
-    if(e.target.closest('.detail-footer-duration, .exercise-time-duration'))return;
+    if(e.target.closest('.detail-footer-duration, .exercise-time-duration, #clearDayBtn'))return;
     updateRecordTrainingDurationOnClick();
 },true);
 function switchTab(tab,metricMode){
     if(currentPage!=='calendar')currentPage=tab;
+    updateAppContentThemeState();
     updateBottomNavState();
     updateDetailTabsState();
     updateAddActionVisibility();
@@ -5120,8 +5214,6 @@ function refreshTodayTrainingDurationOnLoad(){
     var dk=getTodayKey();
     var exercises=data[dk]||[];
     if(!exercises.length)return;
-    var dayMeta=getDayTimeMeta(dk,exercises);
-    if(dayMeta.firstAddedAt===null||dayMeta.lastUpdatedAt===null)return;
     var muscle=getActiveRecordMuscle(dk);
     if(!muscle)return;
     refreshDayLatestTime(dk,muscle,getDefaultSegmentId(),false);
@@ -5157,6 +5249,7 @@ function init(){
     var activeTimerMuscle=hasTodayRecords?getActiveRecordMuscle(todayKey):null;
     if(activeTimerMuscle)startRecordGroupTimer(todayKey,activeTimerMuscle,getDefaultSegmentId());
     refreshTodayTrainingDurationOnLoad();
+    if(!hasTodayRecords)addCalendarTraining();
 }
 init();
     </script>
