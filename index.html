@@ -4030,9 +4030,6 @@ function switchTab(tab){
     if(tab==='stats'){
         var topExerciseInfo=getTopSelectedRecordInfo(selDate)||getTopExerciseInfo(selDate);
         statsSection=topExerciseInfo?topExerciseInfo.muscle:null;
-        if(topExerciseInfo&&topExerciseInfo.muscle&&topExerciseInfo.name){
-            statsExerciseSelection[topExerciseInfo.muscle]=topExerciseInfo.name;
-        }
         showStats();
     }
 }
@@ -5005,11 +5002,8 @@ function showStats(){
             });
             milestoneNames=getOrderedStatsExerciseNames(mu,milestoneNames);
             if(milestoneNames.length){
-                var activeExercise=statsExerciseSelection[mu];
-                if(!activeExercise||milestoneNames.indexOf(activeExercise)<0){
-                    activeExercise=milestoneNames[0];
-                    statsExerciseSelection[mu]=activeExercise;
-                }
+                var activeExercise=milestoneNames[0];
+                statsExerciseSelection[mu]=activeExercise;
                 var escapedActiveExercise=escapeJsSingleQuotedString(activeExercise);
                 htm+='<div class="milestone-actions">';
                 for(var mni=0;mni<milestoneNames.length;mni++){
