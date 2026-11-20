@@ -4357,6 +4357,7 @@ function switchTab(tab){
     if(tab==='stats'){
         var topExerciseInfo=getTopSelectedRecordInfo(selDate)||getTopExerciseInfo(selDate);
         statsSection=topExerciseInfo?topExerciseInfo.muscle:null;
+        if(statsSection)delete statsExerciseSelection[statsSection];
         showStats();
     }
 }
@@ -5027,19 +5028,6 @@ function copySummaryMarkdown(){
     document.body.removeChild(textarea);
 }
 function setStatsExercise(mu, exerciseName){
-    var stats=calcMuscleStats(mu);
-    var exerciseNames=Object.keys(stats.exerciseMilestones||{}).filter(function(name){
-        return stats.exerciseMilestones[name]&&stats.exerciseMilestones[name].length;
-    });
-    var ordered=getOrderedStatsExerciseNames(mu,exerciseNames);
-    moveArrayItem(ordered,ordered.indexOf(exerciseName),0);
-    var previousOrder=statsExerciseOrder[mu];
-    statsExerciseOrder[mu]=ordered;
-    if(!saveStatsExerciseOrder()){
-        if(previousOrder)statsExerciseOrder[mu]=previousOrder;
-        else delete statsExerciseOrder[mu];
-        return;
-    }
     statsExerciseSelection[mu]=exerciseName;
     showStats();
 }
@@ -5331,14 +5319,15 @@ function showStats(){
             });
             milestoneNames=getOrderedStatsExerciseNames(mu,milestoneNames);
             if(milestoneNames.length){
-                var activeExercise=milestoneNames[0];
+                var activeExercise=statsExerciseSelection[mu];
+                if(milestoneNames.indexOf(activeExercise)<0)activeExercise=milestoneNames[0];
                 statsExerciseSelection[mu]=activeExercise;
                 var escapedActiveExercise=escapeJsSingleQuotedString(activeExercise);
                 htm+='<div class="milestone-actions">';
                 for(var mni=0;mni<milestoneNames.length;mni++){
                     var exerciseName=milestoneNames[mni];
                     var escapedExerciseName=escapeJsSingleQuotedString(exerciseName);
-                    htm+='<button class="milestone-action-btn'+(exerciseName===activeExercise?' active':'')+'" data-exercise-name="'+escapeHtmlAttribute(exerciseName)+'" onclick="handleStatsExerciseClick(\''+mu+'\',\''+escapedExerciseName+'\')" ondblclick="handleStatsExerciseDoubleClick(\''+mu+'\',\''+escapedExerciseName+'\',this)" oncontextmenu="return false" title="点击选择并置顶；双击改名">'+escapeHtml(exerciseName)+'</button>';
+                    htm+='<button class="milestone-action-btn'+(exerciseName===activeExercise?' active':'')+'" data-exercise-name="'+escapeHtmlAttribute(exerciseName)+'" onclick="handleStatsExerciseClick(\''+mu+'\',\''+escapedExerciseName+'\')" ondblclick="handleStatsExerciseDoubleClick(\''+mu+'\',\''+escapedExerciseName+'\',this)" oncontextmenu="return false" title="点击选择；双击改名">'+escapeHtml(exerciseName)+'</button>';
                 }
                 htm+='</div>';
                 var milestoneList=s.exerciseMilestones[activeExercise].slice(-3).reverse();
@@ -5366,6 +5355,7 @@ function showStats(){
 }
 function setStats(btn){
     statsSection=(statsSection===btn)?null:btn;
+    if(statsSection)delete statsExerciseSelection[statsSection];
     showStats();
 }
 function ensureCoachGuides(){
@@ -5423,7 +5413,6 @@ function selectCoachExercise(muscle,exerciseName){
     var names=coachPageState.names[muscle];
     if(!Array.isArray(names)||names.indexOf(exerciseName)<0)return;
     var previousState=JSON.stringify(coachPageState);
-    coachPageState.names[muscle]=[exerciseName].concat(names.filter(function(name){return name!==exerciseName;}));
     coachPageState.selected[muscle]=exerciseName;
     coachPageState.selectedMuscle=muscle;
     if(!saveCoachPageState()){
